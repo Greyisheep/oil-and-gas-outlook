@@ -3,6 +3,8 @@ import { ChartFrame } from "@/components/chart-frame";
 import { DataTable, type Col } from "@/components/data-table";
 import { IconCredits } from "@/components/icon";
 import { Shell, type Section } from "@/components/shell";
+import { LivePriceChart, LiveTicker } from "@/components/live";
+import { getLivePrices, type LivePrices } from "@/lib/live-prices";
 import { Console } from "@/components/console";
 import {
   ProductionChart, ShareChart, PeerChart, RigChart, LagChart,
@@ -107,7 +109,8 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: "go
 }
 
 /* ── sections ──────────────────────────────────────────────────────────── */
-const sections: Section[] = [
+function buildSections(live: LivePrices): Section[] {
+  return [
   {
     id: "production",
     label: "Production",
@@ -209,9 +212,24 @@ const sections: Section[] = [
     id: "prices",
     label: "Prices",
     group: "Market",
-    blurb: "What Nigerian oil actually sold for, and the premium it commands over the global benchmark.",
+    blurb: "What oil and gas are trading at today, what Nigerian crude actually sold for, and the premium it commands.",
     content: (
       <div className="flex flex-col gap-3">
+        <ChartFrame
+          n="L1" title="Today's market"
+          plain="Crude and natural gas as they closed most recently, updated through the day. Everything else in this dashboard is monthly and ends in July, so this is the bridge to now."
+          detail="Brent and West Texas Intermediate are the two crude benchmarks most contracts price against; Henry Hub is the US natural gas reference. Oil is priced per barrel and gas per million BTU, so they get separate panels rather than a shared scale. Figures come from the US Energy Information Administration by way of FRED and refresh hourly."
+          source="US Energy Information Administration, published through FRED. Brent DCOILBRENTEU, WTI DCOILWTICO, Henry Hub DHHNGSP."
+          legend={[
+            { label: "Brent", color: "var(--chart-1)" },
+            { label: "WTI", color: "var(--chart-2)" },
+            { label: "Henry Hub gas", color: "var(--chart-4)" },
+          ]}
+        >
+          <LiveTicker data={live} />
+          <LivePriceChart data={live} />
+        </ChartFrame>
+
         <div className="grid gap-3 xl:grid-cols-2">
           <ChartFrame
             n="10" title="Bonny Light against North Sea Dated"
@@ -570,8 +588,10 @@ const sections: Section[] = [
       </div>
     ),
   },
-];
+  ];
+}
 
-export default function Page() {
-  return <Shell sections={sections} dataTo={L.month} repoUrl={REPO} />;
+export default async function Page() {
+  const live = await getLivePrices();
+  return <Shell sections={buildSections(live)} dataTo={L.month} repoUrl={REPO} />;
 }
