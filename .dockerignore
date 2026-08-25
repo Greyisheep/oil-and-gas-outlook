@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.github
+.claude
+data-pipeline/*.pdf
+npm-debug.log*
+.DS_Store
+README.md

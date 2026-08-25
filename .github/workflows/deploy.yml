@@ -1,0 +1,61 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  SERVICE: barrel-ledger
+  REGION: europe-west1
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npm run lint
+      - run: npm run build
+
+  deploy:
+    needs: verify
+    runs-on: ubuntu-latest
+    # Skips cleanly on forks and until the two secrets below are set.
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        continue-on-error: true
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Skip deploy if unauthenticated
+        if: steps.auth.outcome != 'success'
+        run: |
+          echo "::notice::GCP_SA_KEY not set — build verified, deploy skipped."
+          exit 0
+
+      - uses: google-github-actions/setup-gcloud@v2
+        if: steps.auth.outcome == 'success'
+
+      - name: Build and deploy
+        if: steps.auth.outcome == 'success'
+        run: |
+          gcloud builds submit --tag "gcr.io/${{ secrets.GCP_PROJECT_ID }}/$SERVICE" --quiet
+          gcloud run deploy "$SERVICE" \
+            --image "gcr.io/${{ secrets.GCP_PROJECT_ID }}/$SERVICE" \
+            --region "$REGION" \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8080 \
+            --memory 512Mi \
+            --quiet

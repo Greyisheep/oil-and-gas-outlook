@@ -1,26 +1,159 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Nigeria Oil & Gas Console ────────────────────────────────────────────
+   Chrome: olive / stone / brass: earthy, recessive, non-generic.
+   Data marks: validated CVD-safe categorical set (gold, green, red, blue).
+   Both palettes validated with dataviz/validate_palette.js in light AND dark.
+   ------------------------------------------------------------------------ */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-rule: var(--rule);
+  --color-brass: var(--brass);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
+  --font-heading: var(--font-plex-serif);
+  --radius-sm: 2px;
+  --radius-md: 3px;
+  --radius-lg: 4px;
+  --radius-xl: 6px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 3px;
+
+  /* stone paper, faintly olive-biased, chosen rather than defaulted */
+  --background: #f2f2ec;
+  --foreground: #1a1d16;
+  --card: #fbfbf7;
+  --card-foreground: #1a1d16;
+  --popover: #fbfbf7;
+  --popover-foreground: #1a1d16;
+
+  --primary: #5f6b3a;            /* olive */
+  --primary-foreground: #f7f8f2;
+  --secondary: #e6e7dc;
+  --secondary-foreground: #2b3024;
+  --muted: #e9eae0;
+  --muted-foreground: #6d7263;
+  --accent: #e2e6d5;
+  --accent-foreground: #3b4327;
+  --destructive: #a8352f;
+  --brass: #8a6d1e;
+
+  --border: #dcdbd0;
+  --rule: #dcdbd0;
+  --input: #d3d2c6;
+  --ring: #5f6b3a;
+
+  /* data marks, validated light steps */
+  --chart-1: #eda100;  /* gold  */
+  --chart-2: #1baf7a;  /* green */
+  --chart-3: #e34948;  /* red   */
+  --chart-4: #2a78d6;  /* blue  */
+  --grid: #e0e0d5;
+}
+
+.dark {
+  --background: #14160f;
+  --foreground: #eeefe6;
+  --card: #1c1f18;
+  --card-foreground: #eeefe6;
+  --popover: #1c1f18;
+  --popover-foreground: #eeefe6;
+
+  --primary: #97a75f;
+  --primary-foreground: #14160f;
+  --secondary: #262a20;
+  --secondary-foreground: #dfe1d4;
+  --muted: #23271e;
+  --muted-foreground: #9ba190;
+  --accent: #2b3123;
+  --accent-foreground: #cbd3ad;
+  --destructive: #e06b64;
+  --brass: #c9a227;
+
+  --border: #2f332a;
+  --rule: #2f332a;
+  --input: #383d31;
+  --ring: #97a75f;
+
+  /* data marks, validated dark steps */
+  --chart-1: #c98500;
+  --chart-2: #199e70;
+  --chart-3: #e66767;
+  --chart-4: #3987e5;
+  --grid: #2b2f26;
+}
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv05" 1;
   }
+  h1, h2, h3 { text-wrap: balance; }
+  /* every digit that lines up in a column */
+  .tnum, table, .font-mono { font-variant-numeric: tabular-nums; }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* eyebrow / label treatment */
+.source {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 10.5px;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: var(--muted-foreground);
+}
+
+.eyebrow {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* hairline rules instead of card shadows: console, not SaaS */
+.panel {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+
+.rule-t { border-top: 1px solid var(--rule); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
