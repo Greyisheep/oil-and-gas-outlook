@@ -6,33 +6,12 @@ import {
 import { buildSeries, correlationTable, lagProfile, CORR_SERIES, firstDiff } from "@/lib/model";
 import { WAF_USGC_SUEZ, WAF_EAST_VLCC, ME_EAST_VLCC, OECD_DAYS_COVER, OECD_CRUDE_STOCK, MONTHS } from "@/lib/opec-data";
 import { monthLabel } from "@/lib/model";
+import { Tip, AXIS, CURSOR, BAR_CURSOR, GRID, INK3 } from "./chart-kit";
+import { useWindow } from "./range";
 
 const C1 = "var(--chart-1)", C2 = "var(--chart-2)", C3 = "var(--chart-3)", C4 = "var(--chart-4)";
-const GRID = "var(--grid)", INK3 = "var(--muted-foreground)";
-const axis = { stroke: GRID, tickLine: false as const,
-  tick: { fill: INK3, fontSize: 10.5, fontFamily: "var(--font-plex-mono)" } };
 
-type TipProps = { active?: boolean; label?: string | number;
-  payload?: { name?: string; value?: number | string | null; color?: string }[]; unit?: string; dp?: number };
-
-function Tip({ active, payload, label, unit = "", dp = 0 }: TipProps) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="panel px-2.5 py-2 text-[11.5px]" style={{ background: "var(--popover)" }}>
-      <div className="eyebrow mb-1">{label}</div>
-      {payload.filter((p) => p.value != null).map((p) => (
-        <div key={p.name} className="flex items-center justify-between gap-3 font-mono">
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-[2.5px] w-3 rounded-full" style={{ background: p.color }} />{p.name}
-          </span>
-          <span className="font-medium">{Number(p.value).toFixed(dp)}{unit}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const freight = MONTHS.map((m, i) => ({
+const freightAll = MONTHS.map((m, i) => ({
   label: monthLabel(m),
   "WAF to US Gulf (Suezmax)": WAF_USGC_SUEZ[i],
   "WAF to East (VLCC)": WAF_EAST_VLCC[i],
@@ -41,13 +20,14 @@ const freight = MONTHS.map((m, i) => ({
 
 /* ── Freight: Nigeria's own export routes against the Gulf ───────────────── */
 export function FreightChart() {
+  const freight = useWindow(freightAll);
   return (
     <ResponsiveContainer width="100%" height={208}>
       <LineChart data={freight} margin={{ top: 8, right: 14, left: -8, bottom: 0 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis dataKey="label" {...axis} interval={3} />
-        <YAxis {...axis} width={44} tickFormatter={(v) => `WS${v}`} />
-        <Tooltip content={<Tip />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+        <XAxis dataKey="label" {...AXIS} interval={3} />
+        <YAxis {...AXIS} width={44} tickFormatter={(v) => `WS${v}`} />
+        <Tooltip content={<Tip />} cursor={CURSOR} />
         <Line type="monotone" dataKey="WAF to US Gulf (Suezmax)" stroke={C1} strokeWidth={2.5} dot={false} isAnimationActive={false} connectNulls />
         <Line type="monotone" dataKey="WAF to East (VLCC)" stroke={C2} strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
         <Line type="monotone" dataKey="Gulf to East (VLCC)" stroke={C3} strokeWidth={2} strokeDasharray="4 3" dot={false} isAnimationActive={false} connectNulls />
@@ -57,27 +37,28 @@ export function FreightChart() {
 }
 
 /* ── OECD stocks and days of forward cover ──────────────────────────────── */
-const stocks = MONTHS.map((m, i) => ({
+const stocksAll = MONTHS.map((m, i) => ({
   label: monthLabel(m), "OECD crude stocks": OECD_CRUDE_STOCK[i], "Days of cover": OECD_DAYS_COVER[i],
 }));
 export function StocksChart() {
+  const stocks = useWindow(stocksAll);
   return (
     <div className="flex flex-col gap-1">
       <ResponsiveContainer width="100%" height={104}>
         <ComposedChart data={stocks} margin={{ top: 8, right: 14, left: -8, bottom: 0 }} syncId="stk">
           <CartesianGrid stroke={GRID} vertical={false} />
           <XAxis dataKey="label" hide />
-          <YAxis {...axis} width={44} domain={[1250, 1450]} />
-          <Tooltip content={<Tip unit=" mb" />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+          <YAxis {...AXIS} width={44} domain={[1250, 1450]} />
+          <Tooltip content={<Tip unit=" mb" />} cursor={CURSOR} />
           <Area type="monotone" dataKey="OECD crude stocks" stroke={C1} strokeWidth={2} fill={C1} fillOpacity={0.12} dot={false} isAnimationActive={false} connectNulls />
         </ComposedChart>
       </ResponsiveContainer>
       <ResponsiveContainer width="100%" height={104}>
         <LineChart data={stocks} margin={{ top: 4, right: 14, left: -8, bottom: 0 }} syncId="stk">
           <CartesianGrid stroke={GRID} vertical={false} />
-          <XAxis dataKey="label" {...axis} interval={3} />
-          <YAxis {...axis} width={44} domain={[55, 66]} />
-          <Tooltip content={<Tip unit=" days" dp={1} />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+          <XAxis dataKey="label" {...AXIS} interval={3} />
+          <YAxis {...AXIS} width={44} domain={[55, 66]} />
+          <Tooltip content={<Tip unit=" days" dp={1} />} cursor={CURSOR} />
           <Line type="monotone" dataKey="Days of cover" stroke={C2} strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
         </LineChart>
       </ResponsiveContainer>
@@ -130,10 +111,10 @@ export function FreightLagChart() {
     <ResponsiveContainer width="100%" height={176}>
       <BarChart data={prof} margin={{ top: 8, right: 14, left: -12, bottom: 6 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis dataKey="lag" {...axis}
+        <XAxis dataKey="lag" {...AXIS}
           label={{ value: "freight leads by, months", position: "insideBottom", offset: -4, fill: INK3, fontSize: 10, fontFamily: "var(--font-plex-mono)" }} />
-        <YAxis {...axis} width={40} domain={[-1, 1]} />
-        <Tooltip content={<Tip dp={3} />} cursor={{ fill: "var(--secondary)" }} />
+        <YAxis {...AXIS} width={40} domain={[-1, 1]} />
+        <Tooltip content={<Tip dp={3} />} cursor={BAR_CURSOR} />
         <ReferenceArea y1={-0.5} y2={0.5} fill={INK3} fillOpacity={0.07} />
         <ReferenceLine y={0} stroke={INK3} strokeWidth={1} />
         <Bar dataKey="r" name="correlation" radius={[2, 2, 0, 0]} isAnimationActive={false}>
@@ -146,28 +127,28 @@ export function FreightLagChart() {
 
 export function ShareVsFreightChart() {
   const S = buildSeries();
-  const d = MONTHS.map((m, i) => ({
+  const d = useWindow(MONTHS.map((m, i) => ({
     label: monthLabel(m),
     "Nigeria share of OPEC": S[i].opecShare as number | null,
     "Gulf to East freight": ME_EAST_VLCC[i],
-  }));
+  })));
   return (
     <div className="flex flex-col gap-1">
       <ResponsiveContainer width="100%" height={104}>
         <LineChart data={d} margin={{ top: 8, right: 14, left: -8, bottom: 0 }} syncId="svf">
           <CartesianGrid stroke={GRID} vertical={false} />
           <XAxis dataKey="label" hide />
-          <YAxis {...axis} width={44} domain={[4, 9]} tickFormatter={(v) => `${v}%`} />
-          <Tooltip content={<Tip unit="%" dp={2} />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+          <YAxis {...AXIS} width={44} domain={[4, 9]} tickFormatter={(v) => `${v}%`} />
+          <Tooltip content={<Tip unit="%" dp={2} />} cursor={CURSOR} />
           <Line type="monotone" dataKey="Nigeria share of OPEC" stroke={C2} strokeWidth={2.5} dot={false} isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
       <ResponsiveContainer width="100%" height={104}>
         <LineChart data={d} margin={{ top: 4, right: 14, left: -8, bottom: 0 }} syncId="svf">
           <CartesianGrid stroke={GRID} vertical={false} />
-          <XAxis dataKey="label" {...axis} interval={3} />
-          <YAxis {...axis} width={44} tickFormatter={(v) => `WS${v}`} />
-          <Tooltip content={<Tip />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+          <XAxis dataKey="label" {...AXIS} interval={3} />
+          <YAxis {...AXIS} width={44} tickFormatter={(v) => `WS${v}`} />
+          <Tooltip content={<Tip />} cursor={CURSOR} />
           <Line type="monotone" dataKey="Gulf to East freight" stroke={C4} strokeWidth={2} dot={false} isAnimationActive={false} connectNulls />
         </LineChart>
       </ResponsiveContainer>
@@ -185,9 +166,9 @@ export function FreightScatter() {
     <ResponsiveContainer width="100%" height={208}>
       <ScatterChart margin={{ top: 10, right: 16, left: -6, bottom: 16 }}>
         <CartesianGrid stroke={GRID} />
-        <XAxis type="number" dataKey="x" {...axis} name="Gulf to East, change"
+        <XAxis type="number" dataKey="x" {...AXIS} name="Gulf to East, change"
           label={{ value: "Gulf to East, monthly change (WS)", position: "insideBottom", offset: -8, fill: INK3, fontSize: 10, fontFamily: "var(--font-plex-mono)" }} />
-        <YAxis type="number" dataKey="y" {...axis} width={44} name="WAF to US Gulf, change" />
+        <YAxis type="number" dataKey="y" {...AXIS} width={44} name="WAF to US Gulf, change" />
         <ZAxis range={[46, 46]} />
         <Tooltip cursor={{ strokeDasharray: "3 3", stroke: INK3 }}
           content={({ active, payload }) => {

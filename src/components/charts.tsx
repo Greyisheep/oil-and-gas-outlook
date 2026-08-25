@@ -5,52 +5,25 @@ import {
 } from "recharts";
 import { buildSeries, indexed, rigLag, monthLabel, BENCH } from "@/lib/model";
 import { MONTHS, NG_SECONDARY, PEERS } from "@/lib/opec-data";
+import { Tip, AXIS, CURSOR, BAR_CURSOR, GRID, INK3 } from "./chart-kit";
+import { useWindow } from "./range";
 
 const C1 = "var(--chart-1)", C2 = "var(--chart-2)", C3 = "var(--chart-3)", C4 = "var(--chart-4)";
-const GRID = "var(--grid)", INK3 = "var(--muted-foreground)";
-const data = buildSeries();
+const ALL = buildSeries();
 
-const axis = {
-  stroke: GRID,
-  tick: { fill: INK3, fontSize: 10.5, fontFamily: "var(--font-plex-mono)" },
-  tickLine: false as const,
-};
-
-type TipProps = {
-  active?: boolean;
-  label?: string | number;
-  payload?: { name?: string; value?: number | string | null; color?: string }[];
-  unit?: string; dp?: number;
-};
-function Tip({ active, payload, label, unit = "", dp = 0 }: TipProps) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="panel px-2.5 py-2 text-[11.5px] shadow-sm" style={{ background: "var(--popover)" }}>
-      <div className="eyebrow mb-1">{label}</div>
-      {payload.filter((p) => p.value != null).map((p) => (
-        <div key={p.name} className="flex items-center justify-between gap-3 font-mono">
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-[2.5px] w-3 rounded-full" style={{ background: p.color }} />
-            {p.name}
-          </span>
-          <span className="font-medium">{Number(p.value).toFixed(dp)}{unit}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 const H = 208;
 
 /* ── 1. Nigeria crude production, two official bases ─────────────────────── */
 export function ProductionChart() {
+  const data = useWindow(ALL);
   return (
     <ResponsiveContainer width="100%" height={H}>
       <LineChart data={data} margin={{ top: 8, right: 14, left: -8, bottom: 0 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis dataKey="label" {...axis} interval={3} />
-        <YAxis {...axis} domain={[1200, 2150]} width={44} />
-        <Tooltip content={<Tip unit=" tb/d" />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+        <XAxis dataKey="label" {...AXIS} interval={3} />
+        <YAxis {...AXIS} domain={[1200, 2150]} width={44} />
+        <Tooltip content={<Tip unit=" tb/d" />} cursor={CURSOR} />
         <ReferenceLine y={BENCH.budget} stroke={INK3} strokeDasharray="4 3" strokeWidth={1.5}
           label={{ value: "budget benchmark 1,840", position: "insideTopRight", fill: INK3, fontSize: 10, fontFamily: "var(--font-plex-mono)" }} />
         <ReferenceLine y={BENCH.opecQuota} stroke={INK3} strokeDasharray="2 3" strokeWidth={1.5}
@@ -64,6 +37,7 @@ export function ProductionChart() {
 
 /* ── 2. Nigeria's share of OPEC crude, the Hormuz reallocation ──────────── */
 export function ShareChart() {
+  const data = useWindow(ALL);
   return (
     <ResponsiveContainer width="100%" height={H}>
       <AreaChart data={data} margin={{ top: 8, right: 14, left: -8, bottom: 0 }}>
@@ -74,9 +48,9 @@ export function ShareChart() {
           </linearGradient>
         </defs>
         <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis dataKey="label" {...axis} interval={3} />
-        <YAxis {...axis} width={44} domain={[4, 9]} tickFormatter={(v) => `${v}%`} />
-        <Tooltip content={<Tip unit="%" dp={2} />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+        <XAxis dataKey="label" {...AXIS} interval={3} />
+        <YAxis {...AXIS} width={44} domain={[4, 9]} tickFormatter={(v) => `${v}%`} />
+        <Tooltip content={<Tip unit="%" dp={2} />} cursor={CURSOR} />
         <Area isAnimationActive={false} type="monotone" dataKey="opecShare" name="Nigeria share of OPEC crude"
           stroke={C2} strokeWidth={2} fill="url(#shareFill)" dot={false}
           activeDot={{ r: 4, strokeWidth: 2, stroke: "var(--card)" }} />
@@ -94,13 +68,14 @@ const peerData = MONTHS.map((m, i) => ({
   Kuwait: indexed(PEERS.kw)[i],
 }));
 export function PeerChart() {
+  const data = useWindow(peerData);
   return (
     <ResponsiveContainer width="100%" height={H}>
-      <LineChart data={peerData} margin={{ top: 8, right: 14, left: -8, bottom: 0 }}>
+      <LineChart data={data} margin={{ top: 8, right: 14, left: -8, bottom: 0 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis dataKey="label" {...axis} interval={3} />
-        <YAxis {...axis} width={40} domain={[0, 130]} />
-        <Tooltip content={<Tip dp={1} />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+        <XAxis dataKey="label" {...AXIS} interval={3} />
+        <YAxis {...AXIS} width={40} domain={[0, 130]} />
+        <Tooltip content={<Tip dp={1} />} cursor={CURSOR} />
         <ReferenceLine y={100} stroke={INK3} strokeDasharray="4 3" strokeWidth={1.5} />
         <Line isAnimationActive={false} type="monotone" dataKey="Nigeria" stroke={C2} strokeWidth={2.5} dot={false} />
         <Line isAnimationActive={false} type="monotone" dataKey="Saudi Arabia" stroke={C1} strokeWidth={2} dot={false} />
@@ -113,23 +88,24 @@ export function PeerChart() {
 
 /* ── 4. Rigs lead barrels: small multiples, never a dual axis ───────────── */
 export function RigChart() {
+  const data = useWindow(ALL);
   return (
     <div className="flex flex-col gap-1">
       <ResponsiveContainer width="100%" height={104}>
         <AreaChart data={data} margin={{ top: 8, right: 14, left: -8, bottom: 0 }} syncId="riglag">
           <CartesianGrid stroke={GRID} vertical={false} />
           <XAxis dataKey="label" hide />
-          <YAxis {...axis} width={44} domain={[0, 24]} />
-          <Tooltip content={<Tip unit=" rigs" />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+          <YAxis {...AXIS} width={44} domain={[0, 24]} />
+          <Tooltip content={<Tip unit=" rigs" />} cursor={CURSOR} />
           <Area isAnimationActive={false} type="stepAfter" dataKey="rigs" name="Active rigs (OPEC count)" stroke={C1} strokeWidth={2} fill={C1} fillOpacity={0.14} dot={false} />
         </AreaChart>
       </ResponsiveContainer>
       <ResponsiveContainer width="100%" height={104}>
         <LineChart data={data} margin={{ top: 4, right: 14, left: -8, bottom: 0 }} syncId="riglag">
           <CartesianGrid stroke={GRID} vertical={false} />
-          <XAxis dataKey="label" {...axis} interval={3} />
-          <YAxis {...axis} width={44} domain={[1350, 1650]} />
-          <Tooltip content={<Tip unit=" tb/d" />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+          <XAxis dataKey="label" {...AXIS} interval={3} />
+          <YAxis {...AXIS} width={44} domain={[1350, 1650]} />
+          <Tooltip content={<Tip unit=" tb/d" />} cursor={CURSOR} />
           <Line isAnimationActive={false} type="monotone" dataKey="secondary" name="Crude production" stroke={C2} strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
@@ -145,9 +121,9 @@ export function LagChart() {
     <ResponsiveContainer width="100%" height={168}>
       <BarChart data={lags} margin={{ top: 8, right: 14, left: -12, bottom: 4 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis dataKey="lag" {...axis} label={{ value: "lag, months", position: "insideBottom", offset: -2, fill: INK3, fontSize: 10, fontFamily: "var(--font-plex-mono)" }} />
-        <YAxis {...axis} width={40} domain={[-1, 1]} />
-        <Tooltip content={<Tip dp={3} />} cursor={{ fill: "var(--secondary)" }} />
+        <XAxis dataKey="lag" {...AXIS} label={{ value: "lag, months", position: "insideBottom", offset: -2, fill: INK3, fontSize: 10, fontFamily: "var(--font-plex-mono)" }} />
+        <YAxis {...AXIS} width={40} domain={[-1, 1]} />
+        <Tooltip content={<Tip dp={3} />} cursor={BAR_CURSOR} />
         <ReferenceLine y={0} stroke={INK3} strokeWidth={1} />
         <Bar isAnimationActive={false} dataKey="r" name="correlation" radius={[2, 2, 0, 0]}>
           {lags.map((l) => (
@@ -160,13 +136,14 @@ export function LagChart() {
 }
 /* ── 6. Prices ───────────────────────────────────────────────────────────── */
 export function PriceChart() {
+  const data = useWindow(ALL);
   return (
     <ResponsiveContainer width="100%" height={H}>
       <LineChart data={data} margin={{ top: 8, right: 14, left: -8, bottom: 0 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis dataKey="label" {...axis} interval={3} />
-        <YAxis {...axis} width={44} domain={[50, 130]} tickFormatter={(v) => `$${v}`} />
-        <Tooltip content={<Tip unit="/b" dp={2} />} cursor={{ stroke: INK3, strokeWidth: 1, strokeDasharray: "3 3" }} />
+        <XAxis dataKey="label" {...AXIS} interval={3} />
+        <YAxis {...AXIS} width={44} domain={[50, 130]} tickFormatter={(v) => `$${v}`} />
+        <Tooltip content={<Tip unit="/b" dp={2} />} cursor={CURSOR} />
         <ReferenceLine y={BENCH.budgetPrice} stroke={INK3} strokeDasharray="4 3" strokeWidth={1.5}
           label={{ value: "budget $64.85", position: "insideBottomRight", fill: INK3, fontSize: 10, fontFamily: "var(--font-plex-mono)" }} />
         <Line isAnimationActive={false} type="monotone" dataKey="bonny" name="Bonny Light" stroke={C1} strokeWidth={2} dot={false} />
@@ -178,13 +155,14 @@ export function PriceChart() {
 
 /* ── 7. Bonny differential and the reporting gap ─────────────────────────── */
 export function DiffChart() {
+  const data = useWindow(ALL);
   return (
     <ResponsiveContainer width="100%" height={H}>
       <BarChart data={data} margin={{ top: 8, right: 14, left: -12, bottom: 0 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis dataKey="label" {...axis} interval={3} />
-        <YAxis {...axis} width={40} tickFormatter={(v) => `$${v}`} />
-        <Tooltip content={<Tip unit="/b" dp={2} />} cursor={{ fill: "var(--secondary)" }} />
+        <XAxis dataKey="label" {...AXIS} interval={3} />
+        <YAxis {...AXIS} width={40} tickFormatter={(v) => `$${v}`} />
+        <Tooltip content={<Tip unit="/b" dp={2} />} cursor={BAR_CURSOR} />
         <ReferenceLine y={0} stroke={INK3} strokeWidth={1} />
         <Bar isAnimationActive={false} dataKey="diff" name="Bonny Light vs Dated" fill={C1} radius={[2, 2, 0, 0]} />
       </BarChart>
@@ -193,13 +171,14 @@ export function DiffChart() {
 }
 
 export function GapChart() {
+  const data = useWindow(ALL);
   return (
     <ResponsiveContainer width="100%" height={H}>
       <BarChart data={data} margin={{ top: 8, right: 14, left: -12, bottom: 0 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
-        <XAxis dataKey="label" {...axis} interval={3} />
-        <YAxis {...axis} width={40} />
-        <Tooltip content={<Tip unit=" tb/d" />} cursor={{ fill: "var(--secondary)" }} />
+        <XAxis dataKey="label" {...AXIS} interval={3} />
+        <YAxis {...AXIS} width={40} />
+        <Tooltip content={<Tip unit=" tb/d" />} cursor={BAR_CURSOR} />
         <ReferenceLine y={0} stroke={INK3} strokeWidth={1} />
         <Bar isAnimationActive={false} dataKey="gap" name="Secondary minus direct" radius={[2, 2, 0, 0]}>
           {data.map((d, i) => (

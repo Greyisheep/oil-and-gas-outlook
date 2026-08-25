@@ -65,8 +65,11 @@ function arcPath(cx: number, cy: number, r0: number, r1: number, a0: number, a1:
 
 export function Sunburst() {
   const [hover, setHover] = useState<{ name: string; value: number; pct: number } | null>(null);
-  const SZ = 340, cx = SZ / 2, cy = SZ / 2;
+  const SZ = 372, cx = SZ / 2, cy = SZ / 2;
   const R = { hole: 46, blocIn: 46, blocOut: 96, memIn: 100, memOut: 158 };
+  // barrel-top framing: a drum seen from above is already concentric rings, so
+  // the decoration sits outside the data radius and changes no geometry.
+  const RIM = { chime: 176, outer: 169, inner: 164 };
   const GAP = 0.012;
 
   let a = -Math.PI / 2;
@@ -150,8 +153,16 @@ export function Sunburst() {
     <div className="flex flex-col items-center gap-2 px-4 pb-2">
       <svg viewBox={`0 0 ${SZ} ${SZ}`} width="100%" style={{ maxWidth: 400 }} role="img"
            aria-label={`Sunburst of OPEC crude production by bloc and member, ${monthLabel(MONTHS[LAST])}`}>
+        {/* barrel chime and hoops, framing only */}
+        <circle cx={cx} cy={cy} r={RIM.chime} fill="none" stroke="var(--rule)" strokeWidth={7} />
+        <circle cx={cx} cy={cy} r={RIM.chime} fill="none" stroke="var(--muted)" strokeWidth={3} />
+        <circle cx={cx} cy={cy} r={RIM.outer} fill="none" stroke="var(--rule)" strokeWidth={1.5} />
+        <circle cx={cx} cy={cy} r={RIM.inner} fill="none" stroke="var(--rule)" strokeWidth={1} />
         {blocArcs}
         {memArcs}
+        {/* bung cap at the centre */}
+        <circle cx={cx} cy={cy} r={R.hole - 2} fill="var(--card)" stroke="var(--rule)" strokeWidth={1.5} />
+        <circle cx={cx} cy={cy} r={R.hole - 7} fill="none" stroke="var(--rule)" strokeWidth={1} />
         <text x={cx} y={cy - 8} textAnchor="middle"
               style={{ fontSize: 10, fontFamily: "var(--font-plex-mono)", letterSpacing: "0.06em",
                        fill: "var(--muted-foreground)", textTransform: "uppercase" }}>
@@ -166,7 +177,7 @@ export function Sunburst() {
           {centre.pct.toFixed(1)}%
         </text>
       </svg>
-      <p className="eyebrow">Hover a segment · inner ring is bloc, outer ring is member</p>
+      <p className="eyebrow">A barrel from above · inner ring is bloc, outer ring is member · hover a segment</p>
     </div>
   );
 }

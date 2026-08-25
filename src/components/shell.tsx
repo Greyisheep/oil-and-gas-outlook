@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { TrendingUp, SlidersHorizontal, FlaskConical, FileText, PanelLeftClose, PanelLeftOpen, ExternalLink } from "lucide-react";
 import { Icon } from "./icon";
 import type { GlyphName } from "@/lib/glyphs";
+import { RangeProvider, RangeSelector } from "./range";
 
 export type SectionId =
   | "production" | "prices" | "shipping" | "drilling" | "outlook" | "decks" | "method";
@@ -65,6 +66,7 @@ export function Shell({
   const groups = Array.from(new Set(sections.map((s) => s.group)));
 
   return (
+    <RangeProvider>
     <div className="flex min-h-screen">
       {/* ── sidebar ─────────────────────────────────────────────────────── */}
       <aside
@@ -131,7 +133,8 @@ export function Shell({
               </span>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <span className="eyebrow max-sm:hidden">Data to {dataTo}</span>
+              <RangeSelector className="max-md:hidden" />
+              <span className="eyebrow max-lg:hidden">to {dataTo}</span>
               <a
                 href={repoUrl}
                 target="_blank"
@@ -146,7 +149,8 @@ export function Shell({
           </div>
 
           {/* mobile / tablet nav rail */}
-          <div className="flex gap-1 overflow-x-auto border-t border-[var(--rule)] px-3 py-2 lg:hidden">
+          <div className="flex items-center gap-1 overflow-x-auto border-t border-[var(--rule)] px-3 py-2 lg:hidden">
+            <RangeSelector className="mr-2 shrink-0 md:hidden" />
             {sections.map((s) => {
               const on = s.id === active;
               return (
@@ -173,5 +177,6 @@ export function Shell({
         </main>
       </div>
     </div>
+    </RangeProvider>
   );
 }

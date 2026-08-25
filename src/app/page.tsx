@@ -189,7 +189,7 @@ const sections: Section[] = [
           source={`${MOMR} Tables 5-7 and 5-8. Latest-vintage value per data month.`}
           cols={[
             C.month,
-            { key: "secondary", label: "Secondary", unit: "tb/d", emphasis: true },
+            { key: "secondary", label: "Secondary", unit: "tb/d", emphasis: true, bar: true },
             { key: "direct", label: "Direct", unit: "tb/d" },
             { key: "gap", label: "Gap", unit: "tb/d" },
             { key: "share", label: "OPEC share", unit: "%", dp: 2 },
@@ -231,7 +231,7 @@ const sections: Section[] = [
           cols={[
             C.month,
             { key: "orb", label: "ORB", unit: "$/b", dp: 2 },
-            { key: "bonny", label: "Bonny Light", unit: "$/b", dp: 2, emphasis: true },
+            { key: "bonny", label: "Bonny Light", unit: "$/b", dp: 2, emphasis: true, bar: true },
             { key: "dated", label: "N Sea Dated", unit: "$/b", dp: 2 },
             { key: "wti", label: "WTI", unit: "$/b", dp: 2 },
             { key: "diff", label: "Bonny diff", unit: "$/b", dp: 2, emphasis: true },
@@ -291,7 +291,7 @@ const sections: Section[] = [
           source={`${MOMR} Tables 7-1 and 7-2, sourced to Argus and OPEC.`}
           cols={[
             C.month,
-            { key: "wafUsgc", label: "WAF to USGC", unit: "WS", emphasis: true },
+            { key: "wafUsgc", label: "WAF to USGC", unit: "WS", emphasis: true, bar: true },
             { key: "wafEast", label: "WAF to East", unit: "WS" },
             { key: "gulfEast", label: "Gulf to East", unit: "WS" },
             { key: "gulfWest", label: "Gulf to West", unit: "WS" },
@@ -346,7 +346,7 @@ const sections: Section[] = [
           source={`${MOMR} Tables 11-5 and 9-1. OPEC's rig count differs from NUPRC's fleet count; see Method.`}
           cols={[
             C.month,
-            { key: "rigs", label: "Nigeria rigs", unit: "units", emphasis: true },
+            { key: "rigs", label: "Nigeria rigs", unit: "units", emphasis: true, bar: true },
             { key: "prod", label: "Crude output", unit: "tb/d" },
             { key: "stock", label: "OECD crude stocks", unit: "mb" },
             { key: "cover", label: "Days cover", unit: "days", dp: 1 },
@@ -440,7 +440,7 @@ const sections: Section[] = [
         </div>
 
         <DataTable
-          n="T5" title="Full correlation audit" maxHeight={460}
+          n="T5" title="Full correlation audit" maxHeight={460} windowed={false}
           note="Pearson r. Levels use raw monthly values; changes use first differences. Identities are pairs where one series is computed from the other and so cannot fail."
           source="Derived from the extracted series. Nothing here is causal evidence."
           cols={[
