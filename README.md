@@ -21,6 +21,7 @@ Six sections behind a sidebar, each with its charts and a full data table.
 | **Shipping** | Worldscale freight on Nigeria's own export routes, Nigeria's OPEC share against Gulf freight, and a changes scatter showing West Africa does not track the Gulf |
 | **Drilling & stocks** | Rig count as a leading indicator with its full lag profile, OECD stocks and days of forward cover |
 | **Outlook** | Scenario levers driving a twelve-month forward projection for your own position, in USD and NGN |
+| **Outlook vs outturn** | Ten claims quoted verbatim from published Nigerian outlooks, scored against the primary series. Seven forecast calls missed or came out the wrong way round, two are self-contradicted within a single deck |
 | **Method** | The correlation audit, a deliberately shown false finding, and the data provenance |
 
 ### Three things worth knowing
@@ -30,6 +31,11 @@ Direct communication sits just under the 1,500 tb/d quota; secondary sources put
 
 **Gulf output collapsed and Nigeria's did not.** Nigeria's share of OPEC crude rose from 5.2% to 6.5%.
 Nigeria did not produce dramatically more, it produced while others could not.
+
+**January outlooks were written before the shock, and none re-based.** Nigerian sector outlooks publish
+in January; the Middle East escalation began 28 February 2026. Decks ran on Brent near $55 to $61.
+North Sea Dated averaged $91.35 from January to July. Anything downstream of the price deck inherits
+the error, including the risk registers, which led with oversupply while supply was in fact contracting.
 
 **Of 55 correlation pairs tested, 7 survive differencing.** Correlating two trending series inflates r
 towards 1 whether or not they are related. Most of what looks like a relationship in this sector is shared trend.

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { TrendingUp, SlidersHorizontal, FlaskConical, PanelLeftClose, PanelLeftOpen, ExternalLink } from "lucide-react";
+import { TrendingUp, SlidersHorizontal, FlaskConical, FileText, PanelLeftClose, PanelLeftOpen, ExternalLink } from "lucide-react";
 import { Icon } from "./icon";
 import type { GlyphName } from "@/lib/glyphs";
 
 export type SectionId =
-  | "production" | "prices" | "shipping" | "drilling" | "outlook" | "method";
+  | "production" | "prices" | "shipping" | "drilling" | "outlook" | "decks" | "method";
 
 export type Section = {
   id: SectionId;
@@ -25,6 +25,7 @@ const GLYPH: Partial<Record<SectionId, GlyphName>> = {
 const LUCIDE: Partial<Record<SectionId, typeof TrendingUp>> = {
   prices: TrendingUp,
   outlook: SlidersHorizontal,
+  decks: FileText,
   method: FlaskConical,
 };
 

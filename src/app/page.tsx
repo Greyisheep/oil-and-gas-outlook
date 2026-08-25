@@ -14,6 +14,8 @@ import {
 } from "@/components/analysis";
 import { SlopeChart, BarrelGauge, CoverPictogram } from "@/components/forms";
 import { Sunburst, SeasonalRadar, BenchmarkGauge } from "@/components/circular";
+import { ClaimLedger, PriceCallChart } from "@/components/scorecard";
+import { SCORE } from "@/lib/scorecard";
 import {
   fmt, BENCH, monthLabel, buildSeries, rigLag, correlationTable,
   pearson, firstDiff, CORR_SERIES,
@@ -82,6 +84,24 @@ const corrTableRows = corrRows.map((r) => ({
 const C: Record<string, Col> = {
   month: { key: "month", label: "Month", align: "left" },
 };
+
+function Stat({ label, value, tone }: { label: string; value: string; tone?: "good" | "bad" | "warn" }) {
+  return (
+    <span className="flex flex-col gap-0.5">
+      <span className="eyebrow">{label}</span>
+      <span
+        className="font-mono text-[19px] font-medium leading-none tabular-nums"
+        style={
+          tone
+            ? { color: tone === "good" ? "var(--chart-2)" : tone === "warn" ? "var(--chart-1)" : "var(--chart-3)" }
+            : undefined
+        }
+      >
+        {value}
+      </span>
+    </span>
+  );
+}
 
 /* ── sections ──────────────────────────────────────────────────────────── */
 const sections: Section[] = [
@@ -342,6 +362,56 @@ const sections: Section[] = [
     group: "Analysis",
     blurb: "Move the levers, get a twelve-month forward projection for your own position.",
     content: <Console />,
+  },
+  {
+    id: "decks",
+    label: "Outlook vs outturn",
+    group: "Analysis",
+    blurb: "What the published outlooks forecast for 2026, scored against the primary data.",
+    content: (
+      <div className="flex flex-col gap-3">
+        <div className="panel px-5 py-4">
+          <p className="max-w-[86ch] text-[13px] leading-[1.6]">
+            Nigerian sector outlooks publish in <strong>January</strong>. The Middle East escalation
+            began <strong>28 February 2026</strong> and the Strait of Hormuz closed. Every
+            January-vintage deck was built on a Brent assumption near $55 to $61, and almost none has
+            been re-based since. Anything downstream of the price deck inherits the error.
+          </p>
+          <div className="rule-t mt-3.5 flex flex-wrap gap-x-8 gap-y-2 pt-3.5">
+            <Stat label="Claims scored" value={String(SCORE.total)} />
+            <Stat label="Forecast missed" value={String(SCORE.missed)} tone="bad" />
+            <Stat label="Self-contradicted" value={String(SCORE.contradicted)} tone="bad" />
+            <Stat label="Basis mismatch" value={String(SCORE.basis)} tone="warn" />
+            <Stat label="Held up" value={String(SCORE.held)} tone="good" />
+          </div>
+        </div>
+
+        <div className="grid gap-3 xl:grid-cols-[1fr_400px]">
+          <ChartFrame
+            n="19" title="The claim ledger" defaultOpen
+            note="Each claim quoted verbatim from the published deck, then scored against the series extracted from OPEC reports. Click a row for the working. The last row is included so this does not read as one-directional: the structural calls in these decks are generally sound, it is the quantified forecasts that failed."
+            source="Claims from PwC Nigeria's January 2026 presentation to the Lagos Chamber of Commerce. Outturns from OPEC Monthly Oil Market Reports and the IEA Oil Market Report, August 2026."
+          ><ClaimLedger /></ChartFrame>
+
+          <ChartFrame
+            n="20" title="Every price call against the outturn" defaultOpen
+            note="Four Brent assumptions that Nigerian planning ran on in 2026, against what North Sea Dated actually averaged from January to July."
+            legend={[{ label: "Forecast", color: "var(--chart-3)" }, { label: "Realised", color: "var(--chart-2)" }]}
+          ><PriceCallChart /></ChartFrame>
+        </div>
+
+        <div className="panel px-5 py-4 text-[12.5px] leading-[1.6] text-muted-foreground">
+          <h3 className="display mb-1.5 text-[13px] text-foreground">Why this section exists</h3>
+          <p className="max-w-[86ch]">
+            Not to embarrass anyone. Every one of these numbers was reasonable when written, and the
+            same exercise run on any January 2026 outlook would produce a similar result. The point is
+            that a deck is a snapshot of a forecast, and a platform reading the primary series monthly
+            is not. The single question worth asking of any outlook in the room:{" "}
+            <strong className="text-foreground">what price deck were you running, and when did you set it?</strong>
+          </p>
+        </div>
+      </div>
+    ),
   },
   {
     id: "method",
