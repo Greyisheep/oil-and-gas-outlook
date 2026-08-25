@@ -23,7 +23,7 @@ const SERIES = [
     // join the two lines at the handover so there is no visual gap
     actual: null,
     projected: p.pred,
-    band: [p.pred - R.band80, p.pred + R.band80] as [number, number],
+    band: [p.pred - R.realtime.band80, p.pred + R.realtime.band80] as [number, number],
     rigs: p.rigs,
     from: monthLabel(p.fromMonth),
     _first: i === 0,
@@ -73,12 +73,15 @@ export function ProjectionChart() {
   );
 }
 
-/* ── Backtest: what the model would have said, refitted at each origin ──── */
-const BT = R.backtest.map((b) => ({
-  label: monthLabel(b.month),
+/* ── Real-time backtest: the dataset is rebuilt from the OPEC vintages, so the
+      model sees only the figures that existed on the day. ─────────────────── */
+const BT = R.realtime.rows.map((b) => ({
+  label: monthLabel(b.target),
   Actual: b.actual,
-  "Model, refitted": b.pred,
+  "Model, as it stood": b.pred,
   err: b.err,
+  slope: b.slope,
+  trainN: b.trainN,
 }));
 
 export function BacktestRibbon() {
@@ -91,7 +94,7 @@ export function BacktestRibbon() {
         <Tooltip content={<Tip unit=" tb/d" />} cursor={CURSOR} />
         <Line type="monotone" dataKey="Actual" stroke={C2} strokeWidth={2.5}
               dot={{ r: 3, fill: C2 }} isAnimationActive={false} />
-        <Line type="monotone" dataKey="Model, refitted" stroke={C1} strokeWidth={2}
+        <Line type="monotone" dataKey="Model, as it stood" stroke={C1} strokeWidth={2}
               strokeDasharray="5 3" dot={{ r: 3, fill: C1 }} isAnimationActive={false} />
       </ComposedChart>
     </ResponsiveContainer>
@@ -105,16 +108,16 @@ export function BacktestErrors() {
       <BarChart data={BT} margin={{ top: 10, right: 16, left: -12, bottom: 0 }}>
         <CartesianGrid stroke={GRID} vertical={false} />
         <XAxis dataKey="label" {...AXIS} />
-        <YAxis {...AXIS} width={44} domain={[-90, 90]} />
+        <YAxis {...AXIS} width={44} domain={[-95, 95]} />
         <Tooltip content={<Tip unit=" tb/d" dp={1} />} cursor={BAR_CURSOR} />
         <ReferenceLine y={0} stroke={INK3} strokeWidth={1} />
-        <ReferenceLine y={R.band80} stroke={C1} strokeDasharray="3 3" strokeWidth={1.2}
+        <ReferenceLine y={R.realtime.band80} stroke={C1} strokeDasharray="3 3" strokeWidth={1.2}
           label={{ value: "80% band", position: "insideTopRight", fill: C1,
                    fontSize: 9.5, fontFamily: "var(--font-plex-mono)" }} />
-        <ReferenceLine y={-R.band80} stroke={C1} strokeDasharray="3 3" strokeWidth={1.2} />
+        <ReferenceLine y={-R.realtime.band80} stroke={C1} strokeDasharray="3 3" strokeWidth={1.2} />
         <Bar dataKey="err" name="Error" radius={[2, 2, 0, 0]} isAnimationActive={false}>
           {BT.map((d, i) => (
-            <Cell key={i} fill={Math.abs(d.err) <= R.band80 ? C2 : C3} />
+            <Cell key={i} fill={Math.abs(d.err) <= R.realtime.band80 ? C2 : C3} />
           ))}
         </Bar>
       </BarChart>
@@ -124,16 +127,17 @@ export function BacktestErrors() {
 
 /* ── Model card: what a sceptic would ask, answered before they ask ────── */
 export function ModelCard() {
-  const beat = Math.round((1 - R.mase) * 100);
+  const RT = R.realtime;
+  const beatRT = Math.round((1 - RT.mase) * 100);
+  const beatRevised = Math.round((1 - R.mase) * 100);
   const rows: [string, string, string?][] = [
     ["What it says", `each extra rig adds about ${Math.round(R.slope)} thousand barrels a day, ${R.lag} months later`],
     ["Built from", `${R.n} months of drilling and production figures`],
-    ["Tested on", `${R.origins} months it had never seen, rebuilt from scratch each time`],
-    ["Typical error", `${R.mae} thousand barrels a day, against ${R.naiveMae} for simply assuming no change`],
-    ["Accuracy", beat > 0 ? `${beat}% better than assuming next month looks like this one`
-                          : "no better than assuming next month looks like this one"],
-    ["Expected range", `8 months in 10 land within ± ${R.band80} thousand barrels a day`],
-    ["Worst miss", `${R.bandMax} thousand barrels a day`],
+    ["Tested on", `${RT.origins} months, using only the figures that existed at the time`],
+    ["Typical error", `${RT.mae} thousand barrels a day, against ${RT.naiveMae} for simply assuming no change`],
+    ["Accuracy", `${beatRT}% better than assuming next month looks like this one`],
+    ["Expected range", `8 months in 10 land within ± ${RT.band80} thousand barrels a day`],
+    ["Worst miss", `${RT.bandMax} thousand barrels a day`],
   ];
   return (
     <div className="flex flex-col divide-y divide-[var(--rule)] border-t border-[var(--rule)]">
@@ -151,16 +155,17 @@ export function ModelCard() {
       ))}
       <div className="flex flex-col gap-2.5 px-4 py-3.5">
         <p className="max-w-[80ch] text-[12px] leading-[1.6] text-muted-foreground">
-          <strong className="text-foreground">Where it is weakest.</strong> How much oil each rig
-          delivers has not been stable. Measured on data up to January 2026 it was about{" "}
-          {Math.round(R.stability.preSlope)} thousand barrels a day per rig; measured on everything
-          since, about {Math.round(R.stability.fullSlope)}. The direction has held every time, the
-          size has not. Trust the shape of the path more than the exact level.
+          <strong className="text-foreground">Why this looks worse than it could.</strong> OPEC revises
+          its figures for months after first publishing them. Score the model against those corrected
+          numbers and it comes out {beatRevised}% better than a naive guess. Score it against only what
+          was actually on the desk at the time, which is the fair test, and it is {beatRT}%. The larger
+          figure is the one most published models quote. This shows the smaller one.
         </p>
         <p className="max-w-[80ch] text-[12px] leading-[1.6] text-muted-foreground">
-          <strong className="text-foreground">And it is a short history.</strong> {R.origins} tests is
-          few. It is enough to say how often the model lands within a range, not enough to promise a
-          worst case, which is why no tighter range than the one above is offered here.
+          <strong className="text-foreground">It did not work at first.</strong> Run month by month, the
+          model was wrong by an average of {RT.earlyMae} thousand barrels a day over its first{" "}
+          {RT.earlyN} attempts and {RT.lateMae} over the last {RT.lateN}. The relationship only became
+          visible once enough months had accumulated. Four good months is not proof it will stay good.
         </p>
         <p className="max-w-[80ch] text-[12px] leading-[1.6] text-muted-foreground">
           <strong className="text-foreground">The equation, if you want it.</strong>{" "}
@@ -168,5 +173,32 @@ export function ModelCard() {
         </p>
       </div>
     </div>
+  );
+}
+
+/* ── How the relationship firmed up as months accumulated ───────────────── */
+export function SlopeDrift() {
+  const data = R.realtime.rows.map((r) => ({
+    label: monthLabel(r.vintage),
+    "Barrels per rig": r.slope,
+    months: r.trainN,
+  }));
+  return (
+    <ResponsiveContainer width="100%" height={200}>
+      <ComposedChart data={data} margin={{ top: 10, right: 16, left: -10, bottom: 0 }}>
+        <CartesianGrid stroke={GRID} vertical={false} />
+        <XAxis dataKey="label" {...AXIS} />
+        <YAxis {...AXIS} width={42} domain={[-4, 16]} />
+        <Tooltip content={<Tip unit=" tb/d per rig" dp={2} />} cursor={CURSOR} />
+        <ReferenceLine y={0} stroke={INK3} strokeWidth={1}
+          label={{ value: "no relationship", position: "insideTopLeft", fill: INK3,
+                   fontSize: 9.5, fontFamily: "var(--font-plex-mono)" }} />
+        <ReferenceLine y={R.slope} stroke={C2} strokeDasharray="4 3" strokeWidth={1.5}
+          label={{ value: `settles near ${Math.round(R.slope)}`, position: "insideBottomRight",
+                   fill: C2, fontSize: 9.5, fontFamily: "var(--font-plex-mono)" }} />
+        <Line type="monotone" dataKey="Barrels per rig" stroke={C1} strokeWidth={2.5}
+              dot={{ r: 3, fill: C1 }} isAnimationActive={false} />
+      </ComposedChart>
+    </ResponsiveContainer>
   );
 }

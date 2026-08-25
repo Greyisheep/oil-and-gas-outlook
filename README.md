@@ -39,8 +39,9 @@ North Sea Dated averaged $91.35 from January to July. Anything downstream of the
 the error, including the risk registers, which led with oversupply while supply was in fact contracting.
 
 **The budget target is not reachable by drilling at current activity.** Nigerian output follows its
-rig count by about nine months at roughly 13 tb/d per rig, validated by rolling-origin backtest
-(MASE 0.69, so 31% better than carrying the last value forward). Inverted, the 1,840 tb/d budget
+rig count by about nine months at roughly 13 tb/d per rig. Tested against only the figures that
+existed on each date, it is 16% better than assuming no change. Tested against today's corrected
+figures it looks 31% better, which is the number most published models would quote. Inverted, the 1,840 tb/d budget
 benchmark implies about 37 active rigs against the 18 currently drilling, which is double the
 highest count in the sample. That is extrapolation and the app says so, but it bounds the problem.
 
@@ -53,8 +54,12 @@ towards 1 whether or not they are related. Most of what looks like a relationshi
   mechanism, a rolling-origin backtest and conformal bands taken from its own errors. The Outlook
   levers are scenario: the user owns the assumption and the model only propagates it. Nothing blurs
   the two, and there is no price forecast anywhere in the app.
-- **The rig coefficient is unstable.** Fitted before February 2026 the slope is 6.84; on the full
-  sample it is 13.35. The direction has held, the level has not, and the app says so on the panel.
+- **The rig model is backtested in real time.** OPEC revises its figures for months after first
+  publication. The dataset is rebuilt from the 22 published vintages so the model is scored only on
+  what a forecaster actually had on the day. That is the weaker result and it is the one shown.
+- **The rig relationship took a year to appear.** Refitted at each publication date, barrels-per-rig
+  starts negative, crosses zero in early 2026 and settles near thirteen. Average error was 43.8 over
+  the first five attempts and 8.2 over the last four. The app plots this rather than hiding it.
 - **Crude only.** Condensate is excluded throughout, which is what makes quota comparisons valid. Nigeria's headline 1.6 to 1.7 mb/d figures are crude *plus* condensate; the 1.5 mb/d OPEC quota is crude alone. Mixing them makes Nigeria look alternately compliant and in breach.
 - **Vintages preserved.** Each report is keyed by publication month, so a data month seen in three reports keeps all three values. OPEC revises Nigeria by up to 51 tb/d after the fact.
 - **The rig lag is predictive, not causal.** Rigs respond to price too.

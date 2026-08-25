@@ -15,7 +15,7 @@ import {
 import { SlopeChart, BarrelGauge, CoverPictogram, RigPictogram } from "@/components/forms";
 import { Sunburst, SeasonalRadar, BenchmarkGauge } from "@/components/circular";
 import { ClaimLedger, PriceCallChart } from "@/components/scorecard";
-import { ProjectionChart, BacktestRibbon, BacktestErrors, ModelCard } from "@/components/projection";
+import { ProjectionChart, BacktestRibbon, BacktestErrors, ModelCard, SlopeDrift } from "@/components/projection";
 import { TargetSolver } from "@/components/solver";
 import { RIG_LAG } from "@/lib/rig-lag";
 import { SCORE } from "@/lib/scorecard";
@@ -382,9 +382,9 @@ const sections: Section[] = [
           <div className="rule-t mt-3.5 flex flex-wrap gap-x-8 gap-y-2 pt-3.5">
             <Stat label="Oil follows drilling by" value={`${RIG_LAG.lag} months`} />
             <Stat label="Each extra rig adds" value={`+${Math.round(RIG_LAG.slope)} tb/d`} tone="good" />
-            <Stat label="Better than a naive guess by" value={`${Math.round((1 - RIG_LAG.mase) * 100)}%`} tone={RIG_LAG.mase < 1 ? "good" : "bad"} />
-            <Stat label="Months tested on" value={String(RIG_LAG.origins)} tone="warn" />
-            <Stat label="Usual margin" value={`± ${RIG_LAG.band80} tb/d`} />
+            <Stat label="Better than a naive guess by" value={`${Math.round((1 - RIG_LAG.realtime.mase) * 100)}%`} tone={RIG_LAG.realtime.mase < 1 ? "good" : "bad"} />
+            <Stat label="Months tested on" value={String(RIG_LAG.realtime.origins)} tone="warn" />
+            <Stat label="Usual margin" value={`± ${RIG_LAG.realtime.band80} tb/d`} />
           </div>
         </div>
 
@@ -409,8 +409,8 @@ const sections: Section[] = [
         <div className="grid gap-3 xl:grid-cols-2">
           <ChartFrame
             n="22" title="What it would have said at the time"
-            plain="The model tested on months it had never seen. It was 31% more accurate than assuming next month looks like this one."
-            detail="At each point the model is rebuilt using only what was known at the time, then asked for the next month. Nothing after that date is used. It is the difference between a line drawn through answers you already have and one drawn before you had them."
+            plain={<>The fair test: the model rebuilt each month using only the figures that existed then. It was {Math.round((1 - RIG_LAG.realtime.mase) * 100)}% more accurate than assuming next month looks like this one.</>}
+            detail="OPEC keeps revising its figures for months after first publishing them. Most tests quietly use the corrected numbers, which the forecaster did not have. Here the whole dataset is rebuilt from what OPEC had actually printed by that date, so the model is judged on the same information a person would have had."
             legend={[
               { label: "Actual", color: "var(--chart-2)" },
               { label: "Model, refitted at each origin", color: "var(--chart-1)", dash: true },
@@ -419,14 +419,22 @@ const sections: Section[] = [
 
           <ChartFrame
             n="23" title="How wrong it was, month by month"
-            plain={<>Every month it got wrong, and by how much. Two of {RIG_LAG.origins} fell outside the expected range, which is about what should happen.</>}
-            detail={<>The dashed lines mark the range the model expects to stay inside eight times out of ten. Two misses out of {RIG_LAG.origins} is close to that, which means the range is honest rather than padded. A band that never gets breached is usually too wide to be useful.</>}
+            plain={<>Every month it got wrong, and by how much. The early attempts were poor and the recent ones close, which is the pattern to watch.</>}
+            detail={<>The dashed lines mark the range the model expects to stay inside eight times out of ten. It missed by an average of {RIG_LAG.realtime.earlyMae} over its first {RIG_LAG.realtime.earlyN} attempts and {RIG_LAG.realtime.lateMae} over the last {RIG_LAG.realtime.lateN}. Judge it on the recent record, while remembering that four good months is not proof.</>}
             legend={[
               { label: "Inside the band", color: "var(--chart-2)" },
               { label: "Outside", color: "var(--chart-3)" },
             ]}
           ><BacktestErrors /></ChartFrame>
         </div>
+
+        <ChartFrame
+          n="24" title="The model finding the relationship"
+          plain="Early on, the data said more drilling meant less oil. It took about a year of months before the relationship pointed the right way and settled."
+          detail="Each point is the barrels-per-rig figure the model would have arrived at on that date, using only the data published by then. It starts negative, which is nonsense, crosses zero in early 2026 and settles near thirteen. This is the clearest argument for not trusting a relationship fitted on a short history, and for re-checking it as months accumulate."
+          source="Refitted at each OPEC publication date from that date's own figures."
+          legend={[{ label: "Barrels per rig, as known then", color: "var(--chart-1)" }]}
+        ><SlopeDrift /></ChartFrame>
 
         <section className="panel flex flex-col">
           <header className="flex items-baseline gap-2 px-4 pt-3.5 pb-3">
@@ -470,14 +478,14 @@ const sections: Section[] = [
 
         <div className="grid gap-3 xl:grid-cols-[1fr_400px]">
           <ChartFrame
-            n="24" title="The claim ledger"
+            n="25" title="The claim ledger"
             plain="Ten forecasts from a published 2026 outlook, checked against what actually happened. Click any row to see the working."
             detail="Each claim is quoted word for word from the deck, then compared with the figures OPEC and the IEA published afterwards. One row held up and is included on purpose: the structural judgements in these documents are generally sound. It is the specific numbers that failed."
           source="Claims from PwC Nigeria's January 2026 presentation to the Lagos Chamber of Commerce. What happened, from OPEC monthly reports and the IEA Oil Market Report of August 2026."
           ><ClaimLedger /></ChartFrame>
 
           <ChartFrame
-            n="25" title="Every price call against the outturn"
+            n="26" title="Every price call against the outturn"
             plain="Four oil price assumptions Nigerian planning ran on this year, against what oil actually sold for."
             detail="All three forecasts were published in January. The escalation that moved the price began on 28 February. This is not a criticism of the forecasters; it shows how quickly a price assumption expires."
           legend={[{ label: "Forecast", color: "var(--chart-3)" }, { label: "Realised", color: "var(--chart-2)" }]}
@@ -506,13 +514,13 @@ const sections: Section[] = [
       <div className="flex flex-col gap-3">
         <div className="grid gap-3 xl:grid-cols-3">
           <ChartFrame
-            n="26" title="Which relationships are real"
+            n="27" title="Which relationships are real"
             plain={<>Most things that look connected in this sector are simply both trending upward. Only {nSurvive} of {nTotal} pairs survive a proper test.</>}
             detail={<>Two numbers that both rise over time will look related even when they are not. The fix is to compare how much each moved from one month to the next, rather than their levels. The second column does that. {nCollapse} pairs collapse under it, and {nIdentity} are pairs where one number is calculated from the other and so could never have failed.</>}
           ><CorrelationPanel /></ChartFrame>
 
           <ChartFrame
-            n="27" title="A finding that is not one"
+            n="28" title="A finding that is not one"
             plain="A result that looks convincing and is not. Included deliberately."
             detail="One bar clears the threshold while the bars either side sit near zero. A genuine relationship fades in and out gradually; a lone spike surrounded by noise is usually what turns up when you test enough combinations. With this few months of data, it is the pattern to distrust."
           legend={[{ label: "Correlation at lag", color: "var(--chart-3)" }]}
