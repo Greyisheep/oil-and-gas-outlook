@@ -84,7 +84,7 @@ export function TargetSolver() {
             {out.need.toFixed(0)}
           </span>
           <span className="text-[10.5px] text-muted-foreground">
-            drilling now, to land in {R.lag} months
+            drilling now, for oil in {R.lag} months
           </span>
         </div>
         <div className="flex flex-col gap-0.5">
@@ -134,11 +134,11 @@ export function TargetSolver() {
           </span>
           <span className="flex items-baseline gap-1.5 text-[11.5px] text-muted-foreground">
             <span className="inline-block h-2.5 w-2.5 rounded-[1px]" style={{ background: C2 }} />
-            Additional, within observed range
+            Additional, within what Nigeria has run before
           </span>
           <span className="flex items-baseline gap-1.5 text-[11.5px] text-muted-foreground">
             <span className="inline-block h-2.5 w-2.5 rounded-[1px]" style={{ background: C3 }} />
-            Beyond anything observed
+            More than Nigeria has ever run
           </span>
         </div>
       </div>
@@ -147,17 +147,19 @@ export function TargetSolver() {
       {out.extrapolating && (
         <p className="rounded-sm border border-[var(--rule)] bg-[var(--secondary)] px-3 py-2.5
                       text-[12px] leading-[1.6]">
-          <strong>This is extrapolation.</strong> The relationship was fitted on rig counts between{" "}
-          {OBS_MIN} and {OBS_MAX}. At {out.need.toFixed(0)} rigs you are {out.beyondObs.toFixed(1)}×
-          beyond anything in the sample, and nothing here validates that the same barrels-per-rig
-          holds at that level. Read it as an order of magnitude, not a plan: it says the target is
-          far outside the range current drilling has ever produced, which is itself the finding.
+          <strong>Nigeria has never drilled at this level.</strong> Everything here is measured on
+          fleets of between {OBS_MIN} and {OBS_MAX} rigs. At {out.need.toFixed(0)} rigs you are{" "}
+          {out.beyondObs.toFixed(1)}× past anything Nigeria has actually run, and there is no evidence
+          each rig would still deliver the same barrels at that scale. Treat it as a sense of the
+          distance rather than a plan. The useful reading is that the target sits far outside what
+          current drilling has ever produced.
         </p>
       )}
       {!out.extrapolating && (
         <p className="text-[12px] leading-[1.6] text-muted-foreground">
-          Within the rig range the model was actually fitted on, so this is interpolation rather than
-          extrapolation. It still carries the model&rsquo;s ± {R.band80} tb/d backtest error.
+          This sits inside the range of fleets Nigeria has actually operated, so it rests on observed
+          behaviour rather than assumption. It still carries the model&rsquo;s usual margin of about
+          ± {R.band80} thousand barrels a day.
         </p>
       )}
     </div>

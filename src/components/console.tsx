@@ -95,17 +95,17 @@ export function Console() {
       {/* ── levers ─────────────────────────────────────────────────────── */}
       <section className="panel px-4 py-4">
         <div className="mb-3.5 flex items-baseline gap-2">
-          <span className="eyebrow text-[var(--brass)]">04</span>
-          <h2 className="font-[family-name:var(--font-plex-serif)] text-[15px] font-semibold">Scenario levers</h2>
-          <span className="text-[12px] text-muted-foreground">Every figure below and to the right responds live.</span>
+          <span className="eyebrow text-[var(--brass)]">S1</span>
+          <h2 className="display text-[15px]">Your assumptions</h2>
+          <span className="text-[12px] text-muted-foreground">Set what you think will happen. Everything below responds.</span>
         </div>
         <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
           <Lever label="Brent / Dated" unit="$" value={s.brent} min={40} max={140} step={0.5}
-                 onChange={set("brent")} hint="Realised H1 2026 average was $91. Jan outlooks assumed $55 to $61." />
+                 onChange={set("brent")} hint="Oil averaged $91 in the first half of 2026. January forecasts assumed $55 to $61." />
           <Lever label="Your differential" unit="$" value={s.diff} min={-10} max={12} step={0.01}
-                 onChange={set("diff")} hint="Bonny vs Dated. Spot collapsed to +$0.05 in the Aug MOMR." />
+                 onChange={set("diff")} hint="What your grade fetches over the global benchmark." />
           <Lever label="NGN per USD" unit="" value={s.ngn} min={800} max={2200} step={1}
-                 onChange={set("ngn")} hint="₦1,346.90 on 21 Aug 2026. Fair-value estimates ₦1,130 to ₦1,142." />
+                 onChange={set("ngn")} hint="₦1,346.90 on 21 August 2026." />
           <Lever label="National output" unit=" tb/d" value={s.natProd} min={1100} max={2200} step={1}
                  onChange={set("natProd")} hint={`Budget benchmark ${fmt(BENCH.budget)} · MTEF target ${fmt(BENCH.mtefTarget)}`} />
         </div>
@@ -116,9 +116,9 @@ export function Console() {
           <Stat label="Versus benchmark" value={`${nat.delta >= 0 ? "+" : ""}$${nat.delta.toFixed(2)}bn`}
                 sub="per month" tone={nat.delta >= 0 ? "good" : "bad"} />
           <Stat label="Volume gap" value={`${nat.volGap >= 0 ? "+" : ""}${fmt(nat.volGap)} tb/d`}
-                sub="against 1,840 budget" tone={nat.volGap >= 0 ? "good" : "bad"} />
+                sub="against the 1,840 budget" tone={nat.volGap >= 0 ? "good" : "bad"} />
           <Stat label="Price gap" value={`${nat.priceGap >= 0 ? "+" : ""}$${nat.priceGap.toFixed(2)}`}
-                sub="against $64.85 budget" tone={nat.priceGap >= 0 ? "good" : "bad"} />
+                sub="against the $64.85 budget" tone={nat.priceGap >= 0 ? "good" : "bad"} />
         </div>
       </section>
 
@@ -126,8 +126,8 @@ export function Console() {
       <div className="grid gap-3 lg:grid-cols-[300px_1fr]">
         <section className="panel px-4 py-4">
           <div className="mb-3.5 flex items-baseline gap-2">
-            <span className="eyebrow text-[var(--brass)]">05</span>
-            <h2 className="font-[family-name:var(--font-plex-serif)] text-[15px] font-semibold">Your position</h2>
+            <span className="eyebrow text-[var(--brass)]">S2</span>
+            <h2 className="display text-[15px]">Your position</h2>
           </div>
           <div className="grid grid-cols-2 gap-2.5">
             <NumField label="Gross field" unit="bpd" value={c.gross} step={500} onChange={setC_("gross")} />
@@ -149,16 +149,17 @@ export function Console() {
                   tone={total.cum >= 0 ? "good" : "bad"} />
           </div>
           <p className="mt-3 text-[10.5px] leading-[1.5] text-muted-foreground">
-            Illustrative fiscal model: tax applies to revenue net of royalty, opex and capex.
-            Nigeria&rsquo;s actual PIA terms (PPT/HCT/CIT split, capital allowances, PSC cost
-            recovery) are materially more complex. Order-of-magnitude, not a tax computation.
+            Simplified tax treatment: tax is applied to revenue after royalty, operating cost and
+            capital spend. Real Nigerian terms under the PIA are considerably more involved. Use this
+            for scale, not for a tax position.
           </p>
         </section>
 
         <ChartFrame
-          n="06"
+          n="S3"
           title="Twelve-month forward outlook"
-          note="Monthly net cash and cumulative position under the levers above, from September 2026. Drag any lever and this redraws."
+          plain="Your monthly cash and running total under the assumptions above. Move any lever and this redraws."
+          detail="Bars are cash generated each month, the line is the cumulative position. Production declines month on month at the rate you set. Everything here follows from your own inputs, so it is a scenario rather than a forecast."
           source="Model output. Price and differential seeded from OPEC MOMR August 2026; FX from CBN/NAFEM 21 Aug 2026."
           legend={[
             { label: "Net cash, month", color: C1 },
@@ -185,7 +186,7 @@ export function Console() {
       {/* the projection, month by month */}
       <section className="panel flex flex-col">
         <header className="flex items-baseline gap-2 px-4 pt-3.5 pb-3">
-          <span className="eyebrow text-[var(--brass)]">T6</span>
+          <span className="eyebrow text-[var(--brass)]">S4</span>
           <h2 className="display text-[14.5px] leading-tight">Projection detail</h2>
           <span className="eyebrow ml-auto">{rows.length} months</span>
         </header>

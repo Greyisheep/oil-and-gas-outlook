@@ -122,25 +122,25 @@ export function BacktestErrors() {
   );
 }
 
-/* ── Model card: the numbers a sceptic would ask for, before they ask ──── */
+/* ── Model card: what a sceptic would ask, answered before they ask ────── */
 export function ModelCard() {
   const beat = Math.round((1 - R.mase) * 100);
   const rows: [string, string, string?][] = [
-    ["Form", `production(t) = ${fmt(R.intercept)} + ${R.slope} x rigs(t − ${R.lag})`],
-    ["Reads as", `each additional rig implies about ${Math.round(R.slope)} tb/d, ${R.lag} months later`],
-    ["Fitted on", `${R.n} monthly observations`],
-    ["Backtest", `${R.origins} rolling origins, refitted at each, no look-ahead`],
-    ["Error", `${R.mae} tb/d mean absolute, against ${R.naiveMae} for carrying the last value forward`],
-    ["MASE", `${R.mase}`, beat > 0 ? `${beat}% better than naive` : "no better than naive"],
-    ["80% band", `± ${R.band80} tb/d, split-conformal from backtest residuals`],
-    ["Largest miss", `${R.bandMax} tb/d`],
+    ["What it says", `each extra rig adds about ${Math.round(R.slope)} thousand barrels a day, ${R.lag} months later`],
+    ["Built from", `${R.n} months of drilling and production figures`],
+    ["Tested on", `${R.origins} months it had never seen, rebuilt from scratch each time`],
+    ["Typical error", `${R.mae} thousand barrels a day, against ${R.naiveMae} for simply assuming no change`],
+    ["Accuracy", beat > 0 ? `${beat}% better than assuming next month looks like this one`
+                          : "no better than assuming next month looks like this one"],
+    ["Expected range", `8 months in 10 land within ± ${R.band80} thousand barrels a day`],
+    ["Worst miss", `${R.bandMax} thousand barrels a day`],
   ];
   return (
     <div className="flex flex-col divide-y divide-[var(--rule)] border-t border-[var(--rule)]">
       {rows.map(([k, v, extra]) => (
         <div key={k} className="flex items-baseline gap-3 px-4 py-2">
-          <span className="eyebrow w-[104px] shrink-0">{k}</span>
-          <span className="flex-1 font-mono text-[12px] tabular-nums">{v}</span>
+          <span className="eyebrow w-[112px] shrink-0">{k}</span>
+          <span className="flex-1 text-[12.5px] leading-[1.5]">{v}</span>
           {extra && (
             <span className="shrink-0 rounded-sm px-1.5 py-0.5 text-[10px] font-medium"
                   style={{ color: C2, background: "var(--secondary)" }}>
@@ -149,14 +149,22 @@ export function ModelCard() {
           )}
         </div>
       ))}
-      <div className="px-4 py-3">
+      <div className="flex flex-col gap-2.5 px-4 py-3.5">
         <p className="max-w-[80ch] text-[12px] leading-[1.6] text-muted-foreground">
-          <strong className="text-foreground">Where this breaks.</strong> Fitted on data before
-          February 2026 the slope is {R.stability.preSlope}; fitted on everything it is{" "}
-          {R.stability.fullSlope}, a {R.stability.shiftPct}% shift. The direction has held but the
-          coefficient has not, so treat the shape of the path as the signal and the level as
-          indicative. With {R.origins} backtest origins only the 80% band is honestly supported,
-          which is why there is no 95% band on this chart.
+          <strong className="text-foreground">Where it is weakest.</strong> How much oil each rig
+          delivers has not been stable. Measured on data up to January 2026 it was about{" "}
+          {Math.round(R.stability.preSlope)} thousand barrels a day per rig; measured on everything
+          since, about {Math.round(R.stability.fullSlope)}. The direction has held every time, the
+          size has not. Trust the shape of the path more than the exact level.
+        </p>
+        <p className="max-w-[80ch] text-[12px] leading-[1.6] text-muted-foreground">
+          <strong className="text-foreground">And it is a short history.</strong> {R.origins} tests is
+          few. It is enough to say how often the model lands within a range, not enough to promise a
+          worst case, which is why no tighter range than the one above is offered here.
+        </p>
+        <p className="max-w-[80ch] text-[12px] leading-[1.6] text-muted-foreground">
+          <strong className="text-foreground">The equation, if you want it.</strong>{" "}
+          <span className="font-mono">production = {fmt(R.intercept)} + {R.slope} x rigs, {R.lag} months earlier</span>
         </p>
       </div>
     </div>
