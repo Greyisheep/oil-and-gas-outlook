@@ -65,7 +65,7 @@ export function PriceCallChart() {
 
 /** The claim ledger itself. Each row expands to its working. */
 export function ClaimLedger() {
-  const [open, setOpen] = useState<string | null>("P1");
+  const [open, setOpen] = useState<string | null>("E1");
   return (
     <div className="flex flex-col divide-y divide-[var(--rule)] border-t border-[var(--rule)]">
       {CLAIMS.map((c) => {
@@ -81,7 +81,14 @@ export function ClaimLedger() {
               <span className="eyebrow mt-[3px] w-7 shrink-0 text-[var(--brass)]">{c.id}</span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[12.5px] leading-[1.5]">{c.claim}</span>
-                <span className="eyebrow mt-1 block normal-case tracking-normal">{c.where}</span>
+                <span className="eyebrow mt-1 flex flex-wrap items-center gap-1.5 normal-case tracking-normal">
+                  {c.medium === "talk" && (
+                    <span className="rounded-sm border border-[var(--rule)] px-1 py-px text-[9px] uppercase tracking-[0.08em]">
+                      spoken
+                    </span>
+                  )}
+                  {c.source} · {c.where}
+                </span>
               </span>
               <span className="flex shrink-0 items-center gap-3">
                 <span className="hidden text-right font-mono text-[11.5px] tabular-nums sm:block">

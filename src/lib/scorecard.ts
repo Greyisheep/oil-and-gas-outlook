@@ -1,6 +1,7 @@
 /**
- * Claims taken verbatim from published Nigerian oil and gas outlooks, scored
- * against the primary series extracted from OPEC reports.
+ * Claims taken verbatim from published outlooks and recorded industry talks,
+ * scored against the primary series extracted from OPEC and IEA reports.
+ * Spoken quotes come from automatic transcripts, so wording may differ slightly.
  *
  * The point is not that any one author was careless. It is that the whole
  * January-vintage literature was written before the 28 February 2026 Middle
@@ -13,6 +14,8 @@ export type Verdict = "miss" | "wrong-sign" | "basis" | "self-contradicted" | "u
 
 export type Claim = {
   id: string;
+  /** Where the claim was made. Spoken quotes come from automatic captions. */
+  medium?: "deck" | "talk";
   claim: string;
   source: string;
   where: string;
@@ -32,6 +35,39 @@ export const VERDICT_LABEL: Record<Verdict, string> = {
 };
 
 export const CLAIMS: Claim[] = [
+  {
+    id: "E1",
+    medium: "talk",
+    claim: "We are forecasting that Brent spot prices in 2026 will average $56 per barrel. As of today we are around 65, so a pretty significant drop compared with where we are at the start of the year.",
+    source: "US Energy Information Administration, briefing on its January 2026 Short-Term Energy Outlook",
+    where: "Recorded talk, January 2026",
+    forecast: "$56.00/b",
+    outturn: "$91.35/b",
+    verdict: "miss",
+    note: "The EIA is the reference forecaster for this market, and it called $56 while the price sat at $65. Brent averaged $91.35 from January to July. The reasoning given was a supply overhang that demand growth would not absorb. That overhang did not survive the closure of the Strait of Hormuz. Quoted from the automatic transcript, so wording may differ slightly from the spoken original.",
+  },
+  {
+    id: "E2",
+    medium: "talk",
+    claim: "Supply growth to slow a bit, but still we have that overhang in supply that has built over the last two years that we do not really eat away at with our demand growth expectations.",
+    source: "US Energy Information Administration, January 2026 Short-Term Energy Outlook briefing",
+    where: "Recorded talk, January 2026",
+    forecast: "Inventories keep building",
+    outturn: "Supply falling 4.3 mb/d",
+    verdict: "wrong-sign",
+    note: "The whole price call rested on this. By August the IEA had world supply contracting 4.3 mb/d and OECD cover running below both the five-year and the 2015 to 2019 averages. The surplus that was expected to cap prices became a deficit.",
+  },
+  {
+    id: "O1",
+    medium: "talk",
+    claim: "Global oil demand remains robust and is set to expand by 19 million barrels a day by 2050 to reach over 124 million barrels a day. There is no peak demand on the horizon.",
+    source: "OPEC, launch of the World Oil Outlook 2026",
+    where: "Recorded talk, 2026",
+    forecast: "124 mb/d by 2050",
+    outturn: "Not yet scoreable",
+    verdict: "unsupported",
+    note: "Included to mark the limit of this exercise rather than to judge it. A 2050 call cannot be checked against 2026 data and will not be for decades. It is worth setting beside the IEA, which has demand falling 1.6 mb/d during 2026 itself. Those two statements are not strictly contradictory, one being structural and the other cyclical, but they are the two positions the industry is currently choosing between.",
+  },
   {
     id: "P1",
     claim: "Brent crude is expected to average roughly $61.00 per barrel in 2026, a price level that threatens Nigeria's fiscal stability.",
@@ -136,6 +172,7 @@ export const CLAIMS: Claim[] = [
 
 export const SCORE = {
   total: CLAIMS.length,
+  talks: CLAIMS.filter((c) => c.medium === "talk").length,
   missed: CLAIMS.filter((c) => c.verdict === "miss" || c.verdict === "wrong-sign").length,
   contradicted: CLAIMS.filter((c) => c.verdict === "self-contradicted").length,
   basis: CLAIMS.filter((c) => c.verdict === "basis").length,
@@ -144,8 +181,9 @@ export const SCORE = {
 
 /** Forecast against outturn, for the price chart. */
 export const PRICE_CALLS = [
-  { label: "PwC slide 19", forecast: 55.0, outturn: 91.35 },
-  { label: "PwC slide 17", forecast: 61.0, outturn: 91.35 },
-  { label: "Budget benchmark", forecast: 64.85, outturn: 91.35 },
-  { label: "Planning assumption", forecast: 60.0, outturn: 91.35 },
+  { label: "PwC, slide 19", forecast: 55.0, outturn: 91.35 },
+  { label: "US EIA", forecast: 56.0, outturn: 91.35 },
+  { label: "Industry planning", forecast: 60.0, outturn: 91.35 },
+  { label: "PwC, slide 17", forecast: 61.0, outturn: 91.35 },
+  { label: "Nigeria budget", forecast: 64.85, outturn: 91.35 },
 ];

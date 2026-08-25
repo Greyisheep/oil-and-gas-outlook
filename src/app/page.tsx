@@ -475,15 +475,17 @@ function buildSections(live: LivePrices): Section[] {
     id: "decks",
     label: "Outlook vs outturn",
     group: "Analysis",
-    blurb: "What the published 2026 outlooks predicted, and what actually happened.",
+    blurb: "What the 2026 outlooks and industry talks predicted, and what actually happened.",
     content: (
       <div className="flex flex-col gap-3">
         <div className="panel px-5 py-4">
           <p className="max-w-[86ch] text-[13px] leading-[1.6]">
-            Nigerian sector outlooks come out in <strong>January</strong>. The Middle East escalation
-            began on <strong>28 February 2026</strong> and the Strait of Hormuz closed. Every one of
-            those documents assumed oil near $55 to $61, and almost none has been updated since. Every
-            revenue, investment and risk judgement built on that assumption inherited the error.
+            Sector outlooks come out in <strong>January</strong>. The Middle East escalation began on{" "}
+            <strong>28 February 2026</strong> and the Strait of Hormuz closed. Everything published
+            before that assumed oil near <strong>$55 to $61</strong>, including the US Energy
+            Information Administration, which is the reference forecaster for this market. Oil has
+            averaged <strong>$91</strong>. Almost none of it has been updated since, so every revenue,
+            investment and risk judgement built on those numbers inherited the error.
           </p>
           <div className="rule-t mt-3.5 flex flex-wrap gap-x-8 gap-y-2 pt-3.5">
             <Stat label="Claims checked" value={String(SCORE.total)} />
@@ -497,15 +499,15 @@ function buildSections(live: LivePrices): Section[] {
         <div className="grid gap-3 xl:grid-cols-[1fr_400px]">
           <ChartFrame
             n="25" title="The claim ledger"
-            plain="Ten forecasts from a published 2026 outlook, checked against what actually happened. Click any row to see the working."
-            detail="Each claim is quoted word for word from the deck, then compared with the figures OPEC and the IEA published afterwards. One row held up and is included on purpose: the structural judgements in these documents are generally sound. It is the specific numbers that failed."
+            plain={<>{SCORE.total} forecasts from published 2026 outlooks and recorded industry talks, checked against what actually happened. Click any row to see the working.</>}
+            detail={<>Each claim is quoted word for word, then compared with what OPEC and the IEA published afterwards. {SCORE.talks} come from recorded talks rather than documents, taken from automatic transcripts, so their wording may differ slightly from the spoken original. One row held up and is included on purpose: the structural judgements in these outlooks are generally sound. It is the specific numbers that failed.</>}
           source="Claims from PwC Nigeria's January 2026 presentation to the Lagos Chamber of Commerce. What happened, from OPEC monthly reports and the IEA Oil Market Report of August 2026."
           ><ClaimLedger /></ChartFrame>
 
           <ChartFrame
             n="26" title="Every price call against the outturn"
-            plain="Four oil price assumptions Nigerian planning ran on this year, against what oil actually sold for."
-            detail="All three forecasts were published in January. The escalation that moved the price began on 28 February. This is not a criticism of the forecasters; it shows how quickly a price assumption expires."
+            plain="Five oil price assumptions in circulation this year, against what oil actually sold for. The US government's own forecaster was the second lowest."
+            detail="All of these were set in January. The escalation that moved the price began on 28 February. The EIA is the reference forecaster for this market and it called $56 while the price sat at $65, on the view that a supply overhang would persist. This is not a criticism of anyone; it shows how quickly a price assumption expires."
           legend={[{ label: "Forecast", color: "var(--chart-3)" }, { label: "Realised", color: "var(--chart-2)" }]}
           ><PriceCallChart /></ChartFrame>
         </div>
@@ -580,6 +582,15 @@ function buildSections(live: LivePrices): Section[] {
             drilling relationship predicts, it does not explain: rigs also respond to price, so both can
             move for a third reason. Benchmarks throughout are the 2026 federal budget of 1,840 thousand
             barrels a day at $64.85, and the 2026-28 target of 2,060.
+          </div>
+          <div className="sm:col-span-3 border-t border-[var(--rule)] pt-4">
+            <h3 className="display mb-1.5 text-[13px] text-foreground">Recorded talks used</h3>
+            <p className="max-w-[92ch]">
+              Spoken claims are quoted from automatic transcripts, so wording may differ slightly from
+              what was said. Sources: the US Energy Information Administration&rsquo;s briefing on its
+              January 2026 Short-Term Energy Outlook; OPEC&rsquo;s launch of the World Oil Outlook 2026;
+              and the WP Intelligence Oil and Gas Lookahead 2026.
+            </p>
           </div>
           <div className="sm:col-span-3">
             <IconCredits />
