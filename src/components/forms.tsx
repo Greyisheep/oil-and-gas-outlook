@@ -2,6 +2,7 @@
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { MONTHS, PEERS, NG_SECONDARY, OECD_DAYS_COVER } from "@/lib/opec-data";
 import { fmt, BENCH, monthLabel } from "@/lib/model";
+import { Icon } from "./icon";
 
 const C1 = "var(--chart-1)", C2 = "var(--chart-2)", C3 = "var(--chart-3)", C4 = "var(--chart-4)";
 const LAST = MONTHS.length - 1;
@@ -27,7 +28,8 @@ export function SlopeChart() {
   // produce equal slopes, which is what this chart is actually comparing.
   const lo = Math.log10(Math.min(...vals) * 0.85);
   const hi = Math.log10(Math.max(...vals) * 1.15);
-  const y = (v: number) => PAD_T + (1 - (Math.log10(v) - lo) / (hi - lo)) * (H - PAD_T - PAD_B);
+  const q = (n: number) => Math.round(n * 1000) / 1000;   // stable SSR serialisation
+  const y = (v: number) => q(PAD_T + (1 - (Math.log10(v) - lo) / (hi - lo)) * (H - PAD_T - PAD_B));
 
   // push overlapping labels apart while keeping their order
   const place = (key: "a" | "b") => {
@@ -36,7 +38,7 @@ export function SlopeChart() {
     let prev = -Infinity;
     for (const d of order) {
       const want = y(d[key]);
-      const at = Math.max(want, prev + MIN_GAP);
+      const at = q(Math.max(want, prev + MIN_GAP));
       out.set(d.name, at);
       prev = at;
     }
@@ -144,42 +146,33 @@ export function RadialLegend() {
 }
 
 /* ── Barrel pictogram: output against the budget benchmark, one barrel per
-      100 tb/d. A progress read, which is what a pictogram is actually for. ── */
-function Barrel({ fill, opacity = 1 }: { fill: string; opacity?: number }) {
-  return (
-    <svg viewBox="0 0 20 28" width="20" height="28" aria-hidden focusable="false">
-      <path d="M4 3 Q10 0 16 3 L18 9 Q19 14 18 19 L16 25 Q10 28 4 25 L2 19 Q1 14 2 9 Z"
-            fill={fill} fillOpacity={opacity} />
-      <path d="M2.4 10.5 Q10 12.4 17.6 10.5 M2.4 17.5 Q10 19.4 17.6 17.5"
-            stroke="var(--card)" strokeWidth="1.4" fill="none" strokeOpacity={0.85} />
-    </svg>
-  );
-}
-
+      100 tb/d. A progress read, which is what a pictogram is actually for.
+      Drum glyph is Game-icons.net by Delapouite, CC BY 3.0. ──────────────── */
 export function BarrelGauge() {
   const actual = NG_SECONDARY[LAST] as number;
-  const unit = 100;
-  const target = Math.round(BENCH.budget / unit);      // 18 barrels
-  const filled = Math.floor(actual / unit);            // 15
+  const unit = 25;
+  const target = Math.round(BENCH.budget / unit);      // 74 barrels
+  const filled = Math.floor(actual / unit);
   const partial = (actual % unit) / unit;
   const shortfall = BENCH.budget - actual;
 
   return (
     <div className="flex flex-col gap-3 px-4 pb-3">
-      <div className="flex flex-wrap items-end gap-[5px]">
+      <div className="flex flex-wrap items-end gap-[3px]">
         {Array.from({ length: target }).map((_, i) => (
           <span key={i} className="relative inline-flex" title={`${(i + 1) * unit} tb/d`}>
             {i < filled ? (
-              <Barrel fill={C1} />
+              <Icon name="barrel" size={21} style={{ color: C1 }} />
             ) : i === filled ? (
-              <span className="relative inline-block">
-                <Barrel fill="var(--muted)" />
-                <span className="absolute inset-0 overflow-hidden" style={{ width: `${partial * 100}%` }}>
-                  <Barrel fill={C1} />
+              <span className="relative inline-block leading-[0]">
+                <Icon name="barrel" size={21} style={{ color: "var(--muted)" }} />
+                <span className="absolute inset-0 overflow-hidden leading-[0]"
+                      style={{ width: `${partial * 100}%` }}>
+                  <Icon name="barrel" size={21} style={{ color: C1 }} />
                 </span>
               </span>
             ) : (
-              <Barrel fill="var(--muted)" />
+              <Icon name="barrel" size={21} style={{ color: "var(--muted)" }} />
             )}
           </span>
         ))}

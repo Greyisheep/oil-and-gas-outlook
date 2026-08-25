@@ -18,7 +18,7 @@ const mono = JetBrains_Mono({
 const serif = sans;
 
 export const metadata: Metadata = {
-  title: "Barrel Ledger",
+  title: "Oil and Gas Outlook",
   description:
     "Nigerian upstream and downstream indicators rebuilt from 22 OPEC Monthly Oil Market Reports, with scenario levers and a twelve-month company outlook projection.",
 };

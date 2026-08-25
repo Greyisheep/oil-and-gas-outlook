@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import {
-  Droplets, TrendingUp, Ship, Layers, SlidersHorizontal, FlaskConical,
-  PanelLeftClose, PanelLeftOpen, ExternalLink,
-} from "lucide-react";
+import { TrendingUp, SlidersHorizontal, FlaskConical, PanelLeftClose, PanelLeftOpen, ExternalLink } from "lucide-react";
+import { Icon } from "./icon";
+import type { GlyphName } from "@/lib/glyphs";
 
 export type SectionId =
   | "production" | "prices" | "shipping" | "drilling" | "outlook" | "method";
@@ -17,14 +16,24 @@ export type Section = {
   content: ReactNode;
 };
 
-const ICONS: Record<SectionId, typeof Droplets> = {
-  production: Droplets,
+/** Domain glyphs where they read better than a generic UI icon. */
+const GLYPH: Partial<Record<SectionId, GlyphName>> = {
+  production: "barrel",
+  shipping: "cargo_ship",
+  drilling: "oil_rig",
+};
+const LUCIDE: Partial<Record<SectionId, typeof TrendingUp>> = {
   prices: TrendingUp,
-  shipping: Ship,
-  drilling: Layers,
   outlook: SlidersHorizontal,
   method: FlaskConical,
 };
+
+function NavIcon({ id, size = 15 }: { id: SectionId; size?: number }) {
+  const glyph = GLYPH[id];
+  if (glyph) return <Icon name={glyph} size={size + 2} className="shrink-0" />;
+  const L = LUCIDE[id]!;
+  return <L size={size} strokeWidth={2} className="shrink-0" aria-hidden />;
+}
 
 function ThemeButton() {
   const [dark, setDark] = useState(false);
@@ -63,10 +72,10 @@ export function Shell({
       >
         <div className={`flex h-[61px] items-center border-b border-[var(--rule)] ${collapsed ? "justify-center px-2" : "px-4"}`}>
           {collapsed ? (
-            <span className="wordmark text-[17px] leading-none text-[var(--primary)]">BL</span>
+            <span className="wordmark text-[17px] leading-none text-[var(--primary)]">OG</span>
           ) : (
             <div className="min-w-0">
-              <div className="wordmark text-[16px] leading-none">Barrel Ledger</div>
+              <div className="wordmark text-[15px] leading-[1.15]">Oil and Gas<br />Outlook</div>
               <div className="eyebrow mt-1.5 leading-none">Nigeria · OPEC primary data</div>
             </div>
           )}
@@ -78,7 +87,6 @@ export function Shell({
               {!collapsed && <div className="eyebrow mb-2 px-2.5">{g}</div>}
               <div className="flex flex-col gap-0.5">
                 {sections.filter((s) => s.group === g).map((s) => {
-                  const Icon = ICONS[s.id];
                   const on = s.id === active;
                   return (
                     <button
@@ -88,7 +96,7 @@ export function Shell({
                       title={collapsed ? s.label : undefined}
                       className={`navitem ${collapsed ? "justify-center px-0" : ""}`}
                     >
-                      <Icon size={15} strokeWidth={2} className="shrink-0" aria-hidden />
+                      <NavIcon id={s.id} />
                       {!collapsed && <span className="truncate">{s.label}</span>}
                     </button>
                   );
@@ -115,7 +123,7 @@ export function Shell({
         <header className="sticky top-0 z-20 border-b border-[var(--rule)] bg-[var(--card)]/95 backdrop-blur">
           <div className="flex h-[61px] items-center justify-between gap-4 px-4 sm:px-6">
             <div className="flex min-w-0 items-baseline gap-2.5">
-              <span className="wordmark text-[15px] leading-none lg:hidden">Barrel Ledger</span>
+              <span className="wordmark text-[15px] leading-none lg:hidden">Oil and Gas Outlook</span>
               <h1 className="display truncate text-[17px] leading-none max-lg:hidden">{current.label}</h1>
               <span className="truncate text-[12.5px] leading-none text-muted-foreground max-xl:hidden">
                 {current.blurb}
@@ -139,7 +147,6 @@ export function Shell({
           {/* mobile / tablet nav rail */}
           <div className="flex gap-1 overflow-x-auto border-t border-[var(--rule)] px-3 py-2 lg:hidden">
             {sections.map((s) => {
-              const Icon = ICONS[s.id];
               const on = s.id === active;
               return (
                 <button
@@ -148,7 +155,7 @@ export function Shell({
                   aria-current={on ? "page" : undefined}
                   className="navitem w-auto shrink-0 whitespace-nowrap"
                 >
-                  <Icon size={14} aria-hidden />
+                  <NavIcon id={s.id} size={14} />
                   {s.label}
                 </button>
               );

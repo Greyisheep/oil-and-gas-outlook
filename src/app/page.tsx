@@ -1,6 +1,7 @@
 import { KpiStrip, type Kpi } from "@/components/kpi";
 import { ChartFrame } from "@/components/chart-frame";
 import { DataTable, type Col } from "@/components/data-table";
+import { IconCredits } from "@/components/icon";
 import { Shell, type Section } from "@/components/shell";
 import { Console } from "@/components/console";
 import {
@@ -11,7 +12,8 @@ import {
   FreightChart, StocksChart, CorrelationPanel, FreightLagChart,
   ShareVsFreightChart, FreightScatter,
 } from "@/components/analysis";
-import { SlopeChart, RadialShare, RadialLegend, BarrelGauge, CoverPictogram } from "@/components/forms";
+import { SlopeChart, BarrelGauge, CoverPictogram } from "@/components/forms";
+import { Sunburst, SeasonalRadar, BenchmarkGauge } from "@/components/circular";
 import {
   fmt, BENCH, monthLabel, buildSeries, rigLag, correlationTable,
   pearson, firstDiff, CORR_SERIES,
@@ -109,7 +111,7 @@ const sections: Section[] = [
           ><ShareChart /></ChartFrame>
 
           <ChartFrame
-            n="03" title="Output against the budget benchmark" defaultOpen
+            n="03" title="Output against the budget benchmark"
             note={<>One barrel per 100 tb/d. Nigeria filled {fmt(L.sec)} of the {fmt(BENCH.budget)} tb/d the
               2026 budget assumed, leaving {fmt(BENCH.budget - L.sec)} tb/d unfilled. The gap is the point,
               and it is easier to count than to read off an axis.</>}
@@ -124,12 +126,11 @@ const sections: Section[] = [
 
         <div className="grid gap-3 xl:grid-cols-2">
           <ChartFrame
-            n="05" title={`OPEC crude by member, ${L.month}`}
-            note="Composition at a single date, which is the one job a circular form does better than a bar. Nigeria is highlighted. Ranked largest first, top seven shown."
-          >
-            <RadialShare />
-            <RadialLegend />
-          </ChartFrame>
+            n="05" title={`OPEC crude by bloc and member, ${L.month}`} defaultOpen
+            note={<>A real two-level hierarchy, which is the case a sunburst is actually for: OPEC total in
+              the centre, bloc on the inner ring, member on the outer. Nigeria is pulled out and outlined.
+              Africa now carries a visibly larger arc than its Gulf-dominated history would suggest.</>}
+          ><Sunburst /></ChartFrame>
 
           <ChartFrame
             n="06" title="The reporting gap, month by month"
@@ -138,8 +139,21 @@ const sections: Section[] = [
           ><GapChart /></ChartFrame>
         </div>
 
+        <div className="grid gap-3 xl:grid-cols-[320px_1fr]">
+          <ChartFrame
+            n="07" title="Against benchmark and quota"
+            note="One value, two targets. The filled arc is output as a share of the 1,840 tb/d budget benchmark; the tick marks where the 1,500 tb/d OPEC quota falls on the same scale."
+          ><BenchmarkGauge /></ChartFrame>
+
+          <ChartFrame
+            n="08" title="Monthly shape, 2025 against 2026"
+            note="Calendar months wrap around a circle, which is the one time-series shape a radar reads better than a line. The 2026 ring is incomplete because the year is only seven months old in this data."
+            legend={[{ label: "2025", color: "var(--chart-1)" }, { label: "2026", color: "var(--chart-2)" }]}
+          ><SeasonalRadar /></ChartFrame>
+        </div>
+
         <ChartFrame
-          n="07" title="Peer producers over time, indexed to June 2024"
+          n="09" title="Peer producers over time, indexed to June 2024"
           note="The same story as the slope chart but continuous, so you can see when each producer broke rather than only where they ended."
           legend={[
             { label: "Nigeria", color: "var(--chart-2)" },
@@ -389,6 +403,9 @@ const sections: Section[] = [
             capex, whereas Nigeria&rsquo;s PIA terms are materially more complex. Lag correlations are
             predictive, not causal. Benchmarks are the 2026 federal budget (1,840 tb/d at $64.85/b) and the
             2026-28 MTEF target (2,060 tb/d).
+          </div>
+          <div className="sm:col-span-3">
+            <IconCredits />
           </div>
         </div>
       </div>

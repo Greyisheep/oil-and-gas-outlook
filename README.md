@@ -1,4 +1,4 @@
-# Barrel Ledger
+# Oil and Gas Outlook
 
 An interactive console for Nigerian oil and gas indicators, rebuilt from primary sources.
 
@@ -92,6 +92,16 @@ they are not:
 
 OPEC Monthly Oil Market Report (22 editions). Benchmarks: 2026 federal budget
 (1,840 tb/d at $64.85/b) and the 2026-28 MTEF target (2,060 tb/d). FX from CBN/NAFEM.
+
+## Icon attribution
+
+Icons are used under Creative Commons Attribution licences:
+
+- Barrel, oil rig, oil pump, cargo ship, factory, valve: [Game-icons.net](https://game-icons.net) by Delapouite, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)
+- Oil well, gas pump, industry, droplet, ship: [Font Awesome Free 6](https://fontawesome.com/license/free), icons [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+- Interface icons: [Lucide](https://lucide.dev), ISC
+
+No stock-licensed or paid assets are included, so the repository can stay public.
 
 ## Licence
 
