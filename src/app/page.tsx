@@ -280,7 +280,7 @@ const sections: Section[] = [
           n="14" title="West Africa is not simply following the Gulf"
           plain="West African shipping costs look tied to the Gulf, but month to month they move largely on their own."
             detail={<>Compared on levels the two routes track at {wafGulfLevels ? wafGulfLevels.r.toFixed(2) : "n/a"}, which looks like tight coupling. Compared on how much each moved from one month to the next, that falls to {wafGulf ? wafGulf.r.toFixed(2) : "n/a"}. The apparent link was mostly both drifting upward together. Each dot is one month.</>}
-          source="Axes are month on month changes in Worldscale points, so the shared trend is removed. 20 overlapping months."
+          source="Each point is one month, plotted as how far each route moved rather than where it sat. 20 months overlap."
           legend={[{ label: "One month, both routes", color: "var(--chart-1)" }]}
         ><FreightScatter /></ChartFrame>
 
