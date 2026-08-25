@@ -15,6 +15,9 @@ import {
 import { SlopeChart, BarrelGauge, CoverPictogram, RigPictogram } from "@/components/forms";
 import { Sunburst, SeasonalRadar, BenchmarkGauge } from "@/components/circular";
 import { ClaimLedger, PriceCallChart } from "@/components/scorecard";
+import { ProjectionChart, BacktestRibbon, BacktestErrors, ModelCard } from "@/components/projection";
+import { TargetSolver } from "@/components/solver";
+import { RIG_LAG } from "@/lib/rig-lag";
 import { SCORE } from "@/lib/scorecard";
 import {
   fmt, BENCH, monthLabel, buildSeries, rigLag, correlationTable,
@@ -365,6 +368,85 @@ const sections: Section[] = [
     ),
   },
   {
+    id: "projection",
+    label: "Projection",
+    group: "Analysis",
+    blurb: "What rigs already turning imply for output nine months out, and how the model has actually performed.",
+    content: (
+      <div className="flex flex-col gap-3">
+        <div className="panel px-5 py-4">
+          <p className="max-w-[88ch] text-[13px] leading-[1.6]">
+            This is not a forecast of drilling. Those rigs have already turned. Nigerian output follows
+            its rig count by about <strong>{RIG_LAG.lag} months</strong>, so the fleet that was working
+            through late 2025 and the first half of 2026 already implies a production path out to{" "}
+            <strong>{monthLabel(RIG_LAG.projection[RIG_LAG.projection.length - 1].month)}</strong>.
+            No assumption about future rigs, prices or policy is required to draw it.
+          </p>
+          <div className="rule-t mt-3.5 flex flex-wrap gap-x-8 gap-y-2 pt-3.5">
+            <Stat label="Lag" value={`${RIG_LAG.lag} months`} />
+            <Stat label="Per additional rig" value={`+${Math.round(RIG_LAG.slope)} tb/d`} tone="good" />
+            <Stat label="MASE vs naive" value={String(RIG_LAG.mase)} tone={RIG_LAG.mase < 1 ? "good" : "bad"} />
+            <Stat label="Backtest origins" value={String(RIG_LAG.origins)} tone="warn" />
+            <Stat label="80% band" value={`± ${RIG_LAG.band80} tb/d`} />
+          </div>
+        </div>
+
+        <ChartFrame
+          n="20" title="What would it take?" defaultOpen
+          note={<>The model runs backwards as easily as forwards. Set a production target and it returns
+            the rig count that Nigeria&rsquo;s own historical relationship says would be required, and how
+            far that sits from the fleet actually drilling. This is the honest form of the question:
+            not what output will be, but what a given output would demand.</>}
+          source="Inversion of the same fitted relationship. Extrapolation beyond the observed rig range is flagged in the panel rather than returned silently."
+        ><TargetSolver /></ChartFrame>
+
+        <ChartFrame
+          n="21" title="Output implied by rigs already turning" defaultOpen
+          note={<>Solid green is what happened. Dashed gold is the path implied by rigs that were already
+            drilling, carried forward {RIG_LAG.lag} months. The shaded band is the 80% conformal interval
+            taken from the model&rsquo;s own backtest errors, not from its standard errors, so it reflects
+            how wrong this model has actually been rather than how wrong it believes it could be.</>}
+          source={`Fitted on ${RIG_LAG.n} observations of OPEC secondary-source production against OPEC rig counts. Coefficients and bands regenerate from data-pipeline/rig_lag.py.`}
+          legend={[
+            { label: "Actual", color: "var(--chart-2)" },
+            { label: "Implied by rigs already turning", color: "var(--chart-1)", dash: true },
+          ]}
+        ><ProjectionChart /></ChartFrame>
+
+        <div className="grid gap-3 xl:grid-cols-2">
+          <ChartFrame
+            n="22" title="What it would have said at the time" defaultOpen
+            note="Rolling-origin backtest. At each month the model is refitted on only the data available then, and asked for that month. Nothing downstream of the origin is used, so this is what it would genuinely have printed rather than a fit drawn through known answers."
+            legend={[
+              { label: "Actual", color: "var(--chart-2)" },
+              { label: "Model, refitted at each origin", color: "var(--chart-1)", dash: true },
+            ]}
+          ><BacktestRibbon /></ChartFrame>
+
+          <ChartFrame
+            n="23" title="How wrong it was, month by month"
+            note={<>The same backtest as errors. Green sits inside the 80% band, red outside. Two of{" "}
+              {RIG_LAG.origins} fall outside, which is roughly what an 80% band should do. The band is
+              wide because the model has genuinely missed by that much, not because the interval was
+              padded for comfort.</>}
+            legend={[
+              { label: "Inside the band", color: "var(--chart-2)" },
+              { label: "Outside", color: "var(--chart-3)" },
+            ]}
+          ><BacktestErrors /></ChartFrame>
+        </div>
+
+        <section className="panel flex flex-col">
+          <header className="flex items-baseline gap-2 px-4 pt-3.5 pb-3">
+            <span className="eyebrow text-[var(--brass)]">23</span>
+            <h2 className="display text-[14.5px] leading-tight">The model, and where it breaks</h2>
+          </header>
+          <ModelCard />
+        </section>
+      </div>
+    ),
+  },
+  {
     id: "outlook",
     label: "Outlook",
     group: "Analysis",
@@ -396,13 +478,13 @@ const sections: Section[] = [
 
         <div className="grid gap-3 xl:grid-cols-[1fr_400px]">
           <ChartFrame
-            n="20" title="The claim ledger" defaultOpen
+            n="24" title="The claim ledger" defaultOpen
             note="Each claim quoted verbatim from the published deck, then scored against the series extracted from OPEC reports. Click a row for the working. The last row is included so this does not read as one-directional: the structural calls in these decks are generally sound, it is the quantified forecasts that failed."
             source="Claims from PwC Nigeria's January 2026 presentation to the Lagos Chamber of Commerce. Outturns from OPEC Monthly Oil Market Reports and the IEA Oil Market Report, August 2026."
           ><ClaimLedger /></ChartFrame>
 
           <ChartFrame
-            n="21" title="Every price call against the outturn" defaultOpen
+            n="25" title="Every price call against the outturn" defaultOpen
             note="Four Brent assumptions that Nigerian planning ran on in 2026, against what North Sea Dated actually averaged from January to July."
             legend={[{ label: "Forecast", color: "var(--chart-3)" }, { label: "Realised", color: "var(--chart-2)" }]}
           ><PriceCallChart /></ChartFrame>
@@ -430,7 +512,7 @@ const sections: Section[] = [
       <div className="flex flex-col gap-3">
         <div className="grid gap-3 xl:grid-cols-3">
           <ChartFrame
-            n="22" title="Which correlations survive differencing" className="xl:col-span-2" defaultOpen
+            n="26" title="Which correlations survive differencing" className="xl:col-span-2" defaultOpen
             note={<>Every pair ranked by correlation on levels, then re-run on month to month changes.
               Correlating two trending series inflates r towards 1 whether or not they are related, so the
               second column is the honest one. Of <strong>{nTotal} pairs tested, {nSurvive} survive</strong>,
@@ -439,7 +521,7 @@ const sections: Section[] = [
           ><CorrelationPanel /></ChartFrame>
 
           <ChartFrame
-            n="23" title="A finding that is not one" defaultOpen
+            n="27" title="A finding that is not one" defaultOpen
             note={<>Freight against the Bonny differential at every lag. The two month bar clears 0.5, but the
               bars either side sit near zero. A real lag decays smoothly; a lone spike across seven tested
               lags at n under 20 is what searching for a result looks like. Shown so you can see it.</>}

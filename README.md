@@ -21,6 +21,7 @@ Six sections behind a sidebar, each with its charts and a full data table.
 | **Shipping** | Worldscale freight on Nigeria's own export routes, Nigeria's OPEC share against Gulf freight, and a changes scatter showing West Africa does not track the Gulf |
 | **Drilling & stocks** | Rig count as a leading indicator with its full lag profile, OECD stocks and days of forward cover |
 | **Outlook** | Scenario levers driving a twelve-month forward projection for your own position, in USD and NGN |
+| **Projection** | A target solver that inverts the rig relationship to ask what a given output would require, the path implied by rigs already turning, and a rolling-origin backtest showing what the model would actually have said at the time |
 | **Outlook vs outturn** | Ten claims quoted verbatim from published Nigerian outlooks, scored against the primary series. Seven forecast calls missed or came out the wrong way round, two are self-contradicted within a single deck |
 | **Method** | The correlation audit, a deliberately shown false finding, and the data provenance |
 
@@ -37,11 +38,23 @@ in January; the Middle East escalation began 28 February 2026. Decks ran on Bren
 North Sea Dated averaged $91.35 from January to July. Anything downstream of the price deck inherits
 the error, including the risk registers, which led with oversupply while supply was in fact contracting.
 
+**The budget target is not reachable by drilling at current activity.** Nigerian output follows its
+rig count by about nine months at roughly 13 tb/d per rig, validated by rolling-origin backtest
+(MASE 0.69, so 31% better than carrying the last value forward). Inverted, the 1,840 tb/d budget
+benchmark implies about 37 active rigs against the 18 currently drilling, which is double the
+highest count in the sample. That is extrapolation and the app says so, but it bounds the problem.
+
 **Of 55 correlation pairs tested, 7 survive differencing.** Correlating two trending series inflates r
 towards 1 whether or not they are related. Most of what looks like a relationship in this sector is shared trend.
 
 ## Method and honesty notes
 
+- **Projection is separated from scenario.** The rig model is a projection: it has a measured
+  mechanism, a rolling-origin backtest and conformal bands taken from its own errors. The Outlook
+  levers are scenario: the user owns the assumption and the model only propagates it. Nothing blurs
+  the two, and there is no price forecast anywhere in the app.
+- **The rig coefficient is unstable.** Fitted before February 2026 the slope is 6.84; on the full
+  sample it is 13.35. The direction has held, the level has not, and the app says so on the panel.
 - **Crude only.** Condensate is excluded throughout, which is what makes quota comparisons valid. Nigeria's headline 1.6 to 1.7 mb/d figures are crude *plus* condensate; the 1.5 mb/d OPEC quota is crude alone. Mixing them makes Nigeria look alternately compliant and in breach.
 - **Vintages preserved.** Each report is keyed by publication month, so a data month seen in three reports keeps all three values. OPEC revises Nigeria by up to 51 tb/d after the fact.
 - **The rig lag is predictive, not causal.** Rigs respond to price too.
