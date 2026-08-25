@@ -37,7 +37,7 @@
   --color-chart-4: var(--chart-4);
   --font-sans: var(--font-plex-sans);
   --font-mono: var(--font-plex-mono);
-  --font-heading: var(--font-plex-serif);
+  --font-heading: var(--font-plex-sans);
   --radius-sm: 2px;
   --radius-md: 3px;
   --radius-lg: 4px;
@@ -47,61 +47,61 @@
 :root {
   --radius: 3px;
 
-  /* stone paper, faintly olive-biased, chosen rather than defaulted */
-  --background: #f2f2ec;
-  --foreground: #1a1d16;
-  --card: #fbfbf7;
-  --card-foreground: #1a1d16;
-  --popover: #fbfbf7;
-  --popover-foreground: #1a1d16;
+  /* clean near-white ground so the data carries the colour, not the page */
+  --background: #fafaf9;
+  --foreground: #17190f;
+  --card: #ffffff;
+  --card-foreground: #17190f;
+  --popover: #ffffff;
+  --popover-foreground: #17190f;
 
-  --primary: #5f6b3a;            /* olive */
-  --primary-foreground: #f7f8f2;
-  --secondary: #e6e7dc;
+  --primary: #55613a;            /* olive */
+  --primary-foreground: #f8f9f4;
+  --secondary: #f0f0ed;
   --secondary-foreground: #2b3024;
-  --muted: #e9eae0;
-  --muted-foreground: #6d7263;
-  --accent: #e2e6d5;
+  --muted: #f2f2ef;
+  --muted-foreground: #666b5e;
+  --accent: #eceee4;
   --accent-foreground: #3b4327;
   --destructive: #a8352f;
-  --brass: #8a6d1e;
+  --brass: #806618;
 
-  --border: #dcdbd0;
-  --rule: #dcdbd0;
-  --input: #d3d2c6;
-  --ring: #5f6b3a;
+  --border: #e7e7e4;
+  --rule: #e7e7e4;
+  --input: #dcdcd7;
+  --ring: #55613a;
 
   /* data marks, validated light steps */
   --chart-1: #eda100;  /* gold  */
   --chart-2: #1baf7a;  /* green */
   --chart-3: #e34948;  /* red   */
   --chart-4: #2a78d6;  /* blue  */
-  --grid: #e0e0d5;
+  --grid: #ededea;
 }
 
 .dark {
-  --background: #14160f;
-  --foreground: #eeefe6;
-  --card: #1c1f18;
-  --card-foreground: #eeefe6;
-  --popover: #1c1f18;
-  --popover-foreground: #eeefe6;
+  --background: #131512;
+  --foreground: #edeee9;
+  --card: #1a1d19;
+  --card-foreground: #edeee9;
+  --popover: #1a1d19;
+  --popover-foreground: #edeee9;
 
-  --primary: #97a75f;
-  --primary-foreground: #14160f;
-  --secondary: #262a20;
-  --secondary-foreground: #dfe1d4;
-  --muted: #23271e;
-  --muted-foreground: #9ba190;
-  --accent: #2b3123;
-  --accent-foreground: #cbd3ad;
+  --primary: #9cad66;
+  --primary-foreground: #131512;
+  --secondary: #24271f;
+  --secondary-foreground: #dedfd6;
+  --muted: #212420;
+  --muted-foreground: #9aa090;
+  --accent: #2a2f24;
+  --accent-foreground: #cdd5b0;
   --destructive: #e06b64;
   --brass: #c9a227;
 
-  --border: #2f332a;
-  --rule: #2f332a;
-  --input: #383d31;
-  --ring: #97a75f;
+  --border: #2c302a;
+  --rule: #2c302a;
+  --input: #363b33;
+  --ring: #9cad66;
 
   /* data marks, validated dark steps */
   --chart-1: #c98500;
@@ -125,19 +125,23 @@
   .tnum, table, .font-mono { font-variant-numeric: tabular-nums; }
 }
 
-/* eyebrow / label treatment */
+/* Archivo, tightened. Carries the wordmark and every panel title. */
+.display { font-weight: 600; letter-spacing: -0.016em; }
+.wordmark { font-weight: 700; letter-spacing: -0.032em; }
+
+/* Source lines sit under the panel, quiet but legible. */
 .source {
   font-family: var(--font-plex-mono), ui-monospace, monospace;
-  font-size: 10.5px;
+  font-size: 11px;
   line-height: 1.55;
-  letter-spacing: 0.01em;
   color: var(--muted-foreground);
 }
 
 .eyebrow {
   font-family: var(--font-plex-mono), ui-monospace, monospace;
   font-size: 10px;
-  letter-spacing: 0.11em;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted-foreground);
 }
@@ -150,6 +154,25 @@
 }
 
 .rule-t { border-top: 1px solid var(--rule); }
+
+/* Sidebar nav item */
+.navitem {
+  display: flex; align-items: center; gap: 9px;
+  width: 100%; padding: 7px 10px;
+  border-radius: var(--radius);
+  font-size: 13px; font-weight: 500; line-height: 1;
+  color: var(--muted-foreground);
+  text-align: left;
+  transition: background 120ms ease, color 120ms ease;
+}
+.navitem:hover { background: var(--secondary); color: var(--foreground); }
+.navitem[aria-current="page"] {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--primary);
+}
+.navitem:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

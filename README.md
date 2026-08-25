@@ -12,15 +12,27 @@ publication vintage of every figure, so revisions are preserved rather than over
 
 ## What it shows
 
-| # | Panel | Why it's here |
-|---|---|---|
-| 01 | Two official numbers for the same barrels | Nigeria's own submission to OPEC runs consistently *below* the independent secondary-source estimate: 1,505 vs 1,546 tb/d in July 2026. Direct communication sits just under the 1,500 tb/d quota; secondary sources put Nigeria over it. |
-| 02 | Nigeria's share of OPEC crude | Gulf output collapsed through 2026 as the Strait of Hormuz closed. Nigeria held and grew, lifting its share from 5.2% to 6.5%. Nigeria did not produce dramatically more, it produced while others could not. |
-| 03 | Who kept their barrels | Saudi Arabia, Iraq and Kuwait indexed against Nigeria on a common base. |
-| 04-06 | Scenario levers + company outlook | Move Brent, differential, FX and national output; get a twelve-month forward projection for **your own** position: net entitlement, netback, tax, cumulative cash, in USD and NGN. |
-| 07, 10 | Bonny Light and its differential | Realised monthly prices against North Sea Dated. |
-| 08-09 | Rigs lead barrels | Rig count cross-correlated against production at each lag, to estimate the drilling-to-barrels transmission time. |
-| 11 | The reporting gap | Secondary-source estimate minus Nigeria's own submission, month by month. |
+Six sections behind a sidebar, each with its charts and a full data table.
+
+| Section | Contents |
+|---|---|
+| **Production** | Nigerian crude on both official bases, share of OPEC, output against the budget benchmark as a barrel pictogram, a log-scale slope chart of every OPEC member, radial composition, and the reporting gap |
+| **Prices** | Bonny Light against North Sea Dated, and the differential |
+| **Shipping** | Worldscale freight on Nigeria's own export routes, Nigeria's OPEC share against Gulf freight, and a changes scatter showing West Africa does not track the Gulf |
+| **Drilling & stocks** | Rig count as a leading indicator with its full lag profile, OECD stocks and days of forward cover |
+| **Outlook** | Scenario levers driving a twelve-month forward projection for your own position, in USD and NGN |
+| **Method** | The correlation audit, a deliberately shown false finding, and the data provenance |
+
+### Three things worth knowing
+
+**Nigeria's own submission runs below the independent estimate.** 1,505 against 1,546 tb/d in July 2026.
+Direct communication sits just under the 1,500 tb/d quota; secondary sources put Nigeria over it. Both are official.
+
+**Gulf output collapsed and Nigeria's did not.** Nigeria's share of OPEC crude rose from 5.2% to 6.5%.
+Nigeria did not produce dramatically more, it produced while others could not.
+
+**Of 55 correlation pairs tested, 7 survive differencing.** Correlating two trending series inflates r
+towards 1 whether or not they are related. Most of what looks like a relationship in this sector is shared trend.
 
 ## Method and honesty notes
 

@@ -164,7 +164,6 @@ export function Console() {
             { label: "Net cash, month", color: C1 },
             { label: "Cumulative", color: C2 },
           ]}
-          table={<OutlookTable rows={rows} />}
         >
           <ResponsiveContainer width="100%" height={296}>
             <ComposedChart data={rows} margin={{ top: 10, right: 14, left: -6, bottom: 0 }}>
@@ -182,6 +181,24 @@ export function Console() {
           </ResponsiveContainer>
         </ChartFrame>
       </div>
+
+      {/* the projection, month by month */}
+      <section className="panel flex flex-col">
+        <header className="flex items-baseline gap-2 px-4 pt-3.5 pb-3">
+          <span className="eyebrow text-[var(--brass)]">T6</span>
+          <h2 className="display text-[14.5px] leading-tight">Projection detail</h2>
+          <span className="eyebrow ml-auto">{rows.length} months</span>
+        </header>
+        <div className="overflow-auto border-t border-[var(--rule)]">
+          <OutlookTable rows={rows} />
+        </div>
+        <footer className="border-t border-[var(--rule)] px-4 py-2">
+          <p className="source">
+            Model output. Price and differential seeded from OPEC MOMR August 2026; FX from CBN/NAFEM
+            21 Aug 2026. Illustrative fiscal treatment, not a tax computation.
+          </p>
+        </footer>
+      </section>
     </div>
   );
 }
