@@ -6,7 +6,7 @@ Most sector dashboards retype numbers out of a summary deck. This one parses the
 **22 OPEC Monthly Oil Market Report PDFs** (September 2024 to August 2026) and keeps the
 publication vintage of every figure, so revisions are preserved rather than overwritten.
 
-**Live:** _see Deployments_ · **Data to:** July 2026
+**Live:** https://barrel-ledger-130785602363.europe-west1.run.app · **Data to:** July 2026
 
 ---
 
