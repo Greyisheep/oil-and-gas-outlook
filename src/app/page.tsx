@@ -132,14 +132,15 @@ const sections: Section[] = [
 
           <ChartFrame
             n="03" title="Output against the budget benchmark"
-            note={<>One barrel per 100 tb/d. Nigeria filled {fmt(L.sec)} of the {fmt(BENCH.budget)} tb/d the
-              2026 budget assumed, leaving {fmt(BENCH.budget - L.sec)} tb/d unfilled. The gap is the point,
-              and it is easier to count than to read off an axis.</>}
+            note={<>Each barrel is 25 tb/d. Nigeria filled {fmt(L.sec)} of the {fmt(BENCH.budget)} tb/d the
+              2026 budget assumed, leaving {fmt(BENCH.budget - L.sec)} tb/d unfilled. At the Brent price
+              actually realised this year, that shortfall is worth roughly $0.8bn a month in gross export
+              value, which is more than the price gain the year delivered.</>}
           ><BarrelGauge /></ChartFrame>
 
           <ChartFrame
             n="04" title="Who kept their barrels"
-            note="Every OPEC member's crude output at the start and end of the window, one line each. Green gained, red lost. The Gulf producers fell hard as the Strait closed; Nigeria is among the few that rose."
+            note="Every OPEC member's crude output at the start and end of the window. Green gained, red lost. Saudi Arabia, Iraq and Kuwait each lost a fifth or more of their volume as the Strait closed. Nigeria is one of the few that finished higher than it started."
             legend={[{ label: "Gained", color: "var(--chart-2)" }, { label: "Lost", color: "var(--chart-3)" }]}
           ><SlopeChart /></ChartFrame>
         </div>
@@ -147,9 +148,10 @@ const sections: Section[] = [
         <div className="grid gap-3 xl:grid-cols-2">
           <ChartFrame
             n="05" title={`OPEC crude by bloc and member, ${L.month}`} defaultOpen
-            note={<>A real two-level hierarchy, which is the case a sunburst is actually for: OPEC total in
-              the centre, bloc on the inner ring, member on the outer. Nigeria is pulled out and outlined.
-              Africa now carries a visibly larger arc than its Gulf-dominated history would suggest.</>}
+            note={<>OPEC crude for the month, by bloc on the inner ring and member on the outer. The Gulf
+              still carries most of it, but the African arc is wider than at any earlier point in this
+              series: Gulf output fell hard as the Strait closed while African producers held their volumes.
+              Nigeria is the largest African member and is outlined.</>}
           ><Sunburst /></ChartFrame>
 
           <ChartFrame
@@ -162,19 +164,19 @@ const sections: Section[] = [
         <div className="grid gap-3 xl:grid-cols-[320px_1fr]">
           <ChartFrame
             n="07" title="Against benchmark and quota"
-            note="One value, two targets. The filled arc is output as a share of the 1,840 tb/d budget benchmark; the tick marks where the 1,500 tb/d OPEC quota falls on the same scale."
+            note="Nigeria produced 84% of the volume the 2026 budget assumed. The tick marks the 1,500 tb/d OPEC quota, which sits below the budget line. Nigeria is above its quota and below its budget at the same time, which is why compliance and fiscal performance point in opposite directions."
           ><BenchmarkGauge /></ChartFrame>
 
           <ChartFrame
             n="08" title="Monthly shape, 2025 against 2026"
-            note="Calendar months wrap around a circle, which is the one time-series shape a radar reads better than a line. The 2026 ring is incomplete because the year is only seven months old in this data."
+            note="Nigerian output by calendar month, one ring per year. February is the weak month in both years, but the 2026 dip is far deeper, and the recovery through the second quarter is correspondingly steeper. The 2026 ring stops at July because that is where the data ends."
             legend={[{ label: "2025", color: "var(--chart-1)" }, { label: "2026", color: "var(--chart-2)" }]}
           ><SeasonalRadar /></ChartFrame>
         </div>
 
         <ChartFrame
           n="09" title="Peer producers over time, indexed to June 2024"
-          note="The same story as the slope chart but continuous, so you can see when each producer broke rather than only where they ended."
+          note="The same producers month by month, so you can see when each one broke rather than only where it ended. The Gulf declines are abrupt and dated to the closure of the Strait; Nigeria's line is comparatively flat throughout."
           legend={[
             { label: "Nigeria", color: "var(--chart-2)" },
             { label: "Saudi Arabia", color: "var(--chart-1)" },
@@ -279,8 +281,8 @@ const sections: Section[] = [
           note={<>The two freight markets correlate at {wafGulfLevels ? wafGulfLevels.r.toFixed(2) : "n/a"} on
             levels, which looks like tight coupling. On changes that falls to
             {" "}{wafGulf ? wafGulf.r.toFixed(2) : "n/a"}. The apparent link is shared trend. West African
-            rates are set by their own balance of tonnage and cargo. Each dot is one month: if the two moved
-            together the cloud would lie on a diagonal, and it does not.</>}
+            rates are set by their own balance of tonnage and cargo available on this coast, not by what
+            happens in the Gulf. Each dot is one month of change in both routes.</>}
           source="Axes are month on month changes in Worldscale points, so the shared trend is removed. 20 overlapping months."
           legend={[{ label: "One month, both routes", color: "var(--chart-1)" }]}
         ><FreightScatter /></ChartFrame>
@@ -310,14 +312,14 @@ const sections: Section[] = [
       <div className="flex flex-col gap-3">
         <ChartFrame
           n="15" title="The rig fleet, one derrick per rig" defaultOpen
-          note="Rig count is an actual count, so a pictogram encodes it honestly rather than decorating it. Gold is the trough level, green is what has been added since. Nigeria roughly doubled its active fleet off the low, and this is the leading edge of the production recovery in the panels below."
+          note="Nigeria's active fleet has roughly doubled off its low, from 9 rigs to 18. Gold is the trough level, green is what has been added since. The fleet is still thin: Nigeria produces about 86 tb/d per active rig against Algeria's 24 and Saudi Arabia's 27. That reflects high flow rates per well, but also very little sustaining drilling to hold the base."
           source="OPEC Monthly Oil Market Report Table 11-5. OPEC's count differs from NUPRC's fleet disposition; see Method."
         ><RigPictogram /></ChartFrame>
 
         <div className="grid gap-3 xl:grid-cols-3">
           <ChartFrame
             n="16" title="Rigs lead barrels" className="xl:col-span-2"
-            note="Active rigs above, crude output below, sharing one time axis. Two measures of different scale get two panels, not two y-scales."
+            note="Active rigs above, crude output below, on a shared time axis. Rigs bottomed in May 2025 and output bottomed in February 2026, so the fleet turns roughly three quarters before the barrels do. That lag is the reason rig count is worth watching at all."
             legend={[{ label: "Active rigs", color: "var(--chart-1)" }, { label: "Crude production", color: "var(--chart-2)" }]}
           ><RigChart /></ChartFrame>
 
@@ -333,7 +335,7 @@ const sections: Section[] = [
         <div className="grid gap-3 xl:grid-cols-[1fr_340px]">
         <ChartFrame
           n="18" title="OECD stocks and days of forward cover"
-          note="Commercial crude stocks above, days of forward cover below. Cover is the tighter measure because it normalises inventory against demand, and it has been running below both the five year and the 2015 to 2019 averages."
+          note="Commercial crude stocks above, days of forward cover below. Both have drifted lower through 2026. Cover is the tighter of the two because it normalises inventory against demand: a stock build means little if consumption is rising faster than the barrels going in."
           source={`${MOMR} Table 9-1, sourced to EIA, IEA, METI, OilX and OPEC.`}
           legend={[
             { label: "OECD crude stocks, mb", color: "var(--chart-1)" },
@@ -343,7 +345,7 @@ const sections: Section[] = [
 
         <ChartFrame
           n="19" title="Where cover sits right now" defaultOpen
-          note="Days of forward cover as a count rather than a line. Each block is ten days. The five year average sits near 61 days and the 2015 to 2019 average near 62, so the current reading is below both."
+          note="How many days of demand OECD commercial stocks would cover. Each block is ten days. The five year average sits near 61 days and the 2015 to 2019 average near 62, so the current reading is below both, which is the tightest read in this dataset."
         ><CoverPictogram /></ChartFrame>
         </div>
 
