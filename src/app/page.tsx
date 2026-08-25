@@ -49,7 +49,7 @@ const L = {
 };
 const shareGain = L.share - (first.opecShare as number);
 
-const REPO = "https://github.com/Greyisheep/barrel-ledger";
+const REPO = "https://github.com/Greyisheep/oil-and-gas-outlook";
 const MOMR = "OPEC Monthly Oil Market Report, 22 editions Sep 2024 to Aug 2026.";
 
 const kpis: Kpi[] = [

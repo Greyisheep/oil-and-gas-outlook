@@ -6,7 +6,7 @@ Most sector dashboards retype numbers out of a summary deck. This one parses the
 **22 OPEC Monthly Oil Market Report PDFs** (September 2024 to August 2026) and keeps the
 publication vintage of every figure, so revisions are preserved rather than overwritten.
 
-**Live:** https://barrel-ledger-130785602363.europe-west1.run.app · **Data to:** July 2026
+**Live:** https://oil-and-gas-outlook-130785602363.europe-west1.run.app · **Data to:** July 2026
 
 ---
 
@@ -77,14 +77,14 @@ npm run dev
 ## Container
 
 ```bash
-docker build -t barrel-ledger .
-docker run -p 8080:8080 barrel-ledger
+docker build -t oil-and-gas-outlook .
+docker run -p 8080:8080 oil-and-gas-outlook
 ```
 
 ## Deploy to Cloud Run
 
 ```bash
-gcloud run deploy barrel-ledger --source . --region europe-west1 --allow-unauthenticated
+gcloud run deploy oil-and-gas-outlook --source . --region europe-west1 --allow-unauthenticated
 ```
 
 CI (`.github/workflows/deploy.yml`) typechecks, lints and builds on every push to `main`,
