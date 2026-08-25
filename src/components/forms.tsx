@@ -1,8 +1,9 @@
 "use client";
 import { RadialBarChart, RadialBar, PolarAngleAxis, ResponsiveContainer, Tooltip } from "recharts";
-import { MONTHS, PEERS, NG_SECONDARY, OECD_DAYS_COVER } from "@/lib/opec-data";
+import { MONTHS, PEERS, NG_SECONDARY, NG_RIGS, OECD_DAYS_COVER } from "@/lib/opec-data";
 import { fmt, BENCH, monthLabel } from "@/lib/model";
 import { Icon } from "./icon";
+import { useWindow } from "./range";
 
 const C1 = "var(--chart-1)", C2 = "var(--chart-2)", C3 = "var(--chart-3)", C4 = "var(--chart-4)";
 const LAST = MONTHS.length - 1;
@@ -220,6 +221,63 @@ export function CoverPictogram() {
         <span className="mb-[2px] text-[11.5px] text-muted-foreground">days</span>
       </div>
       <p className="eyebrow">Each block = 10 days of forward cover</p>
+    </div>
+  );
+}
+
+/* ── Rig pictogram: rig count is an actual count, so one glyph per rig is an
+      honest encoding. Splits the current fleet into the trough level and what
+      has been added since, because the doubling is the story. Follows the
+      shared time range, so the trough is the trough of what you are looking
+      at. Derrick glyph is Game-icons.net by Delapouite, CC BY 3.0. ────────── */
+export function RigPictogram() {
+  const rigs = useWindow(NG_RIGS.map((v, i) => ({ v, m: MONTHS[i] })));
+  const seen = rigs.filter((r) => r.v != null) as { v: number; m: string }[];
+  if (!seen.length) return null;
+
+  const current = seen[seen.length - 1];
+  const trough = seen.reduce((a, b) => (b.v < a.v ? b : a));
+  const peak = seen.reduce((a, b) => (b.v > a.v ? b : a));
+  const added = Math.max(0, current.v - trough.v);
+  const slots = Math.max(peak.v, current.v);
+
+  return (
+    <div className="flex flex-col gap-3 px-4 pb-3">
+      <div className="flex flex-wrap items-end gap-[4px]">
+        {Array.from({ length: slots }).map((_, i) => {
+          const isBase = i < trough.v;
+          const isAdded = i >= trough.v && i < current.v;
+          return (
+            <Icon
+              key={i}
+              name="oil_rig"
+              size={26}
+              title={i < current.v ? `Rig ${i + 1} of ${current.v}` : undefined}
+              style={{ color: isBase ? C1 : isAdded ? C2 : "var(--muted)" }}
+            />
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1.5">
+        <span className="flex items-baseline gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-[1px]" style={{ background: C1 }} />
+          <span className="text-[11.5px] text-muted-foreground">Trough, {monthLabel(trough.m)}</span>
+          <span className="font-mono text-[13px] font-medium tabular-nums">{trough.v}</span>
+        </span>
+        <span className="flex items-baseline gap-1.5">
+          <span className="inline-block h-2.5 w-2.5 rounded-[1px]" style={{ background: C2 }} />
+          <span className="text-[11.5px] text-muted-foreground">Added since</span>
+          <span className="font-mono text-[13px] font-medium tabular-nums" style={{ color: C2 }}>
+            +{added}
+          </span>
+        </span>
+        <span className="flex items-baseline gap-1.5">
+          <span className="text-[11.5px] text-muted-foreground">Now, {monthLabel(current.m)}</span>
+          <span className="font-mono text-[15px] font-medium tabular-nums">{current.v}</span>
+        </span>
+        <span className="eyebrow ml-auto">One derrick = one active rig</span>
+      </div>
     </div>
   );
 }

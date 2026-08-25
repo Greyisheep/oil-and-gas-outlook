@@ -12,7 +12,7 @@ import {
   FreightChart, StocksChart, CorrelationPanel, FreightLagChart,
   ShareVsFreightChart, FreightScatter,
 } from "@/components/analysis";
-import { SlopeChart, BarrelGauge, CoverPictogram } from "@/components/forms";
+import { SlopeChart, BarrelGauge, CoverPictogram, RigPictogram } from "@/components/forms";
 import { Sunburst, SeasonalRadar, BenchmarkGauge } from "@/components/circular";
 import { ClaimLedger, PriceCallChart } from "@/components/scorecard";
 import { SCORE } from "@/lib/scorecard";
@@ -210,14 +210,14 @@ const sections: Section[] = [
       <div className="flex flex-col gap-3">
         <div className="grid gap-3 xl:grid-cols-2">
           <ChartFrame
-            n="08" title="Bonny Light against North Sea Dated"
+            n="10" title="Bonny Light against North Sea Dated"
             note={<>Realised prices, monthly average. Brent ran far above Nigeria&rsquo;s ${BENCH.budgetPrice} budget
               benchmark through 2026. The price excuse was removed and the volume gap held anyway.</>}
             legend={[{ label: "Bonny Light", color: "var(--chart-1)" }, { label: "North Sea Dated", color: "var(--chart-2)" }]}
           ><PriceChart /></ChartFrame>
 
           <ChartFrame
-            n="09" title="The Bonny differential"
+            n="11" title="The Bonny differential"
             note="Monthly-average premium of Bonny Light over North Sea Dated. Widened sharply with the Gulf disruption, then gave most of it back, which is a marketing and scheduling outcome rather than a geopolitical one."
             source="The MOMR narrative also quotes a spot differential, a different measure that fell to a premium of $0.05/b in the August edition."
             legend={[{ label: "Bonny Light vs Dated", color: "var(--chart-1)" }]}
@@ -250,7 +250,7 @@ const sections: Section[] = [
       <div className="flex flex-col gap-3">
         <div className="grid gap-3 xl:grid-cols-2">
           <ChartFrame
-            n="10" title="Freight on Nigeria's own export routes" defaultOpen
+            n="12" title="Freight on Nigeria's own export routes" defaultOpen
             note={<>Worldscale spot rates. West Africa to US Gulf Coast is the Nigerian export leg, and it ran
               roughly 130% above year-earlier levels through mid 2026. The Gulf to East route is shown for
               contrast: it moved on Hormuz, West African rates largely did not follow it month to month.</>}
@@ -262,7 +262,7 @@ const sections: Section[] = [
           ><FreightChart /></ChartFrame>
 
           <ChartFrame
-            n="11" title="The one relationship that holds up"
+            n="13" title="The one relationship that holds up"
             note={<>Nigeria&rsquo;s share of OPEC crude against Gulf freight rates on a shared time axis.
               On month to month changes this is r = {shareFreight ? shareFreight.r.toFixed(2) : "n/a"},
               the strongest non trivial relationship in the set. Both are driven by the same disruption,
@@ -275,7 +275,7 @@ const sections: Section[] = [
         </div>
 
         <ChartFrame
-          n="12" title="West Africa is not simply following the Gulf" defaultOpen
+          n="14" title="West Africa is not simply following the Gulf" defaultOpen
           note={<>The two freight markets correlate at {wafGulfLevels ? wafGulfLevels.r.toFixed(2) : "n/a"} on
             levels, which looks like tight coupling. On changes that falls to
             {" "}{wafGulf ? wafGulf.r.toFixed(2) : "n/a"}. The apparent link is shared trend. West African
@@ -308,15 +308,21 @@ const sections: Section[] = [
     blurb: "Rig activity as a leading indicator, and OECD inventory cover as the tightness measure.",
     content: (
       <div className="flex flex-col gap-3">
+        <ChartFrame
+          n="15" title="The rig fleet, one derrick per rig" defaultOpen
+          note="Rig count is an actual count, so a pictogram encodes it honestly rather than decorating it. Gold is the trough level, green is what has been added since. Nigeria roughly doubled its active fleet off the low, and this is the leading edge of the production recovery in the panels below."
+          source="OPEC Monthly Oil Market Report Table 11-5. OPEC's count differs from NUPRC's fleet disposition; see Method."
+        ><RigPictogram /></ChartFrame>
+
         <div className="grid gap-3 xl:grid-cols-3">
           <ChartFrame
-            n="13" title="Rigs lead barrels" className="xl:col-span-2"
+            n="16" title="Rigs lead barrels" className="xl:col-span-2"
             note="Active rigs above, crude output below, sharing one time axis. Two measures of different scale get two panels, not two y-scales."
             legend={[{ label: "Active rigs", color: "var(--chart-1)" }, { label: "Crude production", color: "var(--chart-2)" }]}
           ><RigChart /></ChartFrame>
 
           <ChartFrame
-            n="14" title="How long the lag runs"
+            n="17" title="How long the lag runs"
             note={<>Cross-correlation of rig count against production at each lag. Peak at{" "}
               <strong>{lag.lag} months</strong> (r = {lag.r.toFixed(2)}). Predictive, not causal, because
               rigs respond to price too.</>}
@@ -326,7 +332,7 @@ const sections: Section[] = [
 
         <div className="grid gap-3 xl:grid-cols-[1fr_340px]">
         <ChartFrame
-          n="15" title="OECD stocks and days of forward cover"
+          n="18" title="OECD stocks and days of forward cover"
           note="Commercial crude stocks above, days of forward cover below. Cover is the tighter measure because it normalises inventory against demand, and it has been running below both the five year and the 2015 to 2019 averages."
           source={`${MOMR} Table 9-1, sourced to EIA, IEA, METI, OilX and OPEC.`}
           legend={[
@@ -336,7 +342,7 @@ const sections: Section[] = [
         ><StocksChart /></ChartFrame>
 
         <ChartFrame
-          n="16" title="Where cover sits right now" defaultOpen
+          n="19" title="Where cover sits right now" defaultOpen
           note="Days of forward cover as a count rather than a line. Each block is ten days. The five year average sits near 61 days and the 2015 to 2019 average near 62, so the current reading is below both."
         ><CoverPictogram /></ChartFrame>
         </div>
@@ -388,13 +394,13 @@ const sections: Section[] = [
 
         <div className="grid gap-3 xl:grid-cols-[1fr_400px]">
           <ChartFrame
-            n="19" title="The claim ledger" defaultOpen
+            n="20" title="The claim ledger" defaultOpen
             note="Each claim quoted verbatim from the published deck, then scored against the series extracted from OPEC reports. Click a row for the working. The last row is included so this does not read as one-directional: the structural calls in these decks are generally sound, it is the quantified forecasts that failed."
             source="Claims from PwC Nigeria's January 2026 presentation to the Lagos Chamber of Commerce. Outturns from OPEC Monthly Oil Market Reports and the IEA Oil Market Report, August 2026."
           ><ClaimLedger /></ChartFrame>
 
           <ChartFrame
-            n="20" title="Every price call against the outturn" defaultOpen
+            n="21" title="Every price call against the outturn" defaultOpen
             note="Four Brent assumptions that Nigerian planning ran on in 2026, against what North Sea Dated actually averaged from January to July."
             legend={[{ label: "Forecast", color: "var(--chart-3)" }, { label: "Realised", color: "var(--chart-2)" }]}
           ><PriceCallChart /></ChartFrame>
@@ -422,7 +428,7 @@ const sections: Section[] = [
       <div className="flex flex-col gap-3">
         <div className="grid gap-3 xl:grid-cols-3">
           <ChartFrame
-            n="17" title="Which correlations survive differencing" className="xl:col-span-2" defaultOpen
+            n="22" title="Which correlations survive differencing" className="xl:col-span-2" defaultOpen
             note={<>Every pair ranked by correlation on levels, then re-run on month to month changes.
               Correlating two trending series inflates r towards 1 whether or not they are related, so the
               second column is the honest one. Of <strong>{nTotal} pairs tested, {nSurvive} survive</strong>,
@@ -431,7 +437,7 @@ const sections: Section[] = [
           ><CorrelationPanel /></ChartFrame>
 
           <ChartFrame
-            n="18" title="A finding that is not one" defaultOpen
+            n="23" title="A finding that is not one" defaultOpen
             note={<>Freight against the Bonny differential at every lag. The two month bar clears 0.5, but the
               bars either side sit near zero. A real lag decays smoothly; a lone spike across seven tested
               lags at n under 20 is what searching for a result looks like. Shown so you can see it.</>}
