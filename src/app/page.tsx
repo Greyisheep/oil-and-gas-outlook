@@ -117,47 +117,47 @@ function buildSections(live: LivePrices): Section[] {
     group: "Market",
     blurb: "How much oil Nigeria produces, how that compares with the rest of OPEC, and why two official figures disagree.",
     content: (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <KpiStrip items={kpis} />
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-6 xl:grid-cols-2">
           <ChartFrame
             n="01" title="Two official numbers for the same barrels"
-            plain={<>Nigeria reports less oil to OPEC than OPEC&rsquo;s own assessors measure. In {L.month} the gap was {fmt(L.sec - L.dir)} thousand barrels a day.</>}
+            plain={<>Nigeria reports {fmt(L.sec - L.dir)} thousand barrels a day less than OPEC&rsquo;s assessors measure.</>}
             detail={<>OPEC publishes two production figures every month: what each member submits itself, and an independent estimate compiled from secondary sources. Nigeria&rsquo;s own submission of {fmt(L.dir)} sits just under its {fmt(BENCH.opecQuota)} quota. The independent estimate of {fmt(L.sec)} puts it over. Both are official, and neither is ever reconciled to the other.</>}
             legend={[{ label: "Secondary sources", color: "var(--chart-1)" }, { label: "Direct communication", color: "var(--chart-2)" }]}
           ><ProductionChart /></ChartFrame>
 
           <ChartFrame
             n="02" title="Nigeria's share of OPEC crude"
-            plain={<>Nigeria now supplies {L.share.toFixed(1)}% of OPEC&rsquo;s oil, up from {(L.share - shareGain).toFixed(1)}% two years ago. It did not produce much more. The Gulf produced much less.</>}
+            plain={<>Up to {L.share.toFixed(1)}% from {(L.share - shareGain).toFixed(1)}%. The Gulf fell; Nigeria held.</>}
             detail={<>Share is Nigerian output divided by total OPEC crude. When Gulf volumes fell after the Strait of Hormuz closed, every other member&rsquo;s share rose arithmetically even at flat production. This line is as much about what happened elsewhere as about Nigeria.</>}
             legend={[{ label: "Nigeria share of OPEC crude", color: "var(--chart-2)" }]}
           ><ShareChart /></ChartFrame>
 
           <ChartFrame
             n="03" title="Output against the budget benchmark"
-            plain={<>Nigeria produced {fmt(L.sec)} of the {fmt(BENCH.budget)} thousand barrels a day the 2026 budget assumed. The missing {fmt(BENCH.budget - L.sec)} is worth roughly $0.8bn a month at the prices oil actually sold for.</>}
+            plain={<>{fmt(BENCH.budget - L.sec)} thousand barrels a day short of budget, worth about $0.8bn a month.</>}
             detail={<>Each barrel drawn is 25 thousand barrels a day. The benchmark is the production volume the federal budget was built on, not a target anyone committed to hitting. The cash figure values the shortfall at realised Brent rather than the budget price.</>}
           ><BarrelGauge /></ChartFrame>
 
           <ChartFrame
             n="04" title="Who kept their barrels"
-            plain="Saudi Arabia, Iraq and Kuwait each lost a fifth or more of their output. Nigeria finished higher than it started."
+            plain="The Gulf lost a fifth or more. Nigeria finished higher than it started."
             detail="Each line runs from the first month in view to the last. The scale is logarithmic, so the same percentage change has the same steepness whatever the starting volume. Without that, Saudi Arabia's size flattens everyone else into a single band."
             legend={[{ label: "Gained", color: "var(--chart-2)" }, { label: "Lost", color: "var(--chart-3)" }]}
           ><SlopeChart /></ChartFrame>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-6 xl:grid-cols-2">
           <ChartFrame
             n="05" title={`OPEC crude by bloc and member, ${L.month}`}
-            plain="Where OPEC's oil actually came from this month. The African share is the widest it has been in this data."
+            plain="Where OPEC's oil came from this month."
             detail="The inner ring is the producing bloc, the outer ring the individual country, each sized by output. Nigeria is outlined. The rim and hoops are decoration, a barrel seen from above; they sit outside the data and do not change any segment size."
           ><Sunburst /></ChartFrame>
 
           <ChartFrame
             n="06" title="The reporting gap, month by month"
-            plain="Independent assessors have seen more Nigerian oil than Nigeria itself reported in almost every month."
+            plain="Assessors see more oil than Nigeria reports, almost every month."
             detail="The independent estimate minus Nigeria's own submission. Positive means the assessors saw more oil than was declared. The consistency of the sign matters more than the size of any single month."
             legend={[{ label: "Secondary above direct", color: "var(--chart-1)" }, { label: "Secondary below direct", color: "var(--chart-3)" }]}
           ><GapChart /></ChartFrame>
@@ -166,13 +166,13 @@ function buildSections(live: LivePrices): Section[] {
         <div className="grid gap-3 xl:grid-cols-[320px_1fr]">
           <ChartFrame
             n="07" title="Against benchmark and quota"
-            plain="Nigeria is producing above its OPEC quota and below its own budget at the same time."
+            plain="Above the OPEC quota and below the budget at the same time."
             detail="The filled arc is output as a share of the 1,840 budget benchmark. The tick marks where the 1,500 OPEC quota falls on the same scale. Because the quota sits below the budget, the two targets pull in opposite directions: meeting one means missing the other."
           ><BenchmarkGauge /></ChartFrame>
 
           <ChartFrame
             n="08" title="Monthly shape, 2025 against 2026"
-            plain="February is the weak month in both years, and the 2026 dip was far deeper than 2025."
+            plain="February is weak in both years. 2026 was far deeper."
             detail="Each ring is one calendar year of monthly output, with the months running clockwise. The 2026 ring stops at July because that is where the data ends, not because production stopped."
             legend={[{ label: "2025", color: "var(--chart-1)" }, { label: "2026", color: "var(--chart-2)" }]}
           ><SeasonalRadar /></ChartFrame>
@@ -180,7 +180,7 @@ function buildSections(live: LivePrices): Section[] {
 
         <ChartFrame
           n="09" title="Peer producers, month by month"
-          plain="When each producer broke, rather than only where they ended up."
+          plain="When each producer broke, not just where they ended."
             detail="Every producer starts at 100 in June 2024, so the lines compare rates of change rather than volumes. A country producing 8 million barrels and one producing 1 million can then be read on the same axis."
           legend={[
             { label: "Nigeria", color: "var(--chart-2)" },
@@ -214,10 +214,10 @@ function buildSections(live: LivePrices): Section[] {
     group: "Market",
     blurb: "What oil and gas are trading at today, what Nigerian crude actually sold for, and the premium it commands.",
     content: (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <ChartFrame
           n="L1" title="Today's market"
-          plain="Crude and natural gas as they closed most recently, updated through the day. Everything else in this dashboard is monthly and ends in July, so this is the bridge to now."
+          plain="Crude and gas at their latest close. Everything else here ends in July."
           detail="Brent and West Texas Intermediate are the two crude benchmarks most contracts price against; Henry Hub is the US natural gas reference. Oil is priced per barrel and gas per million BTU, so they get separate panels rather than a shared scale. Figures come from the US Energy Information Administration by way of FRED and refresh hourly."
           source="US Energy Information Administration, published through FRED. Brent DCOILBRENTEU, WTI DCOILWTICO, Henry Hub DHHNGSP."
           legend={[
@@ -230,17 +230,17 @@ function buildSections(live: LivePrices): Section[] {
           <LivePriceChart data={live} />
         </ChartFrame>
 
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-6 xl:grid-cols-2">
           <ChartFrame
             n="10" title="Bonny Light against North Sea Dated"
-            plain={<>Oil sold well above the ${BENCH.budgetPrice} a barrel the budget assumed, all year. Whatever went wrong with revenue, it was not the price.</>}
+            plain={<>Oil sold far above the ${BENCH.budgetPrice} the budget assumed. The problem was not price.</>}
             detail="Monthly average realised prices. Bonny Light is Nigeria's benchmark grade; North Sea Dated is the global reference most contracts are priced against. The dashed line is the oil price the 2026 federal budget was built on."
             legend={[{ label: "Bonny Light", color: "var(--chart-1)" }, { label: "North Sea Dated", color: "var(--chart-2)" }]}
           ><PriceChart /></ChartFrame>
 
           <ChartFrame
             n="11" title="The Bonny differential"
-            plain="The premium buyers pay for Nigerian crude over the global benchmark. It spiked with the Gulf disruption, then gave most of it back."
+            plain="The premium Nigerian crude earns. It spiked, then gave most of it back."
             detail="Monthly average of Bonny Light minus North Sea Dated. OPEC's written commentary quotes a spot differential instead, which is a different measure taken at a point in time; it had fallen to five cents by the August report."
             source="OPEC's written commentary quotes a different measure, taken at a point in time, which had fallen to five cents by the August report."
             legend={[{ label: "Bonny Light vs Dated", color: "var(--chart-1)" }]}
@@ -270,11 +270,11 @@ function buildSections(live: LivePrices): Section[] {
     group: "Market",
     blurb: "What it costs to ship Nigerian crude, and whether those costs follow the Gulf or move on their own.",
     content: (
-      <div className="flex flex-col gap-4">
-        <div className="grid gap-4 xl:grid-cols-2">
+      <div className="flex flex-col gap-6">
+        <div className="grid gap-6 xl:grid-cols-2">
           <ChartFrame
             n="12" title="Freight on Nigeria's own export routes"
-            plain="Shipping Nigerian crude to the US Gulf cost roughly 130% more than a year earlier."
+            plain="Shipping to the US Gulf cost about 130% more than a year earlier."
             detail="Worldscale is a freight index rather than a dollar rate, so the level matters less than the movement. West Africa to US Gulf Coast is the Nigerian export leg. The Gulf route is shown only for contrast."
             legend={[
               { label: "WAF to US Gulf (Suezmax)", color: "var(--chart-1)" },
@@ -285,7 +285,7 @@ function buildSections(live: LivePrices): Section[] {
 
           <ChartFrame
             n="13" title="The one relationship that holds up"
-            plain="Nigeria's share of OPEC and Gulf shipping costs move almost in lockstep. Neither causes the other; the same disruption drives both."
+            plain="These move in lockstep. Neither causes the other."
             detail={<>Measured on month-to-month changes the two move together at {shareFreight ? shareFreight.r.toFixed(2) : "n/a"} on a scale where 1.0 is perfect. That is the strongest genuine relationship anywhere in this data. It is a common cause, not a mechanism: closing the Strait raised Gulf freight and cut Gulf output at the same time.</>}
             legend={[
               { label: "Nigeria share of OPEC crude", color: "var(--chart-2)" },
@@ -296,7 +296,7 @@ function buildSections(live: LivePrices): Section[] {
 
         <ChartFrame
           n="14" title="West Africa is not simply following the Gulf"
-          plain="West African shipping costs look tied to the Gulf, but month to month they move largely on their own."
+          plain="West African rates look tied to the Gulf. Month to month, they are not."
             detail={<>Compared on levels the two routes track at {wafGulfLevels ? wafGulfLevels.r.toFixed(2) : "n/a"}, which looks like tight coupling. Compared on how much each moved from one month to the next, that falls to {wafGulf ? wafGulf.r.toFixed(2) : "n/a"}. The apparent link was mostly both drifting upward together. Each dot is one month.</>}
           source="Each point is one month, plotted as how far each route moved rather than where it sat. 20 months overlap."
           legend={[{ label: "One month, both routes", color: "var(--chart-1)" }]}
@@ -324,34 +324,34 @@ function buildSections(live: LivePrices): Section[] {
     group: "Activity",
     blurb: "Drilling activity, which turns up before production does, and how much oil the world is holding in storage.",
     content: (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <ChartFrame
           n="15" title="The rig fleet, one derrick per rig"
-          plain="Nigeria has doubled its drilling fleet, from 9 rigs to 18. It still runs fewer rigs than Algeria, which produces a third less oil."
+          plain="The fleet doubled, 9 rigs to 18. Algeria still runs more on less oil."
             detail="Gold marks the fleet at its lowest point, green what has been added since. Nigeria gets about 86 thousand barrels a day per rig against Algeria's 24 and Saudi Arabia's 27. High flow per well is part of that; so is very little drilling done simply to hold existing production steady."
           source="OPEC Monthly Oil Market Report Table 11-5. NUPRC counts Nigeria's fleet differently, which is covered in Method."
         ><RigPictogram /></ChartFrame>
 
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid gap-6 xl:grid-cols-3">
           <ChartFrame
             n="16" title="Rigs lead barrels" className="xl:col-span-2"
-            plain="Drilling turns up about nine months before the oil does. Rigs bottomed in May 2025; output bottomed in February 2026."
+            plain="Drilling turns up about nine months before the oil does."
             detail="Two panels rather than two scales on one chart, because rigs are counted in tens and barrels in thousands. Reading down the same date line shows the offset between the two."
             legend={[{ label: "Active rigs", color: "var(--chart-1)" }, { label: "Crude production", color: "var(--chart-2)" }]}
           ><RigChart /></ChartFrame>
 
           <ChartFrame
             n="17" title="How long the lag runs"
-            plain={<>Nine months is where the link between drilling and output is strongest.</>}
+            plain={<>Nine months is where the link is strongest.</>}
             detail={<>Each bar measures how closely rig counts line up with production if you shift them by that many months. The tallest bar, at {lag.lag} months, is the best fit. This predicts, it does not explain: rigs also respond to price, so both can move for a third reason.</>}
             legend={[{ label: "Correlation at lag", color: "var(--chart-2)" }]}
           ><LagChart /></ChartFrame>
         </div>
 
-        <div className="grid gap-4 xl:grid-cols-[1fr_340px]">
+        <div className="grid gap-6 xl:grid-cols-[1fr_340px]">
         <ChartFrame
           n="18" title="OECD stocks and days of forward cover"
-          plain="How much oil the developed world is holding, and how long it would last."
+          plain="What the developed world is holding, and how long it lasts."
             detail="Stocks are the raw volume in commercial storage. Cover converts that into days of demand, which is the more useful measure: a build means little if consumption is rising faster than the barrels going in."
           source={`${MOMR} Table 9-1, sourced to EIA, IEA, METI, OilX and OPEC.`}
           legend={[
@@ -362,7 +362,7 @@ function buildSections(live: LivePrices): Section[] {
 
         <ChartFrame
           n="19" title="Where cover sits right now"
-          plain="Storage would cover 58.7 days of demand, below the five-year average of about 61."
+          plain="58.7 days of cover, below the five-year average of 61."
             detail="Each block is ten days. Lower cover means less slack in the system, so any disruption feeds through to price faster."
         ><CoverPictogram /></ChartFrame>
         </div>
@@ -388,7 +388,7 @@ function buildSections(live: LivePrices): Section[] {
     group: "Analysis",
     blurb: "What today's drilling implies for output next year, what a production target would require, and how well this has actually worked.",
     content: (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <div className="panel px-5 py-4">
           <p className="max-w-[88ch] text-[13px] leading-[1.6]">
             Oil shows up about <strong>{RIG_LAG.lag} months</strong> after the drilling that produced it.
@@ -408,14 +408,14 @@ function buildSections(live: LivePrices): Section[] {
 
         <ChartFrame
           n="20" title="What would it take?"
-          plain="Set a production target and see how many rigs Nigeria would need drilling today to reach it."
+          plain="Set a target. See how many rigs it would take."
             detail={<>The relationship between rigs and barrels runs backwards as easily as forwards. Rather than claiming what output will be, this asks what a chosen output would demand. Beyond the range of rig counts Nigeria has actually operated, the panel says so instead of quietly returning a number.</>}
           source="The same drilling relationship, run backwards. Where a target would need more rigs than Nigeria has ever operated, the panel says so."
         ><TargetSolver /></ChartFrame>
 
         <ChartFrame
           n="21" title="Output implied by rigs already turning"
-          plain={<>Those rigs have already drilled. This is the output they imply through {monthLabel(RIG_LAG.projection[RIG_LAG.projection.length - 1].month)}, with no assumption about future drilling, prices or policy.</>}
+          plain={<>Those rigs already drilled. This is the output they imply through {monthLabel(RIG_LAG.projection[RIG_LAG.projection.length - 1].month)}.</>}
             detail={<>Because drilling shows up in production about {RIG_LAG.lag} months later, activity already recorded implies a path that far ahead without forecasting anything. The shaded band comes from the model&rsquo;s own past errors rather than from theory, so it shows how wrong this model has actually been. Eight months in ten should land inside it.</>}
           source={`Built from ${RIG_LAG.n} months of OPEC production and rig figures. The code that produces it is in the repository.`}
           legend={[
@@ -424,10 +424,10 @@ function buildSections(live: LivePrices): Section[] {
           ]}
         ><ProjectionChart /></ChartFrame>
 
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="grid gap-6 xl:grid-cols-2">
           <ChartFrame
             n="22" title="What it would have said at the time"
-            plain={<>The fair test: the model rebuilt each month using only the figures that existed then. It was {Math.round((1 - RIG_LAG.realtime.mase) * 100)}% more accurate than assuming next month looks like this one.</>}
+            plain={<>Rebuilt each month from figures that existed then. {Math.round((1 - RIG_LAG.realtime.mase) * 100)}% better than assuming no change.</>}
             detail="OPEC keeps revising its figures for months after first publishing them. Most tests quietly use the corrected numbers, which the forecaster did not have. Here the whole dataset is rebuilt from what OPEC had actually printed by that date, so the model is judged on the same information a person would have had."
             legend={[
               { label: "Actual", color: "var(--chart-2)" },
@@ -437,7 +437,7 @@ function buildSections(live: LivePrices): Section[] {
 
           <ChartFrame
             n="23" title="How wrong it was, month by month"
-            plain={<>Every month it got wrong, and by how much. The early attempts were poor and the recent ones close, which is the pattern to watch.</>}
+            plain={<>Early attempts were poor, recent ones close. That is the pattern.</>}
             detail={<>The dashed lines mark the range the model expects to stay inside eight times out of ten. It missed by an average of {RIG_LAG.realtime.earlyMae} over its first {RIG_LAG.realtime.earlyN} attempts and {RIG_LAG.realtime.lateMae} over the last {RIG_LAG.realtime.lateN}. Judge it on the recent record, while remembering that four good months is not proof.</>}
             legend={[
               { label: "Inside the band", color: "var(--chart-2)" },
@@ -448,7 +448,7 @@ function buildSections(live: LivePrices): Section[] {
 
         <ChartFrame
           n="24" title="The model finding the relationship"
-          plain="Early on, the data said more drilling meant less oil. It took about a year of months before the relationship pointed the right way and settled."
+          plain="At first the data said more drilling meant less oil. It took a year to settle."
           detail="Each point is the barrels-per-rig figure the model would have arrived at on that date, using only the data published by then. It starts negative, which is nonsense, crosses zero in early 2026 and settles near thirteen. This is the clearest argument for not trusting a relationship fitted on a short history, and for re-checking it as months accumulate."
           source="Refitted at each OPEC publication date from that date's own figures."
           legend={[{ label: "Barrels per rig, as known then", color: "var(--chart-1)" }]}
@@ -477,7 +477,7 @@ function buildSections(live: LivePrices): Section[] {
     group: "Analysis",
     blurb: "What the 2026 outlooks and industry talks predicted, and what actually happened.",
     content: (
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-6">
         <div className="panel px-5 py-4">
           <p className="max-w-[86ch] text-[13px] leading-[1.6]">
             Sector outlooks come out in <strong>January</strong>. The Middle East escalation began on{" "}
@@ -499,14 +499,14 @@ function buildSections(live: LivePrices): Section[] {
         <div className="grid gap-3 xl:grid-cols-[1fr_400px]">
           <ChartFrame
             n="25" title="The claim ledger"
-            plain={<>{SCORE.total} forecasts from published 2026 outlooks and recorded industry talks, checked against what actually happened. Click any row to see the working.</>}
+            plain={<>{SCORE.total} forecasts checked against what happened. Click a row for the working.</>}
             detail={<>Each claim is quoted word for word, then compared with what OPEC and the IEA published afterwards. {SCORE.talks} come from recorded talks rather than documents, taken from automatic transcripts, so their wording may differ slightly from the spoken original. One row held up and is included on purpose: the structural judgements in these outlooks are generally sound. It is the specific numbers that failed.</>}
           source="Claims from PwC Nigeria's January 2026 presentation to the Lagos Chamber of Commerce. What happened, from OPEC monthly reports and the IEA Oil Market Report of August 2026."
           ><ClaimLedger /></ChartFrame>
 
           <ChartFrame
             n="26" title="Every price call against the outturn"
-            plain="Five oil price assumptions in circulation this year, against what oil actually sold for. The US government's own forecaster was the second lowest."
+            plain="Five price assumptions against what oil actually sold for."
             detail="All of these were set in January. The escalation that moved the price began on 28 February. The EIA is the reference forecaster for this market and it called $56 while the price sat at $65, on the view that a supply overhang would persist. This is not a criticism of anyone; it shows how quickly a price assumption expires."
           legend={[{ label: "Forecast", color: "var(--chart-3)" }, { label: "Realised", color: "var(--chart-2)" }]}
           ><PriceCallChart /></ChartFrame>
@@ -531,17 +531,17 @@ function buildSections(live: LivePrices): Section[] {
     group: "Analysis",
     blurb: "Which apparent relationships are real, which are not, and where every number came from.",
     content: (
-      <div className="flex flex-col gap-4">
-        <div className="grid gap-4 xl:grid-cols-3">
+      <div className="flex flex-col gap-6">
+        <div className="grid gap-6 xl:grid-cols-3">
           <ChartFrame
             n="27" title="Which relationships are real"
-            plain={<>Most things that look connected in this sector are simply both trending upward. Only {nSurvive} of {nTotal} pairs survive a proper test.</>}
+            plain={<>Only {nSurvive} of {nTotal} apparent relationships survive a proper test.</>}
             detail={<>Two numbers that both rise over time will look related even when they are not. The fix is to compare how much each moved from one month to the next, rather than their levels. The second column does that. {nCollapse} pairs collapse under it, and {nIdentity} are pairs where one number is calculated from the other and so could never have failed.</>}
           ><CorrelationPanel /></ChartFrame>
 
           <ChartFrame
             n="28" title="A finding that is not one"
-            plain="A result that looks convincing and is not. Included deliberately."
+            plain="A convincing result that is not real. Shown deliberately."
             detail="One bar clears the threshold while the bars either side sit near zero. A genuine relationship fades in and out gradually; a lone spike surrounded by noise is usually what turns up when you test enough combinations. With this few months of data, it is the pattern to distrust."
           legend={[{ label: "Correlation at lag", color: "var(--chart-3)" }]}
           ><FreightLagChart /></ChartFrame>

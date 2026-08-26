@@ -1,15 +1,16 @@
 "use client";
-import { useState, type ReactNode } from "react";
-import { Info, X } from "lucide-react";
+import { Info } from "lucide-react";
+import type { ReactNode } from "react";
 
 export type LegendItem = { label: string; color: string; dash?: boolean };
 
 /**
- * Chart panel with two tiers of text.
+ * Chart panel.
  *
- *   plain  - one short sentence in business language, always visible.
- *   detail - how it was worked out, behind an info toggle for the minority
- *            who want it. Nothing in `plain` should require it.
+ *   plain  - one short sentence, always visible. Short enough that nobody
+ *            needs to open anything to understand the chart.
+ *   detail - how it was worked out. On a hover/focus tooltip, not a toggle,
+ *            because a note this short no longer needs hiding.
  */
 export function ChartFrame({
   n, title, plain, detail, source, legend, children, className = "",
@@ -23,44 +24,41 @@ export function ChartFrame({
   children: ReactNode;
   className?: string;
 }) {
-  const [open, setOpen] = useState(false);
   return (
     <section className={`panel relative flex flex-col p-3 ${className}`}>
       <header className="px-2 pt-1.5 pb-3">
         <div className="flex items-center gap-2.5">
           <span className="shrink-0 text-[13px] font-medium leading-5 text-muted-foreground">{n}</span>
           <h2 className="display truncate">{title}</h2>
+
           {detail && (
-            <button
-              onClick={() => setOpen((v) => !v)}
-              aria-expanded={open}
-              aria-label={open ? "Hide how this works" : "How this works"}
-              className="pill ml-auto shrink-0"
-            >
-              <Info size={14} aria-hidden />
-              Note
-            </button>
+            <span className="group relative ml-auto shrink-0">
+              <button
+                type="button"
+                aria-label="How this was worked out"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground
+                           transition-colors hover:bg-secondary hover:text-foreground
+                           focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
+              >
+                <Info size={15} aria-hidden />
+              </button>
+              <span
+                role="tooltip"
+                className="pointer-events-none absolute right-0 top-8 z-30 w-[300px] rounded-[12px]
+                           border-[0.8px] border-[var(--rule)] bg-[var(--popover)] px-3.5 py-3
+                           text-[13px] leading-5 text-muted-foreground opacity-0 shadow-lg
+                           transition-opacity duration-100
+                           group-hover:opacity-100 group-focus-within:opacity-100"
+              >
+                {detail}
+                {source && <span className="mt-2 block border-t-[0.8px] border-[var(--rule)] pt-2 text-[12px]">{source}</span>}
+              </span>
+            </span>
           )}
         </div>
-        {plain && <p className="body mt-2 max-w-[78ch]">{plain}</p>}
-      </header>
 
-      {/* method, on demand */}
-      {detail && open && (
-        <div className="mx-2 mb-3 rounded-[var(--radius-plot)] border-[0.8px] border-[var(--rule)] bg-[var(--secondary)] px-4 py-3">
-          <div className="mb-1 flex items-center gap-1.5">
-            <span className="eyebrow">How this works</span>
-            <button
-              onClick={() => setOpen(false)}
-              aria-label="Close"
-              className="ml-auto text-muted-foreground hover:text-foreground"
-            >
-              <X size={12} aria-hidden />
-            </button>
-          </div>
-          <div className="body max-w-[82ch]">{detail}</div>
-        </div>
-      )}
+        {plain && <p className="body mt-1.5 max-w-[68ch]">{plain}</p>}
+      </header>
 
       {/* legend always present for >=2 series: identity is never colour-alone */}
       {legend && legend.length > 0 && (
@@ -78,12 +76,6 @@ export function ChartFrame({
       )}
 
       <div className="well flex-1 overflow-hidden">{children}</div>
-
-      {source && (
-        <footer className="border-t border-[var(--rule)] px-4 py-2">
-          <p className="source">{source}</p>
-        </footer>
-      )}
     </section>
   );
 }

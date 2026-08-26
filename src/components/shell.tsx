@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { TrendingUp, SlidersHorizontal, FlaskConical, FileText, Target, PanelLeftClose, PanelLeftOpen, ExternalLink } from "lucide-react";
 import { Icon } from "./icon";
 import type { GlyphName } from "@/lib/glyphs";
@@ -40,6 +40,12 @@ function NavIcon({ id, size = 15 }: { id: SectionId; size?: number }) {
 
 function ThemeButton() {
   const [dark, setDark] = useState(false);
+  // An inline script in the document head restores the stored theme before
+  // paint. Read the result once mounted so the button label cannot desync
+  // from what is actually on screen.
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+  }, []);
   return (
     <button
       onClick={() => {
@@ -167,7 +173,7 @@ export function Shell({
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
+        <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-6">
           <div className="mb-4 xl:hidden">
             <h2 className="heading text-[18px] leading-6 lg:hidden">{current.label}</h2>
             <p className="body mt-1.5 max-w-[72ch]">{current.blurb}</p>
