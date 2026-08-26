@@ -3,10 +3,10 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import { MONTHS } from "@/lib/opec-data";
 
 export const RANGES = [
+  { key: "all", label: "All", months: MONTHS.length },
   { key: "6m", label: "6M", months: 6 },
   { key: "12m", label: "12M", months: 12 },
   { key: "18m", label: "18M", months: 18 },
-  { key: "all", label: "All", months: MONTHS.length },
 ] as const;
 
 export type RangeKey = (typeof RANGES)[number]["key"];

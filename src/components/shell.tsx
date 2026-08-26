@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore, type ReactNode } from "react";
-import { TrendingUp, SlidersHorizontal, FlaskConical, FileText, Target, PanelLeftClose, PanelLeftOpen, ExternalLink } from "lucide-react";
+import { TrendingUp, SlidersHorizontal, FlaskConical, FileText, Target, PanelLeftClose, PanelLeftOpen, ExternalLink, Sun, Moon } from "lucide-react";
 import { Icon } from "./icon";
 import type { GlyphName } from "@/lib/glyphs";
 import { RangeProvider, RangeSelector } from "./range";
@@ -51,20 +51,36 @@ function useDark() {
   );
 }
 
-function ThemeButton() {
+function setTheme(dark: boolean) {
+  document.documentElement.classList.toggle("dark", dark);
+  try { localStorage.setItem("theme", dark ? "dark" : "light"); } catch {}
+}
+
+/** Sun and moon, as drawn, rather than a text toggle. */
+function ThemeButtons() {
   const dark = useDark();
+  const base =
+    "flex h-7 w-7 items-center justify-center rounded-[9px] transition-colors " +
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]";
   return (
-    <button
-      onClick={() => {
-        const next = !document.documentElement.classList.contains("dark");
-        document.documentElement.classList.toggle("dark", next);
-        try { localStorage.setItem("theme", next ? "dark" : "light"); } catch {}
-      }}
-      className="pill"
-      aria-label={`Switch to ${dark ? "light" : "dark"} theme`}
-    >
-      {dark ? "Light" : "Dark"}
-    </button>
+    <div className="flex items-center gap-0.5">
+      <button
+        onClick={() => setTheme(false)}
+        aria-label="Light theme"
+        aria-pressed={!dark}
+        className={`${base} ${!dark ? "bg-[var(--plot)] text-foreground" : "text-[var(--lighter)] hover:text-foreground"}`}
+      >
+        <Sun size={15} aria-hidden />
+      </button>
+      <button
+        onClick={() => setTheme(true)}
+        aria-label="Dark theme"
+        aria-pressed={dark}
+        className={`${base} ${dark ? "bg-[var(--plot)] text-foreground" : "text-[var(--lighter)] hover:text-foreground"}`}
+      >
+        <Moon size={15} aria-hidden />
+      </button>
+    </div>
   );
 }
 
@@ -89,9 +105,14 @@ export function Shell({
           {collapsed ? (
             <span className="wordmark text-[17px] leading-6">OG</span>
           ) : (
-            <div className="min-w-0">
-              <div className="wordmark text-[15px] leading-[1.15]">Oil and Gas<br />Outlook</div>
-              <div className="eyebrow mt-0.5 text-[13px]">Nigeria · OPEC primary data</div>
+            <div className="flex min-w-0 items-center gap-2.5">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[9px] bg-[var(--plot)]">
+                <Icon name="barrel" size={17} className="text-[var(--brass)]" />
+              </span>
+              <div className="min-w-0">
+                <div className="wordmark text-[14px] leading-[1.2]">Oil &amp; Gas Outlook</div>
+                <div className="caption leading-[1.3]">Nigeria · OPEC primary data</div>
+              </div>
             </div>
           )}
         </div>
@@ -136,32 +157,21 @@ export function Shell({
       {/* ── main column ─────────────────────────────────────────────────── */}
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 border-b-[0.8px] border-[var(--rule)] bg-[var(--card)]/95 backdrop-blur">
-          <div className="flex h-[68px] items-center justify-between gap-4 px-4 sm:px-6">
-            <div className="flex min-w-0 items-baseline gap-2.5">
-              <span className="wordmark text-[15px] leading-none lg:hidden">Oil and Gas Outlook</span>
-              <h1 className="heading truncate max-lg:hidden">{current.label}</h1>
-              <span className="body truncate max-xl:hidden">
-                {current.blurb}
-              </span>
+          <div className="flex items-start justify-between gap-6 px-4 py-4 sm:px-6">
+            <div className="min-w-0">
+              <h1 className="heading">{current.label}</h1>
+              <p className="caption mt-0.5 max-w-[92ch]">{current.blurb}</p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <RangeSelector className="max-md:hidden" />
-              <span className="eyebrow max-lg:hidden">to {dataTo}</span>
-              <a
-                href={repoUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="pill shrink-0"
-              >
-                <ExternalLink size={13} aria-hidden /> <span className="max-sm:hidden">Source</span>
+              <a href={repoUrl} target="_blank" rel="noreferrer" className="pill shrink-0">
+                <span className="max-sm:hidden">Source</span> <ExternalLink size={13} aria-hidden />
               </a>
-              <ThemeButton />
+              <ThemeButtons />
             </div>
           </div>
 
           {/* mobile / tablet nav rail */}
           <div className="flex items-center gap-1 overflow-x-auto border-t-[0.8px] border-[var(--rule)] px-3 py-2 lg:hidden">
-            <RangeSelector className="mr-2 shrink-0 md:hidden" />
             {sections.map((s) => {
               const on = s.id === active;
               return (
@@ -179,10 +189,10 @@ export function Shell({
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6 lg:px-6">
-          <div className="mb-4 xl:hidden">
-            <h2 className="heading text-[18px] leading-6 lg:hidden">{current.label}</h2>
-            <p className="body mt-1.5 max-w-[72ch]">{current.blurb}</p>
+        <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
+          <div className="mb-5 flex items-center gap-3">
+            <RangeSelector />
+            <span className="caption">to {dataTo}</span>
           </div>
           {current.content}
         </main>
