@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
-import { Archivo, JetBrains_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-// Archivo carries the shell, JetBrains Mono carries every number.
-const sans = Archivo({
+// Inter throughout, per the supplied style guide. Numerals are aligned with
+// font-variant-numeric rather than by switching to a monospaced face.
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   variable: "--font-plex-sans",
   display: "swap",
 });
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-plex-mono",
-  display: "swap",
-});
+const sans = inter;
+const mono = { variable: "" };
 const serif = sans;
 
 export const metadata: Metadata = {

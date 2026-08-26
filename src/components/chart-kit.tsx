@@ -6,7 +6,7 @@ export const INK3 = "var(--muted-foreground)";
 export const AXIS = {
   stroke: GRID,
   tickLine: false as const,
-  tick: { fill: INK3, fontSize: 10.5, fontFamily: "var(--font-plex-mono)" },
+  tick: { fill: INK3, fontSize: 12, fontFamily: "var(--font-plex-sans)" },
 };
 
 export type TipRow = { name?: string; value?: number | string | null; color?: string };
@@ -35,16 +35,16 @@ export function Tip({ active, payload, label, unit = "", prefix = "", dp = 0, de
 
   return (
     <div
-      className="min-w-[186px] rounded-[3px] border border-[var(--rule)] bg-[var(--popover)] px-3 py-2.5"
+      className="min-w-[200px] rounded-[12px] border-[0.8px] border-[var(--rule)] bg-[var(--popover)] px-3.5 py-3"
       style={{ boxShadow: "0 4px 14px -4px rgb(0 0 0 / 0.14), 0 1px 3px rgb(0 0 0 / 0.06)" }}
     >
-      <div className="eyebrow mb-2 border-b border-[var(--rule)] pb-1.5">{label}</div>
+      <div className="eyebrow mb-2 border-b-[0.8px] border-[var(--rule)] pb-2 text-foreground">{label}</div>
       <div className="flex flex-col gap-1.5">
         {rows.map((p) => {
           const d = deltaKey ? (p.payload?.[deltaKey] as number | undefined) : undefined;
           return (
             <div key={String(p.name)} className="flex items-baseline justify-between gap-4">
-              <span className="flex min-w-0 items-center gap-1.5 text-[11.5px] text-muted-foreground">
+              <span className="flex min-w-0 items-center gap-1.5 text-[13px] text-muted-foreground">
                 <span
                   className="inline-block h-[3px] w-3.5 shrink-0 rounded-full"
                   style={{ background: p.color }}
@@ -52,7 +52,7 @@ export function Tip({ active, payload, label, unit = "", prefix = "", dp = 0, de
                 <span className="truncate">{p.name}</span>
               </span>
               <span className="flex shrink-0 items-baseline gap-2 font-mono tabular-nums">
-                <span className="text-[12.5px] font-medium">
+                <span className="text-[14px] font-medium">
                   {prefix}
                   {nf(Number(p.value), dp)}
                   {unit}
@@ -60,7 +60,7 @@ export function Tip({ active, payload, label, unit = "", prefix = "", dp = 0, de
                 {d != null && (
                   <span
                     className="text-[10.5px]"
-                    style={{ color: d >= 0 ? "var(--chart-2)" : "var(--chart-3)" }}
+                    style={{ color: d >= 0 ? "var(--pos)" : "var(--neg)" }}
                   >
                     {d >= 0 ? "▲" : "▼"} {nf(Math.abs(d), dp)}
                   </span>

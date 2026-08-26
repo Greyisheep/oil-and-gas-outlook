@@ -49,18 +49,18 @@ export function DataTable({
       <header className="px-4 pt-3.5 pb-3">
         <div className="flex items-baseline gap-2">
           <span className="eyebrow text-[var(--brass)]">{n}</span>
-          <h2 className="display text-[14.5px] leading-tight">{title}</h2>
+          <h2 className="display">{title}</h2>
           <span className="eyebrow ml-auto shrink-0">
             {shown.length} of {all.length} rows
             {windowed && range !== "all" ? ` · ${range.toUpperCase()}` : ""}
           </span>
         </div>
         {note && (
-          <p className="mt-1.5 max-w-[76ch] text-[12.5px] leading-[1.5] text-muted-foreground">{note}</p>
+          <p className="body mt-2 max-w-[80ch]">{note}</p>
         )}
       </header>
 
-      <div className="overflow-auto border-t border-[var(--rule)]" style={{ maxHeight }}>
+      <div className="overflow-auto border-t-[0.8px] border-[var(--rule)]" style={{ maxHeight }}>
         <table className="w-full border-separate border-spacing-0 text-[12px]">
           <thead>
             <tr>
@@ -68,7 +68,7 @@ export function DataTable({
                 <th
                   key={c.key}
                   scope="col"
-                  className={`eyebrow sticky top-0 z-20 whitespace-nowrap border-b border-[var(--rule)]
+                  className={`eyebrow sticky top-0 z-20 whitespace-nowrap border-b-[0.8px] border-[var(--rule)]
                               bg-[var(--card)] px-3 py-2 ${
                     (c.align ?? "right") === "left" ? "text-left" : "text-right"
                   } ${i === 0 ? "left-0 z-30" : ""}`}
@@ -102,7 +102,7 @@ export function DataTable({
                   return (
                     <td
                       key={c.key}
-                      className={`relative whitespace-nowrap border-b border-[var(--rule)]/55 px-3 py-1.5
+                      className={`relative whitespace-nowrap border-b-[0.8px] border-[var(--rule)]/55 px-3 py-1.5
                                   group-hover:bg-secondary/70 ${
                         (c.align ?? "right") === "left" ? "text-left font-sans" : "text-right"
                       } ${c.emphasis ? "font-medium text-foreground" : ""} ${
@@ -130,7 +130,7 @@ export function DataTable({
         </table>
       </div>
 
-      <footer className="border-t border-[var(--rule)] px-4 py-2">
+      <footer className="border-t-[0.8px] border-[var(--rule)] px-4 py-2">
         <p className="source">{source}</p>
       </footer>
     </section>

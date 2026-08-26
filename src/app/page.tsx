@@ -58,11 +58,11 @@ const REPO = "https://github.com/Greyisheep/oil-and-gas-outlook";
 const MOMR = "OPEC Monthly Oil Market Report, 22 editions Sep 2024 to Aug 2026.";
 
 const kpis: Kpi[] = [
-  { label: `Crude output · ${L.month}`, value: fmt(L.sec), sub: "tb/d, OPEC secondary sources" },
-  { label: "Versus budget benchmark", value: fmt(L.sec - BENCH.budget), sub: `tb/d against ${fmt(BENCH.budget)}`, tone: "bad" },
-  { label: "Share of OPEC crude", value: `${L.share.toFixed(2)}%`, sub: `${shareGain >= 0 ? "+" : ""}${shareGain.toFixed(2)}pp since Jun 2024`, tone: "good" },
-  { label: "Reporting gap", value: fmt(L.sec - L.dir), sub: "tb/d, secondary over Nigeria's own figure", tone: "warn" },
-  { label: "Bonny Light", value: `$${L.bonny.toFixed(2)}`, sub: `${L.diff >= 0 ? "+" : ""}$${L.diff.toFixed(2)} vs Dated, monthly average` },
+  { icon: "barrel", label: "Crude output", value: fmt(L.sec), sub: "tb/d, OPEC secondary sources" },
+  { icon: "oilWell", label: "Versus budget", value: fmt(L.sec - BENCH.budget), sub: `tb/d against ${fmt(BENCH.budget)}`, tone: "bad" },
+  { icon: "industry", label: "Share of OPEC", value: `${L.share.toFixed(2)}%`, sub: `${shareGain >= 0 ? "+" : ""}${shareGain.toFixed(2)}pp since Jun 2024`, tone: "good" },
+  { icon: "valve", label: "Reporting gap", value: fmt(L.sec - L.dir), sub: "tb/d, secondary over Nigeria's own figure", tone: "warn" },
+  { icon: "droplet", label: "Bonny Light", value: `$${L.bonny.toFixed(2)}`, sub: `${L.diff >= 0 ? "+" : ""}$${L.diff.toFixed(2)} vs Dated, monthly average` },
 ];
 
 /* ── table row builders ────────────────────────────────────────────────── */
@@ -95,10 +95,10 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: "go
     <span className="flex flex-col gap-0.5">
       <span className="eyebrow">{label}</span>
       <span
-        className="font-mono text-[19px] font-medium leading-none tabular-nums"
+        className="value"
         style={
           tone
-            ? { color: tone === "good" ? "var(--chart-2)" : tone === "warn" ? "var(--chart-1)" : "var(--chart-3)" }
+            ? { color: tone === "good" ? "var(--pos)" : tone === "warn" ? "var(--warn)" : "var(--neg)" }
             : undefined
         }
       >
@@ -117,9 +117,9 @@ function buildSections(live: LivePrices): Section[] {
     group: "Market",
     blurb: "How much oil Nigeria produces, how that compares with the rest of OPEC, and why two official figures disagree.",
     content: (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <KpiStrip items={kpis} />
-        <div className="grid gap-3 xl:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-2">
           <ChartFrame
             n="01" title="Two official numbers for the same barrels"
             plain={<>Nigeria reports less oil to OPEC than OPEC&rsquo;s own assessors measure. In {L.month} the gap was {fmt(L.sec - L.dir)} thousand barrels a day.</>}
@@ -148,7 +148,7 @@ function buildSections(live: LivePrices): Section[] {
           ><SlopeChart /></ChartFrame>
         </div>
 
-        <div className="grid gap-3 xl:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-2">
           <ChartFrame
             n="05" title={`OPEC crude by bloc and member, ${L.month}`}
             plain="Where OPEC's oil actually came from this month. The African share is the widest it has been in this data."
@@ -214,7 +214,7 @@ function buildSections(live: LivePrices): Section[] {
     group: "Market",
     blurb: "What oil and gas are trading at today, what Nigerian crude actually sold for, and the premium it commands.",
     content: (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <ChartFrame
           n="L1" title="Today's market"
           plain="Crude and natural gas as they closed most recently, updated through the day. Everything else in this dashboard is monthly and ends in July, so this is the bridge to now."
@@ -230,7 +230,7 @@ function buildSections(live: LivePrices): Section[] {
           <LivePriceChart data={live} />
         </ChartFrame>
 
-        <div className="grid gap-3 xl:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-2">
           <ChartFrame
             n="10" title="Bonny Light against North Sea Dated"
             plain={<>Oil sold well above the ${BENCH.budgetPrice} a barrel the budget assumed, all year. Whatever went wrong with revenue, it was not the price.</>}
@@ -270,8 +270,8 @@ function buildSections(live: LivePrices): Section[] {
     group: "Market",
     blurb: "What it costs to ship Nigerian crude, and whether those costs follow the Gulf or move on their own.",
     content: (
-      <div className="flex flex-col gap-3">
-        <div className="grid gap-3 xl:grid-cols-2">
+      <div className="flex flex-col gap-4">
+        <div className="grid gap-4 xl:grid-cols-2">
           <ChartFrame
             n="12" title="Freight on Nigeria's own export routes"
             plain="Shipping Nigerian crude to the US Gulf cost roughly 130% more than a year earlier."
@@ -324,7 +324,7 @@ function buildSections(live: LivePrices): Section[] {
     group: "Activity",
     blurb: "Drilling activity, which turns up before production does, and how much oil the world is holding in storage.",
     content: (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <ChartFrame
           n="15" title="The rig fleet, one derrick per rig"
           plain="Nigeria has doubled its drilling fleet, from 9 rigs to 18. It still runs fewer rigs than Algeria, which produces a third less oil."
@@ -332,7 +332,7 @@ function buildSections(live: LivePrices): Section[] {
           source="OPEC Monthly Oil Market Report Table 11-5. NUPRC counts Nigeria's fleet differently, which is covered in Method."
         ><RigPictogram /></ChartFrame>
 
-        <div className="grid gap-3 xl:grid-cols-3">
+        <div className="grid gap-4 xl:grid-cols-3">
           <ChartFrame
             n="16" title="Rigs lead barrels" className="xl:col-span-2"
             plain="Drilling turns up about nine months before the oil does. Rigs bottomed in May 2025; output bottomed in February 2026."
@@ -348,7 +348,7 @@ function buildSections(live: LivePrices): Section[] {
           ><LagChart /></ChartFrame>
         </div>
 
-        <div className="grid gap-3 xl:grid-cols-[1fr_340px]">
+        <div className="grid gap-4 xl:grid-cols-[1fr_340px]">
         <ChartFrame
           n="18" title="OECD stocks and days of forward cover"
           plain="How much oil the developed world is holding, and how long it would last."
@@ -388,7 +388,7 @@ function buildSections(live: LivePrices): Section[] {
     group: "Analysis",
     blurb: "What today's drilling implies for output next year, what a production target would require, and how well this has actually worked.",
     content: (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <div className="panel px-5 py-4">
           <p className="max-w-[88ch] text-[13px] leading-[1.6]">
             Oil shows up about <strong>{RIG_LAG.lag} months</strong> after the drilling that produced it.
@@ -424,7 +424,7 @@ function buildSections(live: LivePrices): Section[] {
           ]}
         ><ProjectionChart /></ChartFrame>
 
-        <div className="grid gap-3 xl:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-2">
           <ChartFrame
             n="22" title="What it would have said at the time"
             plain={<>The fair test: the model rebuilt each month using only the figures that existed then. It was {Math.round((1 - RIG_LAG.realtime.mase) * 100)}% more accurate than assuming next month looks like this one.</>}
@@ -477,7 +477,7 @@ function buildSections(live: LivePrices): Section[] {
     group: "Analysis",
     blurb: "What the 2026 outlooks and industry talks predicted, and what actually happened.",
     content: (
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <div className="panel px-5 py-4">
           <p className="max-w-[86ch] text-[13px] leading-[1.6]">
             Sector outlooks come out in <strong>January</strong>. The Middle East escalation began on{" "}
@@ -531,8 +531,8 @@ function buildSections(live: LivePrices): Section[] {
     group: "Analysis",
     blurb: "Which apparent relationships are real, which are not, and where every number came from.",
     content: (
-      <div className="flex flex-col gap-3">
-        <div className="grid gap-3 xl:grid-cols-3">
+      <div className="flex flex-col gap-4">
+        <div className="grid gap-4 xl:grid-cols-3">
           <ChartFrame
             n="27" title="Which relationships are real"
             plain={<>Most things that look connected in this sector are simply both trending upward. Only {nSurvive} of {nTotal} pairs survive a proper test.</>}

@@ -48,8 +48,7 @@ function ThemeButton() {
         document.documentElement.classList.toggle("dark", next);
         try { localStorage.setItem("theme", next ? "dark" : "light"); } catch {}
       }}
-      className="eyebrow rounded-sm border border-[var(--rule)] px-2.5 py-2 hover:bg-secondary
-                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
+className="pill"
       aria-label={`Switch to ${dark ? "light" : "dark"} theme`}
     >
       {dark ? "Light" : "Dark"}
@@ -71,24 +70,24 @@ export function Shell({
     <div className="flex min-h-screen">
       {/* ── sidebar ─────────────────────────────────────────────────────── */}
       <aside
-        className={`hidden shrink-0 flex-col border-r border-[var(--rule)] bg-[var(--card)]
-                    lg:flex ${collapsed ? "w-[64px]" : "w-[248px]"}`}
+        className={`hidden shrink-0 flex-col border-r-[0.8px] border-[var(--rule)] bg-[var(--card)]
+                    lg:flex ${collapsed ? "w-[72px]" : "w-[280px]"}`}
       >
-        <div className={`flex h-[61px] items-center border-b border-[var(--rule)] ${collapsed ? "justify-center px-2" : "px-4"}`}>
+        <div className={`flex h-[68px] items-center border-b-[0.8px] border-[var(--rule)] ${collapsed ? "justify-center px-2" : "px-4"}`}>
           {collapsed ? (
-            <span className="wordmark text-[17px] leading-none text-[var(--primary)]">OG</span>
+            <span className="wordmark text-[17px] leading-6">OG</span>
           ) : (
             <div className="min-w-0">
               <div className="wordmark text-[15px] leading-[1.15]">Oil and Gas<br />Outlook</div>
-              <div className="eyebrow mt-1.5 leading-none">Nigeria · OPEC primary data</div>
+              <div className="eyebrow mt-0.5 text-[13px]">Nigeria · OPEC primary data</div>
             </div>
           )}
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-2.5 py-4">
+        <nav className="flex-1 overflow-y-auto px-3 py-5">
           {groups.map((g) => (
             <div key={g} className="mb-5">
-              {!collapsed && <div className="eyebrow mb-2 px-2.5">{g}</div>}
+              {!collapsed && <div className="eyebrow mb-1.5 px-3 text-[13px]">{g}</div>}
               <div className="flex flex-col gap-0.5">
                 {sections.filter((s) => s.group === g).map((s) => {
                   const on = s.id === active;
@@ -110,7 +109,7 @@ export function Shell({
           ))}
         </nav>
 
-        <div className="border-t border-[var(--rule)] p-2.5">
+        <div className="border-t-[0.8px] border-[var(--rule)] p-2.5">
           <button
             onClick={() => setCollapsed((v) => !v)}
             className={`navitem ${collapsed ? "justify-center px-0" : ""}`}
@@ -124,12 +123,12 @@ export function Shell({
 
       {/* ── main column ─────────────────────────────────────────────────── */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 border-b border-[var(--rule)] bg-[var(--card)]/95 backdrop-blur">
-          <div className="flex h-[61px] items-center justify-between gap-4 px-4 sm:px-6">
+        <header className="sticky top-0 z-20 border-b-[0.8px] border-[var(--rule)] bg-[var(--card)]/95 backdrop-blur">
+          <div className="flex h-[68px] items-center justify-between gap-4 px-4 sm:px-6">
             <div className="flex min-w-0 items-baseline gap-2.5">
               <span className="wordmark text-[15px] leading-none lg:hidden">Oil and Gas Outlook</span>
-              <h1 className="display truncate text-[17px] leading-none max-lg:hidden">{current.label}</h1>
-              <span className="truncate text-[12.5px] leading-none text-muted-foreground max-xl:hidden">
+              <h1 className="heading truncate max-lg:hidden">{current.label}</h1>
+              <span className="body truncate max-xl:hidden">
                 {current.blurb}
               </span>
             </div>
@@ -140,8 +139,7 @@ export function Shell({
                 href={repoUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="eyebrow flex items-center gap-1.5 rounded-sm border border-[var(--rule)] px-2.5 py-2
-                           hover:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring)]"
+                className="pill shrink-0"
               >
                 <ExternalLink size={13} aria-hidden /> <span className="max-sm:hidden">Source</span>
               </a>
@@ -150,7 +148,7 @@ export function Shell({
           </div>
 
           {/* mobile / tablet nav rail */}
-          <div className="flex items-center gap-1 overflow-x-auto border-t border-[var(--rule)] px-3 py-2 lg:hidden">
+          <div className="flex items-center gap-1 overflow-x-auto border-t-[0.8px] border-[var(--rule)] px-3 py-2 lg:hidden">
             <RangeSelector className="mr-2 shrink-0 md:hidden" />
             {sections.map((s) => {
               const on = s.id === active;
@@ -169,10 +167,10 @@ export function Shell({
           </div>
         </header>
 
-        <main className="flex-1 px-4 py-4 sm:px-6 sm:py-5">
+        <main className="flex-1 px-4 py-5 sm:px-6 sm:py-6">
           <div className="mb-4 xl:hidden">
-            <h2 className="display text-[19px] leading-tight lg:hidden">{current.label}</h2>
-            <p className="mt-1 max-w-[70ch] text-[13px] leading-[1.55] text-muted-foreground">{current.blurb}</p>
+            <h2 className="heading text-[18px] leading-6 lg:hidden">{current.label}</h2>
+            <p className="body mt-1.5 max-w-[72ch]">{current.blurb}</p>
           </div>
           {current.content}
         </main>

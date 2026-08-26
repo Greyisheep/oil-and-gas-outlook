@@ -35,20 +35,20 @@ export function RangeSelector({ className = "" }: { className?: string }) {
     <div
       role="group"
       aria-label="Time range"
-      className={`inline-flex overflow-hidden rounded-sm border border-[var(--rule)] ${className}`}
+      className={`inline-flex items-center gap-1 rounded-full border-[0.8px] border-[var(--rule)] p-1 ${className}`}
     >
-      {RANGES.map((r, i) => {
+      {RANGES.map((r) => {
         const on = r.key === range;
         return (
           <button
             key={r.key}
             onClick={() => setRange(r.key)}
             aria-pressed={on}
-            className={`eyebrow px-2.5 py-1.5 transition-colors ${i > 0 ? "border-l border-[var(--rule)]" : ""} ${
+            className={`rounded-full px-3 py-1 text-[13px] font-medium leading-5 transition-colors ${
               on
-                ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
-                : "hover:bg-secondary hover:text-foreground"
-            } focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--ring)]`}
+                ? "bg-[var(--foreground)] text-[var(--background)]"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+            } focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--ring)]`}
           >
             {r.label}
           </button>
