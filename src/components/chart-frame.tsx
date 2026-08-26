@@ -51,7 +51,6 @@ export function ChartFrame({
                            group-hover:opacity-100 group-focus-within:opacity-100"
               >
                 {detail}
-                {source && <span className="mt-2 block border-t-[0.8px] border-[var(--rule)] pt-2 text-[12px]">{source}</span>}
               </span>
             </span>
           )}
@@ -76,6 +75,8 @@ export function ChartFrame({
       )}
 
       <div className="well flex-1 overflow-hidden">{children}</div>
+
+      {source && <p className="caption px-4 pb-1 pt-3 text-center">{source}</p>}
     </section>
   );
 }

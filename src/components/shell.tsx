@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, useSyncExternalStore, type ReactNode } from "react";
 import { TrendingUp, SlidersHorizontal, FlaskConical, FileText, Target, PanelLeftClose, PanelLeftOpen, ExternalLink } from "lucide-react";
 import { Icon } from "./icon";
 import type { GlyphName } from "@/lib/glyphs";
@@ -38,23 +38,29 @@ function NavIcon({ id, size = 15 }: { id: SectionId; size?: number }) {
   return <L size={size} strokeWidth={2} className="shrink-0" aria-hidden />;
 }
 
+/** Tracks the `dark` class the head script restores, so the label never desyncs. */
+function useDark() {
+  return useSyncExternalStore(
+    (notify) => {
+      const o = new MutationObserver(notify);
+      o.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+      return () => o.disconnect();
+    },
+    () => document.documentElement.classList.contains("dark"),
+    () => false,
+  );
+}
+
 function ThemeButton() {
-  const [dark, setDark] = useState(false);
-  // An inline script in the document head restores the stored theme before
-  // paint. Read the result once mounted so the button label cannot desync
-  // from what is actually on screen.
-  useEffect(() => {
-    setDark(document.documentElement.classList.contains("dark"));
-  }, []);
+  const dark = useDark();
   return (
     <button
       onClick={() => {
-        const next = !dark;
-        setDark(next);
+        const next = !document.documentElement.classList.contains("dark");
         document.documentElement.classList.toggle("dark", next);
         try { localStorage.setItem("theme", next ? "dark" : "light"); } catch {}
       }}
-className="pill"
+      className="pill"
       aria-label={`Switch to ${dark ? "light" : "dark"} theme`}
     >
       {dark ? "Light" : "Dark"}
