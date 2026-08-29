@@ -117,7 +117,7 @@ function buildSections(live: LivePrices): Section[] {
     group: "Market",
     blurb: "How much oil Nigeria produces, how that compares with the rest of OPEC, and why two official figures disagree.",
     content: (
-      <div className="flex flex-col gap-6">
+      <div key="production" className="flex flex-col gap-6">
         <KpiStrip items={kpis} />
         <div className="grid gap-6 xl:grid-cols-2">
           <ChartFrame
@@ -209,12 +209,12 @@ function buildSections(live: LivePrices): Section[] {
     ),
   },
   {
-    id: "prices",
+    id: "prices", 
     label: "Prices",
     group: "Market",
     blurb: "What oil and gas are trading at today, what Nigerian crude actually sold for, and the premium it commands.",
     content: (
-      <div className="flex flex-col gap-6">
+      <div key="prices" className="flex flex-col gap-6">
         <ChartFrame
           n="L1" title="Today's market"
           plain="Crude and gas at their latest close. Everything else here ends in July."
@@ -265,12 +265,12 @@ function buildSections(live: LivePrices): Section[] {
     ),
   },
   {
-    id: "shipping",
+    id: "shipping", 
     label: "Shipping",
     group: "Market",
     blurb: "What it costs to ship Nigerian crude, and whether those costs follow the Gulf or move on their own.",
     content: (
-      <div className="flex flex-col gap-6">
+      <div key="shipping" className="flex flex-col gap-6">
         <div className="grid gap-6 xl:grid-cols-2">
           <ChartFrame
             n="12" title="Freight on Nigeria's own export routes"
@@ -319,12 +319,12 @@ function buildSections(live: LivePrices): Section[] {
     ),
   },
   {
-    id: "drilling",
+    id: "drilling", 
     label: "Drilling & stocks",
     group: "Activity",
     blurb: "Drilling activity, which turns up before production does, and how much oil the world is holding in storage.",
     content: (
-      <div className="flex flex-col gap-6">
+      <div key="drilling" className="flex flex-col gap-6">
         <ChartFrame
           n="15" title="The rig fleet, one derrick per rig"
           plain="The fleet doubled, 9 rigs to 18. Algeria still runs more on less oil."
@@ -383,12 +383,12 @@ function buildSections(live: LivePrices): Section[] {
     ),
   },
   {
-    id: "projection",
+    id: "projection", 
     label: "Projection",
     group: "Analysis",
     blurb: "What today's drilling implies for output next year, what a production target would require, and how well this has actually worked.",
     content: (
-      <div className="flex flex-col gap-6">
+      <div key="projection" className="flex flex-col gap-6">
         <div className="panel px-5 py-4">
           <p className="max-w-[88ch] text-[13px] leading-[1.6]">
             Oil shows up about <strong>{RIG_LAG.lag} months</strong> after the drilling that produced it.
@@ -465,19 +465,19 @@ function buildSections(live: LivePrices): Section[] {
     ),
   },
   {
-    id: "outlook",
+    id: "outlook", 
     label: "Outlook",
     group: "Analysis",
     blurb: "Put in your own field and assumptions, get a twelve-month cash projection.",
-    content: <Console />,
+    content: <Console key="outlook" />,
   },
   {
-    id: "decks",
+    id: "decks", 
     label: "Outlook vs outturn",
     group: "Analysis",
     blurb: "What the 2026 outlooks and industry talks predicted, and what actually happened.",
     content: (
-      <div className="flex flex-col gap-6">
+      <div key="outlook" className="flex flex-col gap-6">
         <div className="panel px-5 py-4">
           <p className="max-w-[86ch] text-[13px] leading-[1.6]">
             Sector outlooks come out in <strong>January</strong>. The Middle East escalation began on{" "}
@@ -526,12 +526,12 @@ function buildSections(live: LivePrices): Section[] {
     ),
   },
   {
-    id: "method",
+    id: "method", 
     label: "Method",
     group: "Analysis",
     blurb: "Which apparent relationships are real, which are not, and where every number came from.",
     content: (
-      <div className="flex flex-col gap-6">
+      <div key="decks" className="flex flex-col gap-6">
         <div className="grid gap-6 xl:grid-cols-3">
           <ChartFrame
             n="27" title="Which relationships are real"

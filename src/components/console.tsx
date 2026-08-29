@@ -1,53 +1,94 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
   ResponsiveContainer, ComposedChart, Line, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, ReferenceLine,
 } from "recharts";
-import { ChartFrame } from "./chart-frame";
+import {
+  CalendarDays, GitCompareArrows, CircleDollarSign, Landmark, Scale,
+  BarChart3, Coins, FileText, LineChart, Table2, ChevronsUpDown, HandCoins,
+} from "lucide-react";
 import { projectCompany, nationalView, fmt, BENCH, type Scenario, type CompanyInput } from "@/lib/model";
 
-const C1 = "var(--chart-1)", C2 = "var(--chart-2)";
+const C1 = "var(--chart-1)", C2 = "var(--chart-2)", C3 = "var(--chart-3)", C4 = "var(--chart-4)";
 const GRID = "var(--grid)", INK3 = "var(--muted-foreground)";
 
-function Lever({ label, unit, value, min, max, step, onChange, hint }: {
-  label: string; unit: string; value: number; min: number; max: number;
-  step: number; onChange: (v: number) => void; hint?: string;
+/* ── Panel title: 14px colored glyph + Body-04/Medium, per the frame ─────── */
+function PanelTitle({ icon, tint, children, right }: {
+  icon: ReactNode; tint: string; children: ReactNode; right?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-baseline justify-between gap-2">
-        <label className="eyebrow" htmlFor={label}>{label}</label>
-        <span className="font-mono text-[13px] font-medium tabular-nums">
-          {unit === "$" ? "$" : ""}{fmt(value, step < 1 ? 2 : 0)}{unit !== "$" ? unit : ""}
-        </span>
-      </div>
-      <input
-        id={label} type="range" min={min} max={max} step={step} value={value}
-        onChange={(e) => onChange(+e.target.value)}
-        className="h-1 w-full cursor-pointer appearance-none rounded-full bg-[var(--input)]
-                   accent-[var(--primary)] focus-visible:outline-2 focus-visible:outline-offset-4
-                   focus-visible:outline-[var(--ring)]"
-      />
-      {hint && <p className="text-[10.5px] leading-tight text-muted-foreground">{hint}</p>}
+    <div className="flex items-center gap-2">
+      <span style={{ color: tint }} className="shrink-0 [&>svg]:h-[14px] [&>svg]:w-[14px]">{icon}</span>
+      <h2 className="display">{children}</h2>
+      {right && <span className="caption ml-auto shrink-0">{right}</span>}
     </div>
   );
 }
 
-function NumField({ label, unit, value, step = 1, onChange }: {
+/* ── Lever: label + value over a 4px track, caption under. As drawn. ─────── */
+function Lever({ icon, tint, label, display, value, min, max, step, onChange, hint }: {
+  icon: ReactNode; tint: string; label: string; display: string;
+  value: number; min: number; max: number; step: number;
+  onChange: (v: number) => void; hint: string;
+}) {
+  return (
+    <div className="flex flex-col gap-2 px-4 py-3.5">
+      <div className="flex items-center gap-2">
+        <span style={{ color: tint }} className="shrink-0 [&>svg]:h-[14px] [&>svg]:w-[14px]">{icon}</span>
+        <label className="display flex-1 truncate" htmlFor={label}>{label}</label>
+        <span className="display tnum shrink-0 text-right">{display}</span>
+      </div>
+      <input
+        id={label} type="range" min={min} max={max} step={step} value={value}
+        onChange={(e) => onChange(+e.target.value)}
+        className="lever-track"
+      />
+      <p className="caption">{hint}</p>
+    </div>
+  );
+}
+
+/* ── Outcome: icon + label, H6 value in the semantic colour, caption ─────── */
+function Outcome({ icon, label, sub, value, caption, tone }: {
+  icon: ReactNode; label: string; sub?: string; value: string; caption: string;
+  tone?: "good" | "bad";
+}) {
+  return (
+    <div className="flex flex-col gap-1 px-4 py-3.5">
+      <div className="flex items-center gap-2">
+        <span className="shrink-0 text-foreground [&>svg]:h-[14px] [&>svg]:w-[14px]">{icon}</span>
+        <span className="display">
+          {label}
+          {sub && <span className="font-normal text-[var(--lighter)]"> · {sub}</span>}
+        </span>
+      </div>
+      <span className="value" style={tone ? { color: tone === "good" ? "var(--pos)" : "var(--neg)" } : undefined}>
+        {value}
+      </span>
+      <span className="body">{caption}</span>
+    </div>
+  );
+}
+
+/* ── Input field: 32px, r12, hairline, unit at the right. As drawn. ──────── */
+function Field({ label, unit, value, step = 1, onChange }: {
   label: string; unit: string; value: number; step?: number; onChange: (v: number) => void;
 }) {
   return (
-    <label className="flex flex-col gap-1">
-      <span className="eyebrow">{label}</span>
-      <span className="flex items-center gap-1 rounded-sm border border-[var(--input)] bg-[var(--card)] px-2 py-1.5
-                       focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-[var(--ring)]">
+    <label className="flex flex-col gap-1.5">
+      <span className="caption font-medium text-[var(--muted-foreground)]">{label}</span>
+      <span className="flex h-8 items-center justify-between gap-2 rounded-[12px] border-[0.8px] border-[var(--rule)]
+                       bg-[var(--card)] px-3 focus-within:border-[var(--foreground)]">
         <input
           type="number" value={value} step={step}
           onChange={(e) => onChange(e.target.value === "" ? 0 : +e.target.value)}
-          className="w-full bg-transparent font-mono text-[13px] tabular-nums outline-none"
+          className="no-spinner w-full bg-transparent text-[12px] font-medium tabular-nums outline-none"
         />
-        <span className="shrink-0 font-mono text-[10.5px] text-muted-foreground">{unit}</span>
+        <span className="flex shrink-0 items-center gap-1 text-[var(--fade)]">
+          <ChevronsUpDown size={11} aria-hidden />
+          <span className="caption">{unit}</span>
+        </span>
       </span>
     </label>
   );
@@ -57,17 +98,16 @@ type TipProps = {
   active?: boolean;
   label?: string | number;
   payload?: { name?: string; value?: number | string | null; color?: string }[];
-  unit?: string; dp?: number;
 };
 function TipBox({ active, payload, label }: TipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="panel px-2.5 py-2 text-[11.5px]" style={{ background: "var(--popover)" }}>
-      <div className="eyebrow mb-1">{label}</div>
+    <div className="panel px-3 py-2.5 text-[12px]" style={{ background: "var(--popover)" }}>
+      <div className="caption mb-1">{label}</div>
       {payload.filter((p) => p.value != null).map((p) => (
-        <div key={p.name} className="flex items-center justify-between gap-3 font-mono">
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-[2.5px] w-3 rounded-full" style={{ background: p.color }} />
+        <div key={p.name} className="flex items-center justify-between gap-4 tabular-nums">
+          <span className="flex items-center gap-1.5 text-[var(--muted-foreground)]">
+            <span className="inline-block h-2 w-2 rounded-[2px]" style={{ background: p.color }} />
             {p.name}
           </span>
           <span className="font-medium">${Number(p.value).toFixed(1)}m</span>
@@ -91,161 +131,191 @@ export function Console() {
   const breakeven = c.opex / (1 - c.royalty / 100);
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* ── levers ─────────────────────────────────────────────────────── */}
-      <section className="panel px-4 py-4">
-        <div className="mb-3.5 flex items-baseline gap-2">
-          <span className="eyebrow text-[var(--brass)]">S1</span>
-          <h2 className="display text-[15px]">Your assumptions</h2>
-          <span className="text-[12px] text-muted-foreground">Set what you think will happen. Everything below responds.</span>
-        </div>
-        <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Lever label="Brent / Dated" unit="$" value={s.brent} min={40} max={140} step={0.5}
-                 onChange={set("brent")} hint="Oil averaged $91 in the first half of 2026. January forecasts assumed $55 to $61." />
-          <Lever label="Your differential" unit="$" value={s.diff} min={-10} max={12} step={0.01}
-                 onChange={set("diff")} hint="What your grade fetches over the global benchmark." />
-          <Lever label="NGN per USD" unit="" value={s.ngn} min={800} max={2200} step={1}
-                 onChange={set("ngn")} hint="₦1,346.90 on 21 August 2026." />
-          <Lever label="National output" unit=" tb/d" value={s.natProd} min={1100} max={2200} step={1}
+    <div className="flex flex-col gap-4">
+      {/* ── Scenario levers ──────────────────────────────────────────────── */}
+      <section className="panel p-5">
+        <PanelTitle icon={<LineChart />} tint={C4}>Scenario levers</PanelTitle>
+        <p className="body mt-1">Every figure below and to the right responds live.</p>
+
+        <div className="mt-4 grid rounded-[12px] border-[0.8px] border-[var(--rule)]
+                        max-lg:divide-y lg:grid-cols-4 lg:divide-x divide-[var(--rule)] [&>*]:min-w-0">
+          <Lever icon={<CalendarDays />} tint={C4} label="Brent / Dated"
+                 display={`$${s.brent.toFixed(2)}`} value={s.brent} min={40} max={140} step={0.5}
+                 onChange={set("brent")} hint="2026 avg: $91. Jan outlook: $55–$61." />
+          <Lever icon={<GitCompareArrows />} tint={C3} label="Your differential"
+                 display={`$${s.diff.toFixed(2)}`} value={s.diff} min={-10} max={12} step={0.01}
+                 onChange={set("diff")} hint="Bonny vs Dated. Spot fell to +$0.05 in Aug." />
+          <Lever icon={<CircleDollarSign />} tint={C2} label="NGN per USD"
+                 display={fmt(s.ngn)} value={s.ngn} min={800} max={2200} step={1}
+                 onChange={set("ngn")} hint="₦1,346.90 on 21 Aug 2026. Fair-value estimates ₦1,130 to ₦1,142." />
+          <Lever icon={<Landmark />} tint={C1} label="National output"
+                 display={`${fmt(s.natProd)} tb/d`} value={s.natProd} min={1100} max={2200} step={1}
                  onChange={set("natProd")} hint={`Budget benchmark ${fmt(BENCH.budget)} · MTEF target ${fmt(BENCH.mtefTarget)}`} />
         </div>
 
-        <div className="rule-t mt-4 grid gap-x-6 gap-y-3 pt-3.5 sm:grid-cols-2 lg:grid-cols-4">
-          <Stat label="National revenue, monthly" value={`$${nat.monthlyRev.toFixed(2)}bn`}
-                sub={`vs $${nat.benchRev.toFixed(2)}bn at benchmark`} tone={nat.delta >= 0 ? "good" : "bad"} />
-          <Stat label="Versus benchmark" value={`${nat.delta >= 0 ? "+" : ""}$${nat.delta.toFixed(2)}bn`}
-                sub="per month" tone={nat.delta >= 0 ? "good" : "bad"} />
-          <Stat label="Volume gap" value={`${nat.volGap >= 0 ? "+" : ""}${fmt(nat.volGap)} tb/d`}
-                sub="against the 1,840 budget" tone={nat.volGap >= 0 ? "good" : "bad"} />
-          <Stat label="Price gap" value={`${nat.priceGap >= 0 ? "+" : ""}$${nat.priceGap.toFixed(2)}`}
-                sub="against the $64.85 budget" tone={nat.priceGap >= 0 ? "good" : "bad"} />
+        <div className="mt-2 grid lg:grid-cols-4 [&>*]:min-w-0">
+          <Outcome icon={<HandCoins />} label="National revenue" sub="Monthly"
+                   value={`$${nat.monthlyRev.toFixed(2)}bn`}
+                   caption={`vs $${nat.benchRev.toFixed(2)}bn at benchmark`}
+                   tone={nat.delta >= 0 ? "good" : "bad"} />
+          <Outcome icon={<Scale />} label="Versus benchmark"
+                   value={`${nat.delta >= 0 ? "+" : ""}$${nat.delta.toFixed(2)}bn`}
+                   caption="per month" tone={nat.delta >= 0 ? "good" : "bad"} />
+          <Outcome icon={<BarChart3 />} label="Volume gap"
+                   value={`${nat.volGap >= 0 ? "+" : ""}${fmt(nat.volGap)} tb/d`}
+                   caption={`against ${fmt(BENCH.budget)} budget`} tone={nat.volGap >= 0 ? "good" : "bad"} />
+          <Outcome icon={<Coins />} label="Price gap"
+                   value={`${nat.priceGap >= 0 ? "+" : ""}$${nat.priceGap.toFixed(2)}`}
+                   caption={`against $${BENCH.budgetPrice} budget`} tone={nat.priceGap >= 0 ? "good" : "bad"} />
         </div>
       </section>
 
-      {/* ── company outlook ────────────────────────────────────────────── */}
-      <div className="grid gap-3 lg:grid-cols-[300px_1fr]">
-        <section className="panel px-4 py-4">
-          <div className="mb-3.5 flex items-baseline gap-2">
-            <span className="eyebrow text-[var(--brass)]">S2</span>
-            <h2 className="display text-[15px]">Your position</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-2.5">
-            <NumField label="Gross field" unit="bpd" value={c.gross} step={500} onChange={setC_("gross")} />
-            <NumField label="Working interest" unit="%" value={c.wi} onChange={setC_("wi")} />
-            <NumField label="Opex" unit="$/bbl" value={c.opex} onChange={setC_("opex")} />
-            <NumField label="Royalty" unit="%" value={c.royalty} onChange={setC_("royalty")} />
-            <NumField label="Tax rate" unit="%" value={c.tax} onChange={setC_("tax")} />
-            <NumField label="Decline" unit="%/mo" value={c.decline} step={0.1} onChange={setC_("decline")} />
-            <NumField label="Capex" unit="$m/mo" value={c.capex} step={0.5} onChange={setC_("capex")} />
-            <div className="flex flex-col justify-end">
-              <span className="eyebrow">Cash breakeven</span>
-              <span className="font-mono text-[13px] font-medium tabular-nums">${breakeven.toFixed(2)}/bbl</span>
+      {/* ── Your position + forward outlook ─────────────────────────────── */}
+      <div className="grid gap-4 xl:grid-cols-[360px_1fr]">
+        <section className="panel flex flex-col p-5">
+          <PanelTitle icon={<FileText />} tint={C3}>Your position</PanelTitle>
+          <p className="body mt-1">
+            Fiscal model: tax on revenue after royalty, opex, capex. Nigeria&rsquo;s PIA terms are complex.
+          </p>
+
+          <div className="mt-4 grid grid-cols-2 border-b-[0.8px] border-[var(--rule)] pb-4">
+            <div className="flex flex-col gap-0.5">
+              <span className="flex items-center gap-1.5">
+                <HandCoins size={13} aria-hidden className="text-foreground" />
+                <span className="caption font-medium text-[var(--muted-foreground)]">Net entitlement, month 1</span>
+              </span>
+              <span className="text-[18px] font-semibold leading-6 tabular-nums tracking-[-0.3px]">
+                {fmt(rows[0].prod)} bpd
+              </span>
+              <span className="caption">{c.wi}% of {fmt(c.gross)} bpd gross</span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="flex items-center gap-1.5">
+                <Coins size={13} aria-hidden className="text-foreground" />
+                <span className="caption font-medium text-[var(--muted-foreground)]">12-month net cash</span>
+              </span>
+              <span className="text-[18px] font-semibold leading-6 tabular-nums tracking-[-0.3px]"
+                    style={{ color: total.cum >= 0 ? "var(--pos)" : "var(--neg)" }}>
+                ${total.cum.toFixed(1)}m
+              </span>
+              <span className="caption">₦{(total.cum * s.ngn / 1000).toFixed(1)}bn at ₦{fmt(s.ngn)}</span>
             </div>
           </div>
-          <div className="rule-t mt-3.5 flex flex-col gap-2.5 pt-3.5">
-            <Stat label="Net entitlement, month 1" value={`${fmt(rows[0].prod)} bpd`} sub={`${c.wi}% of ${fmt(c.gross)} bpd gross`} />
-            <Stat label="12-month net cash" value={`$${total.cum.toFixed(1)}m`}
-                  sub={`₦${(total.cum * s.ngn / 1000).toFixed(1)}bn at ₦${fmt(s.ngn)}`}
-                  tone={total.cum >= 0 ? "good" : "bad"} />
+
+          <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-3.5">
+            <Field label="Gross field" unit="bpd" value={c.gross} step={500} onChange={setC_("gross")} />
+            <Field label="Working interest" unit="%" value={c.wi} onChange={setC_("wi")} />
+            <Field label="Opex" unit="$/bbl" value={c.opex} onChange={setC_("opex")} />
+            <Field label="Royalty" unit="%" value={c.royalty} onChange={setC_("royalty")} />
+            <Field label="Tax rate" unit="%" value={c.tax} onChange={setC_("tax")} />
+            <Field label="Decline" unit="%/mo" value={c.decline} step={0.1} onChange={setC_("decline")} />
+            <Field label="Capex" unit="$m/mo" value={c.capex} step={0.5} onChange={setC_("capex")} />
+            <div className="flex flex-col justify-end gap-0.5">
+              <span className="caption font-medium text-[var(--muted-foreground)]">Cash breakeven</span>
+              <span className="text-[18px] font-semibold leading-6 tabular-nums tracking-[-0.3px]">
+                ${breakeven.toFixed(2)}/bbl
+              </span>
+            </div>
           </div>
-          <p className="mt-3 text-[10.5px] leading-[1.5] text-muted-foreground">
-            Simplified tax treatment: tax is applied to revenue after royalty, operating cost and
-            capital spend. Real Nigerian terms under the PIA are considerably more involved. Use this
-            for scale, not for a tax position.
-          </p>
         </section>
 
-        <ChartFrame
-          n="S3"
-          title="Twelve-month forward outlook"
-          plain="Your monthly cash and running total under the assumptions above. Move any lever and this redraws."
-          detail="Bars are cash generated each month, the line is the cumulative position. Production declines month on month at the rate you set. Everything here follows from your own inputs, so it is a scenario rather than a forecast."
-          source="Model output. Price and differential seeded from OPEC MOMR August 2026; FX from CBN/NAFEM 21 Aug 2026."
-          legend={[
-            { label: "Net cash, month", color: C1 },
-            { label: "Cumulative", color: C2 },
-          ]}
-        >
-          <ResponsiveContainer width="100%" height={296}>
-            <ComposedChart data={rows} margin={{ top: 10, right: 14, left: -6, bottom: 0 }}>
-              <CartesianGrid stroke={GRID} vertical={false} />
-              <XAxis dataKey="label" stroke={GRID} tickLine={false}
-                     tick={{ fill: INK3, fontSize: 10.5, fontFamily: "var(--font-plex-mono)" }} />
-              <YAxis stroke={GRID} tickLine={false} width={52}
-                     tick={{ fill: INK3, fontSize: 10.5, fontFamily: "var(--font-plex-mono)" }}
-                     tickFormatter={(v) => `$${v}m`} />
-              <Tooltip content={<TipBox />} cursor={{ fill: "var(--secondary)" }} />
-              <ReferenceLine y={0} stroke={INK3} strokeWidth={1} />
-              <Bar isAnimationActive={false} dataKey="netCash" name="Net cash, month" fill={C1} radius={[2, 2, 0, 0]} />
-              <Line isAnimationActive={false} type="monotone" dataKey="cum" name="Cumulative" stroke={C2} strokeWidth={2.5} dot={false} />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </ChartFrame>
+        <section className="panel flex flex-col p-5">
+          <PanelTitle icon={<LineChart />} tint={C2}>Twelve-month forward outlook</PanelTitle>
+          <p className="body mt-1">
+            Monthly net cash and cumulative position under the levers above, from September 2026.
+            Drag any lever and this redraws.
+          </p>
+
+          <div className="well mt-4 flex-1 px-2 py-3">
+            <ResponsiveContainer width="100%" height={300}>
+              <ComposedChart data={rows} margin={{ top: 8, right: 14, left: -6, bottom: 0 }}>
+                <CartesianGrid stroke={GRID} vertical={false} />
+                <XAxis dataKey="label" stroke={GRID} tickLine={false}
+                       tick={{ fill: INK3, fontSize: 11 }} />
+                <YAxis stroke={GRID} tickLine={false} width={52}
+                       tick={{ fill: INK3, fontSize: 11 }}
+                       tickFormatter={(v) => `$${v}m`} />
+                <Tooltip content={<TipBox />} cursor={{ fill: "var(--accent)" }} />
+                <ReferenceLine y={0} stroke={INK3} strokeWidth={1} />
+                <Bar isAnimationActive={false} dataKey="netCash" name="Net cash, month" fill={C1} radius={[2, 2, 0, 0]} />
+                <Line isAnimationActive={false} type="monotone" dataKey="cum" name="Cumulative" stroke={C2} strokeWidth={2.5} dot={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* legend and source sit under the plot, centered, as drawn */}
+          <div className="mt-3 flex items-center justify-center gap-5">
+            {[{ l: "Net cash, month", c: C1 }, { l: "Cumulative", c: C2 }].map((x) => (
+              <span key={x.l} className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-[2px]" style={{ background: x.c }} aria-hidden />
+                <span className="text-[10px] leading-[14px] tracking-[0.25px] text-foreground">{x.l}</span>
+              </span>
+            ))}
+          </div>
+          <p className="mx-auto mt-1 max-w-[52ch] text-center text-[10px] leading-[14px] tracking-[0.25px] text-[var(--fade)]">
+            Model output. Price and differential seeded from OPEC MOMR August 2026; FX from CBN/NAFEM
+            21 Aug 2026.
+          </p>
+        </section>
       </div>
 
-      {/* the projection, month by month */}
-      <section className="panel flex flex-col">
-        <header className="flex items-baseline gap-2 px-4 pt-3.5 pb-3">
-          <span className="eyebrow text-[var(--brass)]">S4</span>
-          <h2 className="display text-[14.5px] leading-tight">Projection detail</h2>
-          <span className="eyebrow ml-auto">{rows.length} months</span>
-        </header>
-        <div className="overflow-auto border-t border-[var(--rule)]">
+      {/* ── Projection detail ───────────────────────────────────────────── */}
+      <section className="panel p-5">
+        <PanelTitle icon={<Table2 />} tint={C3} right={`${rows.length} Months`}>
+          Projection detail
+        </PanelTitle>
+        <div className="mt-4 overflow-x-auto">
           <OutlookTable rows={rows} />
         </div>
-        <footer className="border-t border-[var(--rule)] px-4 py-2">
-          <p className="source">
-            Model output. Price and differential seeded from OPEC MOMR August 2026; FX from CBN/NAFEM
-            21 Aug 2026. Illustrative fiscal treatment, not a tax computation.
-          </p>
-        </footer>
+        <p className="caption mt-3">
+          Model output. Illustrative fiscal treatment, not a tax computation.
+        </p>
       </section>
-    </div>
-  );
-}
-
-function Stat({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: "good" | "bad" }) {
-  return (
-    <div className="flex flex-col gap-0.5">
-      <span className="eyebrow">{label}</span>
-      <span className="font-mono text-[17px] font-medium leading-none tabular-nums"
-            style={tone ? { color: tone === "good" ? "var(--chart-2)" : "var(--chart-3)" } : undefined}>
-        {value}
-      </span>
-      {sub && <span className="text-[10.5px] leading-tight text-muted-foreground">{sub}</span>}
     </div>
   );
 }
 
 function OutlookTable({ rows }: { rows: ReturnType<typeof projectCompany> }) {
-  const H = ["Month", "bpd net", "$/bbl", "Revenue", "Royalty", "Opex", "Tax", "Net cash", "Cumulative", "₦bn"];
+  const H: { l: string; u?: string; left?: boolean }[] = [
+    { l: "Month", left: true }, { l: "Net", u: "bpd" }, { l: "Realised", u: "$/bbl" },
+    { l: "Revenue", u: "$m" }, { l: "Royalty", u: "$m" }, { l: "Opex", u: "$m" },
+    { l: "Tax", u: "$m" }, { l: "Net cash", u: "$m" }, { l: "Cumulative", u: "$m" },
+    { l: "Position", u: "₦bn" },
+  ];
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-[11.5px]">
-        <thead>
-          <tr className="rule-t border-b border-[var(--rule)]">
-            {H.map((h, i) => (
-              <th key={h} className={`eyebrow py-1.5 ${i === 0 ? "text-left" : "text-right"} whitespace-nowrap px-1.5`}>{h}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="font-mono tabular-nums">
-          {rows.map((r) => (
-            <tr key={r.month} className="border-b border-[var(--rule)]/60">
-              <td className="whitespace-nowrap px-1.5 py-1 text-left">{r.label}</td>
-              <td className="px-1.5 py-1 text-right">{fmt(r.prod)}</td>
-              <td className="px-1.5 py-1 text-right">{r.realised.toFixed(2)}</td>
-              <td className="px-1.5 py-1 text-right">{r.revenue.toFixed(1)}</td>
-              <td className="px-1.5 py-1 text-right text-muted-foreground">{r.royalty.toFixed(1)}</td>
-              <td className="px-1.5 py-1 text-right text-muted-foreground">{r.opex.toFixed(1)}</td>
-              <td className="px-1.5 py-1 text-right text-muted-foreground">{r.tax.toFixed(1)}</td>
-              <td className="px-1.5 py-1 text-right font-medium">{r.netCash.toFixed(1)}</td>
-              <td className="px-1.5 py-1 text-right font-medium">{r.cum.toFixed(1)}</td>
-              <td className="px-1.5 py-1 text-right">{r.ngn.toFixed(2)}</td>
-            </tr>
+    <table className="w-full text-[14px] leading-5">
+      <thead>
+        <tr className="bg-[var(--plot)]">
+          {H.map((h, i) => (
+            <th key={h.l}
+                className={`whitespace-nowrap px-3 py-2 font-medium text-foreground
+                            ${h.left ? "text-left" : "text-right"}
+                            ${i === 0 ? "rounded-l-[8px]" : ""} ${i === H.length - 1 ? "rounded-r-[8px]" : ""}`}>
+              {h.l}{h.u && <span className="ml-1 font-normal text-[var(--fade)]">{h.u}</span>}
+            </th>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </tr>
+      </thead>
+      <tbody className="tabular-nums">
+        {rows.map((r) => (
+          <tr key={r.month} className="border-b-[0.8px] border-[var(--rule)] last:border-0">
+            <td className="whitespace-nowrap px-3 py-2 text-left">{r.label}</td>
+            <td className="px-3 py-2 text-right">{fmt(r.prod)}</td>
+            <td className="px-3 py-2 text-right">{r.realised.toFixed(2)}</td>
+            <td className="px-3 py-2 text-right">{r.revenue.toFixed(1)}</td>
+            <td className="px-3 py-2 text-right text-[var(--muted-foreground)]">{r.royalty.toFixed(1)}</td>
+            <td className="px-3 py-2 text-right text-[var(--muted-foreground)]">{r.opex.toFixed(1)}</td>
+            <td className="px-3 py-2 text-right text-[var(--muted-foreground)]">{r.tax.toFixed(1)}</td>
+            <td className="px-3 py-2 text-right">
+              <span className="inline-block rounded-[6px] bg-[var(--chip)] px-1.5 py-0.5 font-medium">
+                {r.netCash.toFixed(1)}
+              </span>
+            </td>
+            <td className="px-3 py-2 text-right font-medium">{r.cum.toFixed(1)}</td>
+            <td className="px-3 py-2 text-right">{r.ngn.toFixed(2)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
