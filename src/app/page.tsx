@@ -31,7 +31,7 @@ import { WatchList } from "@/components/watch";
 import { WATCH_COUNTS } from "@/lib/watch-wishes";
 import { SETTLEMENT_FACTS, LICENSING, FID_FACTS, AEB } from "@/lib/watch-data";
 import { MAP_FACTS } from "@/lib/terminals";
-import { REFINING_FUNNEL, REFINING_IN_FLIGHT, LICENSING_FUNNEL, FUNNEL_FACTS } from "@/lib/funnels";
+import { REFINING_FUNNEL, REFINING_IN_FLIGHT, FUNNEL_FACTS } from "@/lib/funnels";
 import { GAS_FACTS, GAS_2025_BSCF, RECONCILIATION } from "@/lib/gas-balance";
 import { ProjectionChart, BacktestRibbon, BacktestErrors, ModelCard, SlopeDrift } from "@/components/projection";
 import { TargetSolver } from "@/components/solver";
@@ -418,8 +418,8 @@ function buildSections(live: LivePrices): Section[] {
         </div>
 
         <ChartFrame
-          n="16" title="Where the barrels actually leave from"
-          plain={<>Four terminals load {MAP_FACTS.mappedShare}% of Nigeria&rsquo;s crude, all within about 300km of coast.</>}
+          n="16" title="Four points on the coast move 61% of Nigeria's crude"
+          plain={<>{Math.round(MAP_FACTS.mapped * 1000).toLocaleString()} barrels a day leave through four terminals inside a 300km stretch. Forcados alone is one barrel in every five.</>}
           detail={<>Circle area is throughput, so twice the ink means twice the barrels. Bonny and Qua Iboe load at offshore single-buoy moorings 26 and 37km out, which is why those dots sit in the sea; Forcados and Escravos are river-mouth terminals. Bonga is the fifth-largest stream but is a deepwater vessel rather than a terminal, and Shell publishes its distance from shore without its position, so it is listed beside the map rather than plotted on a guess.</>}
           source="NUPRC July 2026 terminal production. Outline from geoBoundaries; coordinates are published loading points."
         ><TerminalMap /></ChartFrame>
@@ -496,13 +496,6 @@ function buildSections(live: LivePrices): Section[] {
             detail="Each block is ten days. Lower cover means less slack in the system, so any disruption feeds through to price faster."
         ><CoverPictogram /></ChartFrame>
         </div>
-
-        <ChartFrame
-          n="23" title="The 2025 licensing round, stage by stage"
-          plain={<>{FUNNEL_FACTS.blocksUnbid} of the 50 blocks drew no bid at all, and no concession has been executed yet.</>}
-          detail={<>Blocks are the unit here, not capacity. The round opened on 1 December 2025 and the commercial bid conference ran on 21 July 2026, when {FUNNEL_FACTS.blocksAwarded} blocks went provisionally to {FUNNEL_FACTS.firmsWinning} companies. Provisional is the operative word: winners must pay signature bonuses and execute concession contracts before any licence takes legal effect, and that window runs to October 2026. Until then the last bar stays at zero. This is the panel wish &ldquo;the big rounds need to be concluded&rdquo;, as a counter.</>}
-          source="NUPRC 2025 licensing round announcements. The last stage updates when contracting completes."
-        ><Funnel stages={LICENSING_FUNNEL} scaleBy="count" barLabel="Bars scaled by number of blocks" /></ChartFrame>
 
         <DataTable
           n="T4" title="Drilling and storage, month by month" maxHeight={520}
@@ -603,14 +596,14 @@ function buildSections(live: LivePrices): Section[] {
         </div>
 
         <ChartFrame
-          n="24" title="What would it take?"
+          n="23" title="What would it take?"
           plain="Set a target. See how many rigs it would take."
             detail={<>The relationship between rigs and barrels runs backwards as easily as forwards. Rather than claiming what output will be, this asks what a chosen output would demand. Beyond the range of rig counts Nigeria has actually operated, the panel says so instead of quietly returning a number.</>}
           source="The same drilling relationship, run backwards. Where a target would need more rigs than Nigeria has ever operated, the panel says so."
         ><TargetSolver /></ChartFrame>
 
         <ChartFrame
-          n="25" title="Output implied by rigs already turning"
+          n="24" title="Output implied by rigs already turning"
           plain={<>Those rigs already drilled. This is the output they imply through {monthLabel(RIG_LAG.projection[RIG_LAG.projection.length - 1].month)}.</>}
             detail={<>Because drilling shows up in production about {RIG_LAG.lag} months later, activity already recorded implies a path that far ahead without forecasting anything. The shaded band comes from the model&rsquo;s own past errors rather than from theory, so it shows how wrong this model has actually been. Eight months in ten should land inside it.</>}
           source={`Built from ${RIG_LAG.n} months of OPEC production and rig figures. The code that produces it is in the repository.`}
@@ -622,7 +615,7 @@ function buildSections(live: LivePrices): Section[] {
 
         <div className="grid gap-6 xl:grid-cols-2">
           <ChartFrame
-            n="26" title="What it would have said at the time"
+            n="25" title="What it would have said at the time"
             plain={<>Rebuilt each month from figures that existed then. {Math.round((1 - RIG_LAG.realtime.mase) * 100)}% better than assuming no change.</>}
             detail="OPEC keeps revising its figures for months after first publishing them. Most tests quietly use the corrected numbers, which the forecaster did not have. Here the whole dataset is rebuilt from what OPEC had actually printed by that date, so the model is judged on the same information a person would have had."
             legend={[
@@ -632,7 +625,7 @@ function buildSections(live: LivePrices): Section[] {
           ><BacktestRibbon /></ChartFrame>
 
           <ChartFrame
-            n="27" title="How wrong it was, month by month"
+            n="26" title="How wrong it was, month by month"
             plain={<>Early attempts were poor, recent ones close. That is the pattern.</>}
             detail={<>The dashed lines mark the range the model expects to stay inside eight times out of ten. It missed by an average of {RIG_LAG.realtime.earlyMae} over its first {RIG_LAG.realtime.earlyN} attempts and {RIG_LAG.realtime.lateMae} over the last {RIG_LAG.realtime.lateN}. Judge it on the recent record, while remembering that four good months is not proof.</>}
             legend={[
@@ -643,7 +636,7 @@ function buildSections(live: LivePrices): Section[] {
         </div>
 
         <ChartFrame
-          n="28" title="The model finding the relationship"
+          n="27" title="The model finding the relationship"
           plain="At first the data said more drilling meant less oil. It took a year to settle."
           detail="Each point is the barrels-per-rig figure the model would have arrived at on that date, using only the data published by then. It starts negative, which is nonsense, crosses zero in early 2026 and settles near thirteen. This is the clearest argument for not trusting a relationship fitted on a short history, and for re-checking it as months accumulate."
           source="Refitted at each OPEC publication date from that date's own figures."
@@ -694,14 +687,14 @@ function buildSections(live: LivePrices): Section[] {
 
         <div className="grid gap-3 xl:grid-cols-[1fr_400px]">
           <ChartFrame
-            n="29" title="The claim ledger"
+            n="28" title="The claim ledger"
             plain={<>{SCORE.total} forecasts checked against what happened. Click a row for the working.</>}
             detail={<>Each claim is quoted word for word, then compared with what OPEC and the IEA published afterwards. {SCORE.talks} come from recorded talks rather than documents, taken from automatic transcripts, so their wording may differ slightly from the spoken original. One row held up and is included on purpose: the structural judgements in these outlooks are generally sound. It is the specific numbers that failed.</>}
           source="Claims from PwC Nigeria's January 2026 presentation to the Lagos Chamber of Commerce. What happened, from OPEC monthly reports and the IEA Oil Market Report of August 2026."
           ><ClaimLedger /></ChartFrame>
 
           <ChartFrame
-            n="30" title="Every price call against the outturn"
+            n="29" title="Every price call against the outturn"
             plain="Five price assumptions against what oil actually sold for."
             detail="All of these were set in January. The escalation that moved the price began on 28 February. The EIA is the reference forecaster for this market and it called $56 while the price sat at $65, on the view that a supply overhang would persist. This is not a criticism of anyone; it shows how quickly a price assumption expires."
           legend={[{ label: "Forecast", color: "var(--chart-3)" }, { label: "Realised", color: "var(--chart-2)" }]}
@@ -730,7 +723,7 @@ function buildSections(live: LivePrices): Section[] {
       <div key="method" className="flex flex-col gap-6">
         <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
           <ChartFrame
-            n="31" title="How OPEC's Nigeria figure moves after publication"
+            n="30" title="How OPEC's Nigeria figure moves after publication"
             plain={<>Every month gets three looks, then the number is frozen. Corrections average {REVISION.stats.meanAbs} tb/d.</>}
             detail={<>Rows are the month being measured, columns are the report the figure appeared in, and shade is how far it had drifted from its first published estimate. Only {REVISION.stats.coverage}% of the grid is filled, which is the point: a monthly report carries three months of history, so a month is estimated, corrected twice, then never touched again. Empty cells are months a report never covered, not zeros.
               {" "}The corrections are close to unbiased, averaging {REVISION.stats.meanSigned} tb/d signed across {REVISION.stats.n} months with {REVISION.stats.up} up and {REVISION.stats.down} down. What they are not is small: the range runs {REVISION.stats.min} to +{REVISION.stats.max}.</>}
@@ -738,7 +731,7 @@ function buildSections(live: LivePrices): Section[] {
           ><RevisionTriangle /></ChartFrame>
 
           <ChartFrame
-            n="32" title="How quickly a month settles"
+            n="31" title="How quickly a month settles"
             plain={<>The first correction does the work: {REVISION.stats.firstStep} tb/d, against {REVISION.stats.secondStep} for the second.</>}
             detail="Both bars ignore direction and average the size of the move. A figure less than two months old should be treated as provisional, one older than that as settled. That is exactly why the projection backtest scores the model against figures as they stood at the time rather than as they read now."
             source="Same 22 editions."
@@ -747,14 +740,14 @@ function buildSections(live: LivePrices): Section[] {
 
         <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
           <ChartFrame
-            n="33" title="What this month's figure will settle at"
+            n="32" title="What this month's figure will settle at"
             plain={<>July printed {REVISION_MODEL.provisional[REVISION_MODEL.provisional.length-1].current}. Eight times in ten it settles between {REVISION_MODEL.provisional[REVISION_MODEL.provisional.length-1].lo.toFixed(0)} and {REVISION_MODEL.provisional[REVISION_MODEL.provisional.length-1].hi.toFixed(0)}.</>}
             detail={<>Built from the {REVISION_MODEL.n} months that have had all three of their looks, since OPEC never revisits after that. The average revision is {REVISION_MODEL.mean} tb/d with a t-statistic of {REVISION_MODEL.t}, so there is no detectable bias and the first print should not be nudged up or down. What it does carry is spread, {REVISION_MODEL.sd} tb/d, and that is what the bar shows. The tick is the printed figure, the band is where it lands eight times out of ten.</>}
             source="Derived from 22 OPEC report editions. An interval, not a correction."
           ><SettledNowcast /></ChartFrame>
 
           <ChartFrame
-            n="34" title="Why it cannot just be corrected"
+            n="33" title="Why it cannot just be corrected"
             plain="Nothing predicts the revision, so no adjustment is available."
             detail="If the size of the revision were related to the size of the print, or to the previous month's revision, the print could be adjusted rather than merely bracketed. Both were tested and neither correlation reaches the strength required to be distinguishable from chance at this sample size. That is a real result, not a failure: it says the published figure is already the best point estimate available, and the only honest thing to add is the range around it."
           ><RevisionPredictors /></ChartFrame>
@@ -762,13 +755,13 @@ function buildSections(live: LivePrices): Section[] {
 
         <div className="grid gap-6 xl:grid-cols-3">
           <ChartFrame
-            n="35" title="Which relationships are real"
+            n="34" title="Which relationships are real"
             plain={<>Only {nSurvive} of {nTotal} apparent relationships survive a proper test.</>}
             detail={<>Two numbers that both rise over time will look related even when they are not. The fix is to compare how much each moved from one month to the next, rather than their levels. The second column does that. {nCollapse} pairs collapse under it, and {nIdentity} are pairs where one number is calculated from the other and so could never have failed.</>}
           ><CorrelationPanel /></ChartFrame>
 
           <ChartFrame
-            n="36" title="A finding that is not one"
+            n="35" title="A finding that is not one"
             plain="A convincing result that is not real. Shown deliberately."
             detail="One bar clears the threshold while the bars either side sit near zero. A genuine relationship fades in and out gradually; a lone spike surrounded by noise is usually what turns up when you test enough combinations. With this few months of data, it is the pattern to distrust."
           legend={[{ label: "Correlation at lag", color: "var(--chart-3)" }]}

@@ -12,26 +12,54 @@ export function KoboWaffle() {
   const filled = Math.floor(S.ratePct);
   return (
     <div className="flex flex-col gap-3 px-4 pb-4 pt-1">
-      <div className="grid w-fit grid-cols-10 gap-[5px]">
+      <svg
+        viewBox="0 0 185 185"
+        className="w-full"
+        style={{ maxWidth: 310 }}
+        role="img"
+        aria-label={`Waffle of one hundred coins, ${filled} filled: generators are paid ${S.ratePct} per cent of what they invoice`}
+      >
+        <defs>
+          {/* a struck coin: face, then a rim inside it */}
+          {/* Naira mark from Tabler Icons (MIT), drawn at 24 units and scaled
+              to sit inside a 14.4px coin. */}
+          <g id="nairaMark">
+            <path
+              d="M7 18V7.052a1.05 1.05 0 0 1 1.968-.51l6.064 10.916a1.05 1.05 0 0 0 1.968-.51V6M5 10h14M5 14h14"
+              fill="none" stroke="currentColor" strokeLinecap="round"
+              strokeLinejoin="round" strokeWidth="2.6"
+            />
+          </g>
+          <g id="coinOn">
+            <circle r="7.2" fill="var(--chart-2)" />
+            <g transform="translate(-5.6,-5.6) scale(0.467)" color="var(--card)" opacity={0.92}>
+              <use href="#nairaMark" />
+            </g>
+          </g>
+          <g id="coinOff">
+            <circle r="7.2" fill="var(--card)" stroke="var(--rule)" strokeWidth="1.2" />
+            <g transform="translate(-5.6,-5.6) scale(0.467)" color="var(--rule)">
+              <use href="#nairaMark" />
+            </g>
+          </g>
+        </defs>
         {Array.from({ length: 100 }).map((_, i) => (
-          <span
+          <use
             key={i}
-            className="h-[15px] w-[15px] rounded-full"
-            style={{
-              background: i < filled ? "var(--chart-2)" : "var(--track)",
-              opacity: i < filled ? 0.9 : 1,
-            }}
-            aria-hidden
+            href={i < filled ? "#coinOn" : "#coinOff"}
+            x={9 + (i % 10) * 18.4}
+            y={9 + Math.floor(i / 10) * 18.4}
           />
         ))}
-      </div>
+      </svg>
+
       <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
         <span className="text-[13px]">
           <span className="mr-1.5 inline-block h-2.5 w-2.5 rounded-full align-middle" style={{ background: "var(--chart-2)" }} />
           Paid <span className="tabular-nums font-medium">₦{S.avgPaid}bn</span>
         </span>
         <span className="text-[13px]">
-          <span className="mr-1.5 inline-block h-2.5 w-2.5 rounded-full align-middle" style={{ background: "var(--track)" }} />
+          <span className="mr-1.5 inline-block h-2.5 w-2.5 rounded-full border border-[var(--rule)] align-middle bg-[var(--card)]" />
           Unpaid <span className="tabular-nums font-medium">₦{S.shortfallMonthly}bn</span>
         </span>
         <span className="caption ml-auto">One coin per naira in a hundred · {S.ratePct}% monthly average</span>
@@ -75,10 +103,28 @@ export function BlockWaffle() {
           <span className="mr-1.5 inline-block h-2.5 w-2.5 rounded-[3px] align-middle bg-[var(--track)] shadow-[inset_0_0_0_1px_var(--rule)]" />
           No bid <span className="tabular-nums font-medium">{L.offered - L.awarded}</span>
         </span>
-        <span className="text-[13px]" style={{ color: "var(--chart-3)" }}>
-          Concessions executed <span className="tabular-nums font-medium">{L.executed}</span>
-        </span>
       </div>
+
+      {/* the stages, so the pictogram still carries where the round has got to */}
+      <ol className="flex flex-wrap items-center gap-x-2 gap-y-1.5 border-t-[0.8px] border-[var(--rule)] pt-3">
+        {[
+          { label: "Offered", n: L.offered, done: true },
+          { label: "Drew a bid", n: L.bidFor, done: true },
+          { label: "Awarded", n: L.awarded, done: true },
+          { label: "Signed", n: L.executed, done: false },
+        ].map((st, i, arr) => (
+          <li key={st.label} className="flex items-center gap-2">
+            <span className="flex items-baseline gap-1.5">
+              <span className="tabular-nums text-[15px] font-semibold"
+                    style={{ color: st.done ? "var(--foreground)" : "var(--chart-3)" }}>
+                {st.n}
+              </span>
+              <span className="caption">{st.label}</span>
+            </span>
+            {i < arr.length - 1 && <span className="text-[var(--fade)]">&rarr;</span>}
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }

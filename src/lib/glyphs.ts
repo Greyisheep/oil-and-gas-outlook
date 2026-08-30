@@ -8,6 +8,11 @@
 //     Font Awesome Free 6, icons licensed CC BY 4.0
 //     https://fontawesome.com/license/free
 //
+//   naira
+//     Tabler Icons, MIT. Permissive, so no attribution is required, but it
+//     is credited anyway alongside the rest.
+//     https://tabler.io/icons
+//
 // Attribution is rendered in the application footer and stated in the README.
 
 export type Glyph = { vb: string; d: string };

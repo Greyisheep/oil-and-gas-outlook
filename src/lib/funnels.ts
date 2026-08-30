@@ -52,27 +52,8 @@ export const REFINING_IN_FLIGHT = {
   names: "Waltersmith Train 2, AIPCC, Azikel",
 };
 
-/**
- * The 2025 licensing round, NUPRC. Opened 1 Dec 2025; commercial bid
- * conference 21 Jul 2026; ministerial approval and contracting expected
- * July to October 2026.
- */
-export const LICENSING_FUNNEL: Stage[] = [
-  { label: "Blocks offered", count: 50, countUnit: "blocks",
-    note: "15 onshore, 19 shallow, 15 frontier, 1 deep offshore" },
-  { label: "Attracted a bid", count: 37, countUnit: "blocks",
-    note: "143 companies, 200 bids" },
-  { label: "Provisionally awarded", count: 37, countUnit: "blocks",
-    note: "to 31 companies, 21 Jul 2026", tone: "pending" },
-  { label: "Concessions executed", count: 0, countUnit: "blocks",
-    note: "window open Jul to Oct 2026", tone: "dead" },
-];
-
 export const FUNNEL_FACTS = {
   refiningCapacityKept: +(467_000 / 1_752_000 * 100).toFixed(1),
   refiningLicensedMbpsd: 1.752,
   refiningActiveKbpsd: 467,
-  blocksUnbid: 50 - 37,
-  blocksAwarded: 37,
-  firmsWinning: 31,
 };
