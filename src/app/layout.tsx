@@ -14,10 +14,36 @@ const sans = inter;
 const mono = { variable: "" };
 const serif = sans;
 
+const SITE = "https://oilgas.vandor.tech";
+const DESCRIPTION =
+  "Nigerian upstream and downstream indicators rebuilt from 22 OPEC Monthly Oil Market Reports, plus NUPRC and NMDPRA releases. Every figure names its source.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE),
   title: "Oil and Gas Outlook",
-  description:
-    "Nigerian upstream and downstream indicators rebuilt from 22 OPEC Monthly Oil Market Reports, with scenario levers and a twelve-month company outlook projection.",
+  description: DESCRIPTION,
+  applicationName: "Oil and Gas Outlook",
+  authors: [{ name: "Claret Ibeawuchi" }],
+  keywords: [
+    "Nigeria", "oil and gas", "OPEC", "NUPRC", "NMDPRA",
+    "crude production", "natural gas", "energy data",
+  ],
+  alternates: { canonical: SITE },
+  // Link unfurls on LinkedIn and elsewhere read these.
+  openGraph: {
+    type: "website",
+    url: SITE,
+    siteName: "Oil and Gas Outlook",
+    title: "Oil and Gas Outlook · Nigeria",
+    description: DESCRIPTION,
+    locale: "en_GB",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Oil and Gas Outlook · Nigeria",
+    description: DESCRIPTION,
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
