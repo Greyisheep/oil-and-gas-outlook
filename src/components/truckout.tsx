@@ -3,7 +3,7 @@ import {
   ComposedChart, Line, ReferenceArea, ReferenceLine, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
-import { Tip, AXIS, CURSOR, GRID, INK3 } from "./chart-kit";
+import { Tip, AXIS, CURSOR, GRID } from "./chart-kit";
 import { TRUCKOUT as T } from "@/lib/truckout";
 
 const C1 = "var(--chart-1)", C3 = "var(--chart-3)";
