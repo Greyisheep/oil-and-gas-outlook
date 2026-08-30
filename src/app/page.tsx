@@ -22,6 +22,8 @@ import { Funnel } from "@/components/funnel";
 import { Sufficiency } from "@/components/sufficiency";
 import { ReservesChange } from "@/components/reserves";
 import { TerminalMap } from "@/components/terminal-map";
+import { RevisionTriangle, SettleSteps } from "@/components/revision-triangle";
+import { REVISION } from "@/lib/revision";
 import { MAP_FACTS } from "@/lib/terminals";
 import { REFINING_FUNNEL, REFINING_IN_FLIGHT, LICENSING_FUNNEL, FUNNEL_FACTS } from "@/lib/funnels";
 import { GAS_FACTS, GAS_2025_BSCF, RECONCILIATION } from "@/lib/gas-balance";
@@ -645,16 +647,33 @@ function buildSections(live: LivePrices): Section[] {
     group: "Analysis",
     blurb: "Which apparent relationships are real, which are not, and where every number came from.",
     content: (
-      <div key="decks" className="flex flex-col gap-6">
+      <div key="method" className="flex flex-col gap-6">
+        <div className="grid gap-6 xl:grid-cols-[1fr_320px]">
+          <ChartFrame
+            n="30" title="How OPEC's Nigeria figure moves after publication"
+            plain={<>Every month gets three looks, then the number is frozen. Corrections average {REVISION.stats.meanAbs} tb/d.</>}
+            detail={<>Rows are the month being measured, columns are the report the figure appeared in, and shade is how far it had drifted from its first published estimate. Only {REVISION.stats.coverage}% of the grid is filled, which is the point: a monthly report carries three months of history, so a month is estimated, corrected twice, then never touched again. Empty cells are months a report never covered, not zeros.
+              {" "}The corrections are close to unbiased, averaging {REVISION.stats.meanSigned} tb/d signed across {REVISION.stats.n} months with {REVISION.stats.up} up and {REVISION.stats.down} down. What they are not is small: the range runs {REVISION.stats.min} to +{REVISION.stats.max}.</>}
+            source="Extracted from 22 OPEC Monthly Oil Market Report editions, keyed by publication date."
+          ><RevisionTriangle /></ChartFrame>
+
+          <ChartFrame
+            n="31" title="How quickly a month settles"
+            plain={<>The first correction does the work: {REVISION.stats.firstStep} tb/d, against {REVISION.stats.secondStep} for the second.</>}
+            detail="Both bars ignore direction and average the size of the move. A figure less than two months old should be treated as provisional, one older than that as settled. That is exactly why the projection backtest scores the model against figures as they stood at the time rather than as they read now."
+            source="Same 22 editions."
+          ><SettleSteps /></ChartFrame>
+        </div>
+
         <div className="grid gap-6 xl:grid-cols-3">
           <ChartFrame
-            n="30" title="Which relationships are real"
+            n="32" title="Which relationships are real"
             plain={<>Only {nSurvive} of {nTotal} apparent relationships survive a proper test.</>}
             detail={<>Two numbers that both rise over time will look related even when they are not. The fix is to compare how much each moved from one month to the next, rather than their levels. The second column does that. {nCollapse} pairs collapse under it, and {nIdentity} are pairs where one number is calculated from the other and so could never have failed.</>}
           ><CorrelationPanel /></ChartFrame>
 
           <ChartFrame
-            n="31" title="A finding that is not one"
+            n="33" title="A finding that is not one"
             plain="A convincing result that is not real. Shown deliberately."
             detail="One bar clears the threshold while the bars either side sit near zero. A genuine relationship fades in and out gradually; a lone spike surrounded by noise is usually what turns up when you test enough combinations. With this few months of data, it is the pattern to distrust."
           legend={[{ label: "Correlation at lag", color: "var(--chart-3)" }]}
