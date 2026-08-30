@@ -20,6 +20,7 @@ import { ClaimLedger, PriceCallChart } from "@/components/scorecard";
 import { GasSankey } from "@/components/sankey";
 import { Funnel } from "@/components/funnel";
 import { Sufficiency } from "@/components/sufficiency";
+import { ReservesChange } from "@/components/reserves";
 import { REFINING_FUNNEL, REFINING_IN_FLIGHT, LICENSING_FUNNEL, FUNNEL_FACTS } from "@/lib/funnels";
 import { GAS_FACTS, GAS_2025_BSCF, RECONCILIATION } from "@/lib/gas-balance";
 import { ProjectionChart, BacktestRibbon, BacktestErrors, ModelCard, SlopeDrift } from "@/components/projection";
@@ -194,6 +195,13 @@ function buildSections(live: LivePrices): Section[] {
             { label: "Kuwait", color: "var(--chart-4)", dash: true },
           ]}
         ><PeerChart /></ChartFrame>
+
+        <ChartFrame
+          n="08" title="Reserves: oil slipped, gas grew"
+          plain="Oil and condensate reserves fell 0.74% over 2025 while gas rose 2.21%. Nigeria is replacing gas faster than oil."
+          detail={<>Bars show the percentage change either side of zero, because the two resources sit on scales that cannot share an axis: 37bn barrels against 215 trillion cubic feet. The 1 January 2025 positions are recovered by inverting the published percentages, which lands on NUPRC&rsquo;s own reported 37.28bn to within 0.006bn. The reserves life index divides reserves by current production, so it moves when either does, and 85 years of gas against 59 of oil is the clearest number behind the argument that Nigeria is a gas country that sells oil.</>}
+          source="NUPRC National Annual Petroleum Reserves Position as at 1 January 2026."
+        ><ReservesChange /></ChartFrame>
 
         <DataTable
           n="T1" title="Monthly production" maxHeight={520}
