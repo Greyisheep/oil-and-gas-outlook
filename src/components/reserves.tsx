@@ -32,7 +32,6 @@ const R = [
       { label: "Crude oil", value: 31.09 },
       { label: "Condensate", value: 5.92 },
     ],
-    cause: "2025 production, and field-performance revisions",
   },
   {
     name: "Natural gas",
@@ -43,7 +42,6 @@ const R = [
       { label: "Non-associated", value: 114.98 },
       { label: "Associated", value: 100.21 },
     ],
-    cause: "new discoveries and improved reservoir studies",
   },
 ];
 
@@ -104,17 +102,9 @@ export function ReservesChange() {
                 Lasts <span className="tabular-nums text-foreground">{r.life}</span> years at current output
               </span>
             </div>
-            <p className="caption">{r.cause}</p>
           </div>
         );
       })}
-
-      <p className="caption border-t-[0.8px] border-[var(--rule)] pt-2.5">
-        NUPRC publishes the net change only, not the volume produced or the volume added, so no
-        replacement ratio can be derived from the release. That gap is the reason this panel stops here.
-        The gas opening position is marked est. because NUPRC reported the percentage change without
-        the prior-year figure; it is recovered by inverting that percentage.
-      </p>
     </div>
   );
 }

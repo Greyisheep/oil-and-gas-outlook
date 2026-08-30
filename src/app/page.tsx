@@ -199,7 +199,9 @@ function buildSections(live: LivePrices): Section[] {
         <ChartFrame
           n="08" title="Reserves: oil slipped, gas grew"
           plain="Oil and condensate reserves fell 0.74% over 2025 while gas rose 2.21%. Nigeria is replacing gas faster than oil."
-          detail={<>Bars show the percentage change either side of zero, because the two resources sit on scales that cannot share an axis: 37bn barrels against 215 trillion cubic feet. The 1 January 2025 positions are recovered by inverting the published percentages, which lands on NUPRC&rsquo;s own reported 37.28bn to within 0.006bn. The reserves life index divides reserves by current production, so it moves when either does, and 85 years of gas against 59 of oil is the clearest number behind the argument that Nigeria is a gas country that sells oil.</>}
+          detail={<>Bars show percentage change either side of zero, because 37bn barrels and 215 trillion cubic feet cannot share an axis. Reserves life divides reserves by current output, so 85 years of gas against 59 of oil is the clearest number behind the argument that Nigeria is a gas country that sells oil.
+            {" "}Oil fell on 2025 production and field-performance revisions; gas rose on new discoveries and better reservoir studies.
+            {" "}NUPRC publishes only the net change, not the volume produced or added, so no replacement ratio can be derived from the release. The gas opening is marked est. because no prior-year figure was given; it is recovered by inverting the published percentage, and doing the same to oil gives 37.286 against the reported 37.28, which is what makes the gas figure trustworthy.</>}
           source="NUPRC National Annual Petroleum Reserves Position as at 1 January 2026."
         ><ReservesChange /></ChartFrame>
 
@@ -287,8 +289,10 @@ function buildSections(live: LivePrices): Section[] {
         <ChartFrame
           n="G1" title="Where Nigeria's gas goes"
           plain={<>Only {GAS_FACTS.domesticShare}% of production reaches the domestic market, and gas to power is {GAS_FACTS.powerShare}% of everything produced.</>}
-          detail={<>Read left to right. Ribbon width is volume, so the comparison is the thickness. Export and field operations take the two widest branches; the domestic market is the third, and within it the power sector is a narrow strand. The first stage is NUPRC&rsquo;s full-year 2025 balance, converted to a daily average. The second stage, splitting domestic supply by sector, is NMDPRA&rsquo;s Q1 to Q3 2025 fact sheet, so it covers a shorter window. Those sectors are labelled &ldquo;strategic&rdquo; and are a subset of domestic offtake; the remainder is drawn grey rather than assigned to a sector it might not belong to.</>}
-          source={`NUPRC 2025 annual gas figures and NMDPRA "State of the Midstream and Downstream Sector" fact sheet, October 2025. The four published uses sum to ${RECONCILIATION.componentsSum} bscf; the flare share independently implies ${RECONCILIATION.impliedByFlareShare} bscf, agreeing to ${RECONCILIATION.gapPct}%. The diagram is drawn on that sum, so the headline "2.71 tscf" rounding gap of ${RECONCILIATION.headlineRoundingGap} bscf is not carried as a phantom flow.`}
+          detail={<>Ribbon width is volume, so the comparison is thickness. Export and field operations take the two widest branches, and within the domestic branch the power sector is a narrow strand.
+            {" "}NUPRC&rsquo;s four published uses sum to {RECONCILIATION.componentsSum} bscf rather than the 2.71 tscf headline. The flare share settles which is right: {GAS_2025_BSCF.flared} divided by {GAS_2025_BSCF.flarePct}% implies {RECONCILIATION.impliedByFlareShare} bscf, agreeing with the sum to {RECONCILIATION.gapPct}%. The diagram uses that sum and closes exactly, rather than carrying the {RECONCILIATION.headlineRoundingGap} bscf of headline rounding as a phantom flow.
+            {" "}The two stages come from different periods. Splitting domestic supply by sector is NMDPRA&rsquo;s Q1 to Q3 2025 figure, and those sectors are labelled strategic, so they are a subset. The remainder is drawn grey rather than assigned to a sector it may not belong to.</>}
+          source="NUPRC 2025 annual gas figures; NMDPRA fact sheet, October 2025."
           legend={[
             { label: "Export", color: "var(--chart-4)" },
             { label: "Domestic market", color: "var(--chart-2)" },
@@ -342,8 +346,10 @@ function buildSections(live: LivePrices): Section[] {
           <ChartFrame
             n="D1" title="Licensed to build, actually running"
             plain={<>Nigeria has licensed {FUNNEL_FACTS.refiningLicensedMbpsd}m barrels a day of refining. {FUNNEL_FACTS.refiningActiveKbpsd},000 runs, which is {FUNNEL_FACTS.refiningCapacityKept}% of it.</>}
-            detail={<>A licence to establish is permission to plan; a licence to construct means the project cleared that first gate. Bars are scaled by capacity rather than by the number of licences, because capacity is what actually attrites: most of the licensed volume sits in projects that never reached steel. One inconsistency to note, since it is in the source: the fact sheet&rsquo;s headline says four active refineries while its own footnote refers to six operational private refineries. The funnel uses the headline figure.</>}
-            source={`NMDPRA State of the Midstream and Downstream Sector fact sheet, October 2025. A further ${REFINING_IN_FLIGHT.count} refineries are under construction (${REFINING_IN_FLIGHT.names}), adding ${REFINING_IN_FLIGHT.capacity.toLocaleString("en-US")} bpsd when complete. They are not shown as a funnel stage because they run in parallel with the refineries already operating, rather than feeding them.`}
+            detail={<>A licence to establish is permission to plan; a licence to construct means the project cleared that gate. Bars are scaled by capacity rather than licence count, because capacity is what attrites: most of the licensed volume sits in projects that never reached steel.
+              {" "}A further {REFINING_IN_FLIGHT.count} refineries are building now ({REFINING_IN_FLIGHT.names}), adding {REFINING_IN_FLIGHT.capacity.toLocaleString("en-US")} bpsd when complete. They are not a funnel stage, because they run in parallel with the refineries already operating rather than feeding them.
+              {" "}One inconsistency, and it is in the source: the fact sheet&rsquo;s headline says four active refineries while its own footnote refers to six operational private ones. The funnel uses the headline.</>}
+            source="NMDPRA State of the Midstream and Downstream Sector fact sheet, October 2025."
           ><Funnel stages={REFINING_FUNNEL} scaleBy="size" barLabel="Bars scaled by capacity, bpsd" /></ChartFrame>
 
           <ChartFrame
