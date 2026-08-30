@@ -22,6 +22,8 @@ import { Funnel } from "@/components/funnel";
 import { Sufficiency } from "@/components/sufficiency";
 import { UtilisationBullets, CngFleet, CngStations, Network, DangotePlan } from "@/components/downstream";
 import { UTILISATION, PCNGI_STATIONS, PCNGI_TOTAL, DANGOTE } from "@/lib/downstream";
+import { TruckoutChart } from "@/components/truckout";
+import { TRUCKOUT } from "@/lib/truckout";
 import { ReservesChange } from "@/components/reserves";
 import { TerminalMap } from "@/components/terminal-map";
 import { RevisionTriangle, SettleSteps } from "@/components/revision-triangle";
@@ -404,23 +406,36 @@ function buildSections(live: LivePrices): Section[] {
           ><DangotePlan /></ChartFrame>
         </div>
 
+        <ChartFrame
+          n="D5" title="Two headlines, one dataset"
+          plain={<>Petrol demand fell {Math.abs(TRUCKOUT.pathPct)}% and {Math.abs(TRUCKOUT.levelPct)}% this year. Both are true, of the same numbers.</>}
+          detail={<>The regulator reported half-year consumption down {Math.abs(TRUCKOUT.levelPct)}%; the marketers reported demand down about 22%. They are not rival datasets. The marketers&rsquo; report is built on the regulator&rsquo;s own truck-out figures, and those monthly figures multiplied by days in month sum to {TRUCKOUT.h1Total2026.toLocaleString("en-US")}m litres, matching the published half-year total exactly.
+            {" "}One is a level comparison, half against half, and the two half-year averages sit {(TRUCKOUT.avg2025 - TRUCKOUT.avg2026).toFixed(2)}m litres apart, which is the flat band on the chart. The other is a path comparison, January against the May trough, which is the line falling through it. A high January averaged against a collapsed May is what makes the year look unchanged.
+            {" "}July is drawn but should be treated carefully: receipts were {TRUCKOUT.julyReceipts}m litres a day against truck-out of {TRUCKOUT.julyTruckout}, so the market was building stock. A 25% fall in truck-out beside a 10% fall in receipts is a distribution signal before it is a demand one.</>}
+          source="NMDPRA monthly truck-out data. Truck-out measures product moving into the market, not fuel burned."
+          legend={[
+            { label: "Daily average", color: "var(--chart-1)" },
+            { label: "Both half-year averages", color: "var(--chart-3)" },
+          ]}
+        ><TruckoutChart /></ChartFrame>
+
         <div className="grid gap-6 xl:grid-cols-[1fr_1fr_1.15fr]">
           <ChartFrame
-            n="D5" title="Vehicles converted to gas"
+            n="D6" title="Vehicles converted to gas"
             plain={<>{PCNGI_TOTAL.toLocaleString("en-US")} vehicles now run on compressed gas, and four in five are private cars.</>}
             detail="Each row states its own scale, because the categories differ by three orders of magnitude and one shared unit would render buses invisible. The programme is heavily weighted towards private cars; the freight and transit conversions that would shift national fuel demand are a much smaller share."
             source="Presidential CNG Initiative, via the NMDPRA fact sheet."
           ><CngFleet /></ChartFrame>
 
           <ChartFrame
-            n="D6" title="Filling stations for it"
+            n="D7" title="Filling stations for it"
             plain={<>{PCNGI_STATIONS.built} stations are open and {PCNGI_STATIONS.building} are still being built.</>}
             detail="One square per station. Filled squares are open, outlined ones are under construction, which is the useful distinction: the network that exists today is roughly a third of the network being promised, and conversions are running ahead of the places to refuel."
             source="Presidential CNG Initiative, via the NMDPRA fact sheet."
           ><CngStations /></ChartFrame>
 
           <ChartFrame
-            n="D7" title="The network fuel moves through"
+            n="D8" title="The network fuel moves through"
             plain="A depot and haulage system built for imports, now serving a refinery at home."
             detail="Counts and storage capacity as published. The scale is worth holding in mind against the sufficiency panel: 4.72 billion litres of petrol storage sounds large, but against roughly 57 million litres of daily consumption it is about eleven days, which is exactly what that panel reports."
             source="NMDPRA fact sheet, October 2025."
