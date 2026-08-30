@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useSyncExternalStore, type ReactNode } from "react";
-import { TrendingUp, SlidersHorizontal, FlaskConical, FileText, Target, Flame, Fuel, PanelLeftClose, PanelLeftOpen, ExternalLink, Sun, Moon } from "lucide-react";
+import { TrendingUp, SlidersHorizontal, FlaskConical, FileText, Target, Flame, Fuel, Banknote, ListChecks, PanelLeftClose, PanelLeftOpen, ExternalLink, Sun, Moon } from "lucide-react";
 import { Icon } from "./icon";
 import type { GlyphName } from "@/lib/glyphs";
 import { RangeProvider, RangeSelector } from "./range";
 
 export type SectionId =
-  | "production" | "prices" | "gas" | "downstream" | "shipping" | "drilling" | "projection" | "outlook" | "decks" | "method";
+  | "production" | "prices" | "gas" | "downstream" | "shipping" | "drilling" | "capital" | "watch" | "projection" | "outlook" | "decks" | "method";
 
 export type Section = {
   id: SectionId;
@@ -27,6 +27,8 @@ const LUCIDE: Partial<Record<SectionId, typeof TrendingUp>> = {
   prices: TrendingUp,
   gas: Flame,
   downstream: Fuel,
+  capital: Banknote,
+  watch: ListChecks,
   projection: Target,
   outlook: SlidersHorizontal,
   decks: FileText,

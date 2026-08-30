@@ -26,6 +26,10 @@ import { RevisionTriangle, SettleSteps } from "@/components/revision-triangle";
 import { REVISION } from "@/lib/revision";
 import { SettledNowcast, RevisionPredictors, TheftDecomposition } from "@/components/nowcast";
 import { REVISION_MODEL, THEFT_MODEL } from "@/lib/models";
+import { KoboWaffle, BlockWaffle, FidSlots, EnergyBank } from "@/components/waffles";
+import { WatchList } from "@/components/watch";
+import { WATCH_COUNTS } from "@/lib/watch-wishes";
+import { SETTLEMENT_FACTS, LICENSING, FID_FACTS, AEB } from "@/lib/watch-data";
 import { MAP_FACTS } from "@/lib/terminals";
 import { REFINING_FUNNEL, REFINING_IN_FLIGHT, LICENSING_FUNNEL, FUNNEL_FACTS } from "@/lib/funnels";
 import { GAS_FACTS, GAS_2025_BSCF, RECONCILIATION } from "@/lib/gas-balance";
@@ -316,6 +320,13 @@ function buildSections(live: LivePrices): Section[] {
           ]}
         ><GasSankey /></ChartFrame>
 
+        <ChartFrame
+          n="G6" title="What the grid actually pays for its gas"
+          plain={<>Generators invoiced ₦{SETTLEMENT_FACTS.avgInvoiced}bn a month and were paid ₦{SETTLEMENT_FACTS.avgPaid}bn. {Math.floor(SETTLEMENT_FACTS.ratePct)} naira in every hundred.</>}
+          detail={<>The domestic branch of the diagram above ends here. Gas-to-power is the largest strategic offtake, and this is the market it sells into: an average settlement rate of {SETTLEMENT_FACTS.ratePct}% across January to April 2026, leaving ₦{SETTLEMENT_FACTS.shortfallMonthly}bn short every month. The prior full year settled at {SETTLEMENT_FACTS.prevYearRatePct}%, and the tariff shortfall accumulated between April 2025 and April 2026 was ₦{SETTLEMENT_FACTS.tariffShortfallTn}tn. Generators project sector debt reaching ₦{SETTLEMENT_FACTS.debtBy2033Tn}tn by 2033 if the imbalance holds. Every new bcf of domestic capacity flows into this.</>}
+          source="NBET market data via generator reporting, January to April 2026."
+        ><KoboWaffle /></ChartFrame>
+
         <div className="grid gap-6 lg:grid-cols-4">
           <ChartFrame n="G2" title="Exported"
             plain="Mostly as LNG, the single widest branch.">
@@ -505,6 +516,65 @@ function buildSections(live: LivePrices): Section[] {
           ]}
           rows={activityRows}
         />
+      </div>
+    ),
+  },
+  {
+    id: "capital",
+    label: "Capital",
+    group: "Activity",
+    blurb: "The blocks, the decisions and the bank the sector is waiting on, each as a counter rather than a promise.",
+    content: (
+      <div key="capital" className="flex flex-col gap-6">
+        <div className="grid gap-6 xl:grid-cols-2">
+          <ChartFrame
+            n="C1" title="The 2025 licensing round, block by block"
+            plain={<>{LICENSING.offered - LICENSING.awarded} of {LICENSING.offered} blocks drew no bid, and {LICENSING.executed} concessions have been signed.</>}
+            detail={<>One square per block on offer. {LICENSING.awarded} went provisionally to {LICENSING.firms} companies at the commercial bid conference on 21 July 2026. Provisional is the operative word: winners must pay signature bonuses and execute concession contracts before a licence takes legal effect, and that window runs to October 2026. Until it closes the executed count stays at zero, which is why this panel exists as a counter rather than a headline.</>}
+            source="NUPRC licensing round announcements. Updates when contracting completes."
+          ><BlockWaffle /></ChartFrame>
+
+          <ChartFrame
+            n="C2" title="Deepwater decisions taken"
+            plain={<>The wish at the conference was one of two. It is still {FID_FACTS.taken}.</>}
+            detail="Fiscal incentives were approved in March 2026 and the production tax credit gazetted in August at $11.50 a barrel, both real steps. Neither is a final investment decision. Bonga South West is targeted at 2027 and Zabazaba has no date. The slots stay empty until a decision is actually signed."
+            source="NNPC and operator announcements."
+          ><FidSlots /></ChartFrame>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <ChartFrame
+            n="C3" title="The Africa Energy Bank"
+            plain={<>About {AEB.subscribedPct}% of the ${AEB.authorisedBn}bn authorised capital has been subscribed.</>}
+            detail="Set up by the African Petroleum Producers Organisation with Afreximbank, and intended as a lender for oil and gas projects as international banks withdraw from the sector. The Abuja headquarters is complete and the launch date has moved more than once. A panellist at the conference put it bluntly: no capital for the energy bank. The subscription figure is why."
+            source="APPO and Afreximbank statements."
+          ><EnergyBank /></ChartFrame>
+        </div>
+      </div>
+    ),
+  },
+  {
+    id: "watch",
+    label: "12-month watch",
+    group: "Analysis",
+    blurb: "What the panels asked for at the conference, each turned into something that can be checked.",
+    content: (
+      <div key="watch" className="flex flex-col gap-6">
+        <section className="panel flex flex-col py-4">
+          <header className="px-4 pb-3">
+            <h2 className="display">Asked for in the next twelve months</h2>
+            <p className="body mt-1 max-w-[86ch]">
+              {WATCH_COUNTS.total} things senior people said they wanted to see, converted into a
+              metric with a current reading. Click any row for the working. {WATCH_COUNTS.unmeasured} are
+              not measurable from published data, and saying so is the point rather than an omission.
+            </p>
+          </header>
+          <WatchList />
+          <p className="source mt-3 px-4">
+            Wishes paraphrased from notes taken at the Nigeria Oil &amp; Gas Outlook conference,
+            27 August 2026. Readings from the sources cited in each section of this dashboard.
+          </p>
+        </section>
       </div>
     ),
   },

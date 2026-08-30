@@ -80,3 +80,15 @@ export const AEB = {
     { when: "Jul 2026", what: "Latest stated launch, Abuja headquarters complete" },
   ],
 };
+
+/* ── 2025 licensing round, NUPRC ────────────────────────────────────────
+   Offered 1 Dec 2025; commercial bid conference 21 Jul 2026; ministerial
+   approval and contracting expected July to October 2026. Thirteen blocks
+   attracted no bid at all. */
+export const LICENSING = {
+  offered: 50,
+  bidFor: 37,
+  awarded: 37,
+  firms: 31,
+  executed: 0,
+};
