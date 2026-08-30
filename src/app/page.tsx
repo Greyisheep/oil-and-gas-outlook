@@ -24,6 +24,8 @@ import { UtilisationBullets, CngFleet, CngStations, Network, DangotePlan } from 
 import { UTILISATION, PCNGI_STATIONS, PCNGI_TOTAL, DANGOTE } from "@/lib/downstream";
 import { TruckoutChart } from "@/components/truckout";
 import { TRUCKOUT } from "@/lib/truckout";
+import { StockFlows, StockReconciliation } from "@/components/stock";
+import { STOCK } from "@/lib/stock";
 import { ReservesChange } from "@/components/reserves";
 import { TerminalMap } from "@/components/terminal-map";
 import { RevisionTriangle, SettleSteps } from "@/components/revision-triangle";
@@ -420,23 +422,45 @@ function buildSections(live: LivePrices): Section[] {
           ]}
         ><TruckoutChart /></ChartFrame>
 
+        <div className="grid gap-6 xl:grid-cols-2">
+          <ChartFrame
+            n="D6" title="What arrived against what left"
+            plain={<>July took in {STOCK.julyNet} m litres a day more than it shipped out. The market was building stock, not running short.</>}
+            detail={<>Truck-out is the number everyone quotes as demand, but it only measures product leaving the depots. Receipts measure what arrived. The gap between them is inventory movement, which is what a sourcing desk actually needs and which nobody publishes directly.
+              {" "}June built at {STOCK.juneNet} m litres a day and July at {STOCK.julyNet}. That matters for reading the demand story: July&rsquo;s 25% fall in truck-out came alongside only a 10% fall in receipts, so most of that drop is distribution behaviour rather than consumption.</>}
+            source="NMDPRA monthly supply reporting, June and July 2026."
+            legend={[
+              { label: "Received", color: "var(--chart-4)" },
+              { label: "Trucked out", color: "var(--chart-1)" },
+            ]}
+          ><StockFlows /></ChartFrame>
+
+          <ChartFrame
+            n="D7" title="Three published numbers that do not agree"
+            plain="The flows say stock rose 400m litres. The cover figure says it fell. Both are NMDPRA's."
+            detail={<>Days of cover is stock divided by daily demand, so it needs a denominator, and NMDPRA does not publish which one it uses. Read against each month&rsquo;s own truck-out, the move from {STOCK.coverFrom} to {STOCK.coverTo} days implies stock fell. Read against a fixed {STOCK.benchmark} m litre benchmark it implies a rise, but only a third of what the flow balance shows.
+              {" "}This is the same unstated-denominator problem as the refining utilisation figure, and it bites harder here: a build and a drawdown are opposite instructions for anyone deciding whether to lift a cargo.</>}
+            source="Derived from NMDPRA's own June and July 2026 figures. The arithmetic is shown so it can be checked."
+          ><StockReconciliation /></ChartFrame>
+        </div>
+
         <div className="grid gap-6 xl:grid-cols-[1fr_1fr_1.15fr]">
           <ChartFrame
-            n="D6" title="Vehicles converted to gas"
+            n="D8" title="Vehicles converted to gas"
             plain={<>{PCNGI_TOTAL.toLocaleString("en-US")} vehicles now run on compressed gas, and four in five are private cars.</>}
             detail="Each row states its own scale, because the categories differ by three orders of magnitude and one shared unit would render buses invisible. The programme is heavily weighted towards private cars; the freight and transit conversions that would shift national fuel demand are a much smaller share."
             source="Presidential CNG Initiative, via the NMDPRA fact sheet."
           ><CngFleet /></ChartFrame>
 
           <ChartFrame
-            n="D7" title="Filling stations for it"
+            n="D9" title="Filling stations for it"
             plain={<>{PCNGI_STATIONS.built} stations are open and {PCNGI_STATIONS.building} are still being built.</>}
             detail="One square per station. Filled squares are open, outlined ones are under construction, which is the useful distinction: the network that exists today is roughly a third of the network being promised, and conversions are running ahead of the places to refuel."
             source="Presidential CNG Initiative, via the NMDPRA fact sheet."
           ><CngStations /></ChartFrame>
 
           <ChartFrame
-            n="D8" title="The network fuel moves through"
+            n="D10" title="The network fuel moves through"
             plain="A depot and haulage system built for imports, now serving a refinery at home."
             detail="Counts and storage capacity as published. The scale is worth holding in mind against the sufficiency panel: 4.72 billion litres of petrol storage sounds large, but against roughly 57 million litres of daily consumption it is about eleven days, which is exactly what that panel reports."
             source="NMDPRA fact sheet, October 2025."
