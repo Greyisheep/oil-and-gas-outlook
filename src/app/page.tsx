@@ -222,7 +222,8 @@ function buildSections(live: LivePrices): Section[] {
         <ChartFrame
           n="11" title="Theft fell, and it barely moved the gap"
           plain={<>Crude losses are down {Math.abs(THEFT_MODEL.collapsePct)}% from 2021, but what is still stolen is {THEFT_MODEL.remainingShareOfGap}% of the shortfall.</>}
-          detail={<>The decline is real and one of the clearest policy wins in the sector. The point of the second bar is what it leaves. Ending theft completely tomorrow would close {THEFT_MODEL.remainingShareOfGap}% of the distance to the budget benchmark; {(100-THEFT_MODEL.recoveredShareOfGap-THEFT_MODEL.remainingShareOfGap).toFixed(1)}% of that gap is production that was never brought online.
+          detail={<>The decline is real and one of the clearest policy wins in the sector. The point of the second bar is what it leaves. Ending theft completely tomorrow would close {THEFT_MODEL.remainingShareOfGap}% of the distance to the budget benchmark; the other {THEFT_MODEL.undrilledShareOfGap}% is production that was never brought online.
+            {" "}Recovered theft is deliberately not a slice of that bar. It was recovered, so it is not part of what is missing; its effect is the size of the bar itself, and without it the shortfall would be {(THEFT_MODEL.gapWithoutRecovery/1000).toFixed(0)}k rather than {(THEFT_MODEL.gap/1000).toFixed(0)}k bpd.
             {" "}A smooth exponential decay was fitted to the yearly series and rejected. It scores well on paper but its errors are patterned, over-predicting 2023 by around 12,000 bpd, because this is not a decay curve: losses collapsed {Math.abs(THEFT_MODEL.collapsePct)}% across 2021 to 2023 and have since flattened at roughly {Math.abs(THEFT_MODEL.plateauPerYearPct)}% a year against a floor near 10,000 bpd.</>}
           source="NUPRC annual crude loss figures. 2025 covers January to July, the period reported as a 16-year low."
         ><TheftDecomposition /></ChartFrame>

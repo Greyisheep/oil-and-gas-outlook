@@ -21,17 +21,28 @@ const RECOVERED = THEFT[0].bpd - THEFT[THEFT.length - 1].bpd;
 const JULY_CRUDE = 1_505_000;
 const BUDGET = 1_840_000;
 
+const GAP = BUDGET - JULY_CRUDE;
+const STILL_STOLEN = THEFT[THEFT.length - 1].bpd;
+
 export const THEFT_FACTS = {
   peakBpd: THEFT[0].bpd,
-  nowBpd: THEFT[THEFT.length - 1].bpd,
+  nowBpd: STILL_STOLEN,
   recovered: RECOVERED,
   cutPct: +(RECOVERED / THEFT[0].bpd * 100).toFixed(1),
-  gapToBudget: BUDGET - JULY_CRUDE,
-  /* What is left to steal, against what is still missing. This is the whole
-     argument: ending theft entirely would close 2.9% of the remaining gap. */
-  remainingTheftShareOfGap: +(THEFT[THEFT.length - 1].bpd / (BUDGET - JULY_CRUDE) * 100).toFixed(1),
+  gapToBudget: GAP,
   julyCrude: JULY_CRUDE,
   budget: BUDGET,
+
+  /* Decomposition of the gap that exists NOW. Recovered theft is deliberately
+     not a component: it was recovered, so it is not part of what is missing.
+     Treating it as a slice of the current shortfall double-counts a past win
+     into a present gap, which is what an earlier version of this panel did. */
+  stolenShareOfGap: +(STILL_STOLEN / GAP * 100).toFixed(1),
+  undrilledShareOfGap: +((GAP - STILL_STOLEN) / GAP * 100).toFixed(1),
+  undrilledBpd: +(GAP - STILL_STOLEN).toFixed(0),
+
+  /* Recovery as context: how much wider the gap would be without it. */
+  gapWithoutRecovery: +(GAP + RECOVERED).toFixed(0),
 };
 
 /* ── Electricity settlement, NBET market data via GenCo reporting ─────── */

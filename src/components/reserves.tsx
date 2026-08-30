@@ -68,11 +68,12 @@ export function ReservesChange() {
               </span>
             </div>
 
-            {/* diverging bar on percentage change, zero in the centre */}
-            <div className="relative h-7 rounded-[6px] bg-[var(--track)]">
-              <div className="absolute bottom-0 left-1/2 top-0 w-[1.5px] -translate-x-1/2 bg-[var(--rule)]" aria-hidden />
+            {/* Bars diverge from a zero that has to be visible, or the
+                direction means nothing. Ticks give the length a scale. */}
+            <div className="relative h-9">
+              <div className="absolute inset-x-0 top-[7px] h-5 rounded-[5px] bg-[var(--track)]" />
               <div
-                className="absolute top-1/2 h-5 -translate-y-1/2 rounded-[5px]"
+                className="absolute top-[9px] h-4 rounded-[4px]"
                 style={{
                   background: colour,
                   width: `${half(r.pct)}%`,
@@ -80,8 +81,19 @@ export function ReservesChange() {
                   right: up ? undefined : "50%",
                 }}
               />
+              {/* zero */}
+              <div className="absolute bottom-[6px] left-1/2 top-0 w-[2px] -translate-x-1/2
+                              bg-[var(--foreground)] opacity-70" aria-hidden />
+              {/* scale ticks at the ends of the shown range */}
+              {[-SCALE, 0, SCALE].map((t) => (
+                <span key={t}
+                      className="absolute bottom-0 -translate-x-1/2 text-[10px] tabular-nums text-[var(--lighter)]"
+                      style={{ left: `${50 + (t / SCALE) * 50}%` }}>
+                  {t > 0 ? `+${t}%` : `${t}%`}
+                </span>
+              ))}
               <span
-                className="absolute top-1/2 -translate-y-1/2 text-[13px] font-medium tabular-nums"
+                className="absolute top-[11px] text-[12.5px] font-semibold tabular-nums"
                 style={{
                   color: colour,
                   left: up ? `calc(50% + ${half(r.pct)}% + 8px)` : undefined,

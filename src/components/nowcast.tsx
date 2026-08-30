@@ -121,26 +121,35 @@ export function TheftDecomposition() {
         })}
       </div>
 
-      {/* what the recovery bought, against what is still missing */}
-      <div className="flex flex-col gap-1.5 border-t-[0.8px] border-[var(--rule)] pt-3">
-        <span className="caption">Against the {(T.gap / 1000).toFixed(0)}k bpd still missing from the budget benchmark</span>
-        <div className="flex h-7 overflow-hidden rounded-[6px]">
+      {/* What is missing NOW, split into its two real causes. Recovered theft
+          is context below, not a slice: it is not part of the shortfall. */}
+      <div className="flex flex-col gap-2 border-t-[0.8px] border-[var(--rule)] pt-3">
+        <span className="caption">
+          The {(T.gap / 1000).toFixed(0)}k bpd still missing from the budget benchmark, by cause
+        </span>
+        <div className="flex h-8 overflow-hidden rounded-[6px]">
           <div className="flex items-center justify-center"
-               style={{ width: `${T.recoveredShareOfGap}%`, background: "var(--chart-2)", opacity: 0.85 }}>
-            <span className="text-[11px] font-medium text-white">{T.recoveredShareOfGap}%</span>
+               style={{ width: `${T.remainingShareOfGap}%`, background: "var(--chart-3)", minWidth: 34 }}>
+            <span className="text-[11px] font-semibold text-white">{T.remainingShareOfGap}%</span>
           </div>
-          <div style={{ width: `${T.remainingShareOfGap}%`, background: "var(--chart-3)" }} />
-          <div className="flex flex-1 items-center justify-center bg-[var(--track)]">
-            <span className="text-[11px] font-medium text-[var(--muted-foreground)]">
-              {(100 - T.recoveredShareOfGap - T.remainingShareOfGap).toFixed(1)}%
+          <div className="flex flex-1 items-center px-3" style={{ background: "var(--track)" }}>
+            <span className="text-[12px] font-medium text-[var(--muted-foreground)]">
+              {T.undrilledShareOfGap}% · {(T.undrilled / 1000).toFixed(0)}k bpd of production never brought online
             </span>
           </div>
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-1">
-          <span className="caption"><span className="mr-1 inline-block h-2 w-2 rounded-[1px] align-middle" style={{ background: "var(--chart-2)" }} />Already recovered from theft</span>
-          <span className="caption"><span className="mr-1 inline-block h-2 w-2 rounded-[1px] align-middle" style={{ background: "var(--chart-3)" }} />Still being stolen</span>
-          <span className="caption"><span className="mr-1 inline-block h-2 w-2 rounded-[1px] align-middle" style={{ background: "var(--track)" }} />Neither: wells not drilled</span>
+          <span className="caption">
+            <span className="mr-1 inline-block h-2 w-2 rounded-[1px] align-middle" style={{ background: "var(--chart-3)" }} />
+            Still being stolen · {T.remaining.toLocaleString("en-US")} bpd
+          </span>
         </div>
+        <p className="caption pt-1">
+          Recovered theft is not a slice of this bar, because it is no longer missing. Its effect is
+          the size of the bar itself: without the {(T.recovered / 1000).toFixed(0)}k bpd already
+          recovered, the shortfall would be {(T.gapWithoutRecovery / 1000).toFixed(0)}k rather
+          than {(T.gap / 1000).toFixed(0)}k.
+        </p>
       </div>
     </div>
   );
