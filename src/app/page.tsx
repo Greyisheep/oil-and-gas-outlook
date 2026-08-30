@@ -18,6 +18,9 @@ import { SlopeChart, BarrelGauge, CoverPictogram, RigPictogram } from "@/compone
 import { Sunburst, SeasonalRadar, BenchmarkGauge } from "@/components/circular";
 import { ClaimLedger, PriceCallChart } from "@/components/scorecard";
 import { GasSankey } from "@/components/sankey";
+import { Funnel } from "@/components/funnel";
+import { Sufficiency } from "@/components/sufficiency";
+import { REFINING_FUNNEL, REFINING_IN_FLIGHT, LICENSING_FUNNEL, FUNNEL_FACTS } from "@/lib/funnels";
 import { GAS_FACTS, GAS_2025_BSCF, RECONCILIATION } from "@/lib/gas-balance";
 import { ProjectionChart, BacktestRibbon, BacktestErrors, ModelCard, SlopeDrift } from "@/components/projection";
 import { TargetSolver } from "@/components/solver";
@@ -321,6 +324,31 @@ function buildSections(live: LivePrices): Section[] {
     ),
   },
   {
+    id: "downstream",
+    label: "Downstream",
+    group: "Market",
+    blurb: "How much refining Nigeria has licensed against how much actually runs, and how many days of fuel the country holds.",
+    content: (
+      <div key="downstream" className="flex flex-col gap-6">
+        <div className="grid gap-6 xl:grid-cols-2">
+          <ChartFrame
+            n="D1" title="Licensed to build, actually running"
+            plain={<>Nigeria has licensed {FUNNEL_FACTS.refiningLicensedMbpsd}m barrels a day of refining. {FUNNEL_FACTS.refiningActiveKbpsd},000 runs, which is {FUNNEL_FACTS.refiningCapacityKept}% of it.</>}
+            detail={<>A licence to establish is permission to plan; a licence to construct means the project cleared that first gate. Bars are scaled by capacity rather than by the number of licences, because capacity is what actually attrites: most of the licensed volume sits in projects that never reached steel. One inconsistency to note, since it is in the source: the fact sheet&rsquo;s headline says four active refineries while its own footnote refers to six operational private refineries. The funnel uses the headline figure.</>}
+            source={`NMDPRA State of the Midstream and Downstream Sector fact sheet, October 2025. A further ${REFINING_IN_FLIGHT.count} refineries are under construction (${REFINING_IN_FLIGHT.names}), adding ${REFINING_IN_FLIGHT.capacity.toLocaleString("en-US")} bpsd when complete. They are not shown as a funnel stage because they run in parallel with the refineries already operating, rather than feeding them.`}
+          ><Funnel stages={REFINING_FUNNEL} scaleBy="size" barLabel="Bars scaled by capacity, bpsd" /></ChartFrame>
+
+          <ChartFrame
+            n="D2" title="Days of fuel the country holds"
+            plain="Cooking gas has five days of cover against a thirty-day benchmark. Diesel and fuel oil are comfortable."
+            detail="Sufficiency is stock divided by daily consumption, so it falls when either stock drops or demand rises. The dot is the reading, the ring is the benchmark, and the bar between them is the gap. LPG being the thinnest cover is the one to watch, because it is also the fuel the government is pushing households towards."
+            source="NMDPRA fact sheet, October 2025. National averages for the month."
+          ><Sufficiency /></ChartFrame>
+        </div>
+      </div>
+    ),
+  },
+  {
     id: "shipping", 
     label: "Shipping",
     group: "Market",
@@ -422,6 +450,13 @@ function buildSections(live: LivePrices): Section[] {
             detail="Each block is ten days. Lower cover means less slack in the system, so any disruption feeds through to price faster."
         ><CoverPictogram /></ChartFrame>
         </div>
+
+        <ChartFrame
+          n="17" title="The 2025 licensing round, stage by stage"
+          plain={<>{FUNNEL_FACTS.blocksUnbid} of the 50 blocks drew no bid at all, and no concession has been executed yet.</>}
+          detail={<>Blocks are the unit here, not capacity. The round opened on 1 December 2025 and the commercial bid conference ran on 21 July 2026, when {FUNNEL_FACTS.blocksAwarded} blocks went provisionally to {FUNNEL_FACTS.firmsWinning} companies. Provisional is the operative word: winners must pay signature bonuses and execute concession contracts before any licence takes legal effect, and that window runs to October 2026. Until then the last bar stays at zero. This is the panel wish &ldquo;the big rounds need to be concluded&rdquo;, as a counter.</>}
+          source="NUPRC 2025 licensing round announcements. The last stage updates when contracting completes."
+        ><Funnel stages={LICENSING_FUNNEL} scaleBy="count" barLabel="Bars scaled by number of blocks" /></ChartFrame>
 
         <DataTable
           n="T4" title="Drilling and storage, month by month" maxHeight={520}
