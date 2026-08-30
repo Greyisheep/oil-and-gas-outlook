@@ -20,6 +20,8 @@ import { ClaimLedger, PriceCallChart } from "@/components/scorecard";
 import { GasSankey } from "@/components/sankey";
 import { Funnel } from "@/components/funnel";
 import { Sufficiency } from "@/components/sufficiency";
+import { UtilisationBullets, CngFleet, CngStations, Network, DangotePlan } from "@/components/downstream";
+import { UTILISATION, PCNGI_STATIONS, PCNGI_TOTAL, DANGOTE } from "@/lib/downstream";
 import { ReservesChange } from "@/components/reserves";
 import { TerminalMap } from "@/components/terminal-map";
 import { RevisionTriangle, SettleSteps } from "@/components/revision-triangle";
@@ -383,6 +385,46 @@ function buildSections(live: LivePrices): Section[] {
             detail="Sufficiency is stock divided by daily consumption, so it falls when either stock drops or demand rises. The dot is the reading, the ring is the benchmark, and the bar between them is the gap. LPG being the thinnest cover is the one to watch, because it is also the fuel the government is pushing households towards."
             source="NMDPRA fact sheet, October 2025. National averages for the month."
           ><Sufficiency /></ChartFrame>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <ChartFrame
+            n="D3" title="How much of the plant is actually running"
+            plain={<>Nothing runs above {Math.max(...UTILISATION.map((u) => u.pct))}%. The gap to each marker is capacity that exists and sits idle.</>}
+            detail={<>Bullet bars on one shared scale rather than separate gauges, so the four can be compared in a single glance. One caveat, and it is in the source: the refining figure of {UTILISATION[0].pct}% is printed with no denominator. It cannot be against installed capacity, because that would mean roughly 693,000 barrels a day flowing through 467,000 barrels a day of working plant, so it can only describe the refineries actually operating. The gas figures are unambiguous and check out: 3.94 against 6.1 bscf/d is 64.6%, matching the published 64.7%.
+              {" "}This is the panel that answers the conference remark that Nigerian uptime is not competitive.</>}
+            source="NMDPRA State of the Midstream and Downstream Sector fact sheet, October 2025."
+          ><UtilisationBullets /></ChartFrame>
+
+          <ChartFrame
+            n="D4" title="Dangote against its own plan"
+            plain={<>The refinery planned {DANGOTE.plannedMlPerDay}m litres a day. In 2025 it averaged half that; by June 2026 it had passed it.</>}
+            detail="Two readings, because showing only one would mislead. The fact sheet covers October 2024 to October 2025 and has been overtaken. The step between them is the single biggest change in Nigerian downstream supply, and it is why petrol imports fell so sharply through 2026."
+            source="NMDPRA fact sheet October 2025, and NMDPRA monthly supply reporting for June 2026."
+          ><DangotePlan /></ChartFrame>
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-[1fr_1fr_1.15fr]">
+          <ChartFrame
+            n="D5" title="Vehicles converted to gas"
+            plain={<>{PCNGI_TOTAL.toLocaleString("en-US")} vehicles now run on compressed gas, and four in five are private cars.</>}
+            detail="Each row states its own scale, because the categories differ by three orders of magnitude and one shared unit would render buses invisible. The programme is heavily weighted towards private cars; the freight and transit conversions that would shift national fuel demand are a much smaller share."
+            source="Presidential CNG Initiative, via the NMDPRA fact sheet."
+          ><CngFleet /></ChartFrame>
+
+          <ChartFrame
+            n="D6" title="Filling stations for it"
+            plain={<>{PCNGI_STATIONS.built} stations are open and {PCNGI_STATIONS.building} are still being built.</>}
+            detail="One square per station. Filled squares are open, outlined ones are under construction, which is the useful distinction: the network that exists today is roughly a third of the network being promised, and conversions are running ahead of the places to refuel."
+            source="Presidential CNG Initiative, via the NMDPRA fact sheet."
+          ><CngStations /></ChartFrame>
+
+          <ChartFrame
+            n="D7" title="The network fuel moves through"
+            plain="A depot and haulage system built for imports, now serving a refinery at home."
+            detail="Counts and storage capacity as published. The scale is worth holding in mind against the sufficiency panel: 4.72 billion litres of petrol storage sounds large, but against roughly 57 million litres of daily consumption it is about eleven days, which is exactly what that panel reports."
+            source="NMDPRA fact sheet, October 2025."
+          ><Network /></ChartFrame>
         </div>
       </div>
     ),

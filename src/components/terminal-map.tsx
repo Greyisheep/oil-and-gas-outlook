@@ -22,11 +22,14 @@ const LEGEND = [300, 150, 50];
  * that show the offshore moorings at their true stand-off from shore.
  */
 export function TerminalMap() {
+  const ranked = [...TERMINALS].sort((a, b) => b.kbpd - a.kbpd);
+
   return (
-    <div className="overflow-x-auto">
+    <div className="grid gap-6 px-1 xl:grid-cols-[minmax(0,1fr)_260px] xl:items-start">
       <svg
         viewBox={`0 0 ${MAP_BOX.w} ${MAP_BOX.h}`}
-        className="h-[470px] w-full min-w-[640px]"
+        className="w-full"
+        style={{ aspectRatio: `${MAP_BOX.w} / ${MAP_BOX.h}` }}
         role="img"
         aria-label="Nautical-style chart of the Niger Delta showing crude export terminals sized by July 2026 throughput: Forcados 322, Bonny 304, Qua Iboe 158 and Escravos 131 thousand barrels a day"
       >
@@ -62,7 +65,9 @@ export function TerminalMap() {
             <text key={`xl${g.deg}`} x={g.x + 3} y={MAP_BOX.h - 6}>{g.deg}°E</text>
           ))}
           {GRATICULE.lat.map((g) => (
-            <text key={`yl${g.deg}`} x={4} y={g.y - 4}>{g.deg}°N</text>
+            <text key={`yl${g.deg}`} x={MAP_BOX.w - 5} y={g.y - 4} textAnchor="end">
+              {g.deg}°N
+            </text>
           ))}
         </g>
 
@@ -171,46 +176,47 @@ export function TerminalMap() {
         </g>
       </svg>
 
-      {/* The protagonist is concentration, so the ranking gets the weight. */}
-      <div className="flex flex-wrap items-end gap-x-8 gap-y-4 px-4 pb-2 pt-3">
-        <div className="shrink-0">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[38px] font-semibold leading-none tracking-[-1px] tabular-nums">
-              {MAP_FACTS.mappedShare}%
-            </span>
+      {/* The protagonist is concentration, so the ranking gets its own column. */}
+      <div className="flex flex-col gap-4 pb-2 xl:pt-2">
+        <div>
+          <div className="text-[40px] font-semibold leading-none tracking-[-1.2px] tabular-nums">
+            {MAP_FACTS.mappedShare}%
           </div>
-          <p className="body mt-1 max-w-[24ch]">
+          <p className="body mt-1.5">
             of Nigeria&rsquo;s crude leaves through these four points
           </p>
         </div>
 
-        <div className="flex min-w-[240px] flex-1 flex-col gap-1.5">
-          {[...TERMINALS].sort((a, b) => b.kbpd - a.kbpd).map((t) => {
+        <div className="flex flex-col gap-2.5 border-t-[0.8px] border-[var(--rule)] pt-3.5">
+          {ranked.map((t) => {
             const share = (t.kbpd / MAP_FACTS.nationalCrude) * 100;
             return (
-              <div key={t.name} className="flex items-center gap-2.5">
-                <span className="w-[62px] shrink-0 text-[12.5px]">{t.name}</span>
-                <div className="h-[7px] flex-1 rounded-full bg-[var(--track)]">
+              <div key={t.name} className="flex flex-col gap-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-[13px] font-medium">{t.name}</span>
+                  <span className="text-[12.5px] tabular-nums text-[var(--muted-foreground)]">
+                    {share.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="h-[7px] rounded-full bg-[var(--track)]">
                   <div className="h-[7px] rounded-full"
                        style={{ width: `${(share / 25) * 100}%`, background: "var(--chart-1)", opacity: 0.85 }} />
                 </div>
-                <span className="w-[86px] shrink-0 text-right text-[12.5px] tabular-nums text-[var(--muted-foreground)]">
-                  {share.toFixed(1)}% · 1 in {(MAP_FACTS.nationalCrude / t.kbpd).toFixed(1)}
-                </span>
+                <span className="caption">1 barrel in every {(MAP_FACTS.nationalCrude / t.kbpd).toFixed(1)}</span>
               </div>
             );
           })}
         </div>
-      </div>
 
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t-[0.8px] border-[var(--rule)] px-4 pb-3 pt-2.5">
-        <span className="caption">The rest</span>
-        {UNMAPPED.map((u) => (
-          <span key={u.name} className="text-[12.5px]">
-            {u.name} <span className="tabular-nums text-[var(--muted-foreground)]">{u.kbpd} kb/d</span>
-            <span className="text-[var(--fade)]"> · {u.why}</span>
-          </span>
-        ))}
+        <div className="flex flex-col gap-1 border-t-[0.8px] border-[var(--rule)] pt-3">
+          <span className="caption">Not on the map</span>
+          {UNMAPPED.map((u) => (
+            <span key={u.name} className="text-[12.5px] leading-[1.45]">
+              {u.name} <span className="tabular-nums text-[var(--muted-foreground)]">{u.kbpd}</span>
+              <span className="text-[var(--fade)]"> · {u.why}</span>
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );
