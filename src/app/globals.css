@@ -256,6 +256,15 @@
 .no-spinner::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .no-spinner { -moz-appearance: textfield; appearance: textfield; }
 
+/* ─── Sankey ─────────────────────────────────────────────────────────────
+   Hover highlighting without JS: the hovered ribbon lifts, its siblings
+   fade. Works on the server-rendered markup and degrades to plain fills
+   where hover does not exist. */
+.ribbon { fill-opacity: 0.28; transition: fill-opacity 120ms ease, opacity 120ms ease; }
+.ribbons:hover .ribbon { opacity: 0.16; }
+.ribbons .ribbon:hover { opacity: 1; fill-opacity: 0.55; }
+@media (hover: none) { .ribbons:hover .ribbon { opacity: 1; } }
+
 /* ─── Sidebar ────────────────────────────────────────────────────────────── */
 .navitem {
   display: flex; align-items: center; gap: 8px;

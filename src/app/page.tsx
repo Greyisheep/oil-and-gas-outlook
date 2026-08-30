@@ -17,6 +17,8 @@ import {
 import { SlopeChart, BarrelGauge, CoverPictogram, RigPictogram } from "@/components/forms";
 import { Sunburst, SeasonalRadar, BenchmarkGauge } from "@/components/circular";
 import { ClaimLedger, PriceCallChart } from "@/components/scorecard";
+import { GasSankey } from "@/components/sankey";
+import { GAS_FACTS, GAS_2025_BSCF, RECONCILIATION } from "@/lib/gas-balance";
 import { ProjectionChart, BacktestRibbon, BacktestErrors, ModelCard, SlopeDrift } from "@/components/projection";
 import { TargetSolver } from "@/components/solver";
 import { RIG_LAG } from "@/lib/rig-lag";
@@ -261,6 +263,60 @@ function buildSections(live: LivePrices): Section[] {
           ]}
           rows={priceRows}
         />
+      </div>
+    ),
+  },
+  {
+    id: "gas",
+    label: "Gas",
+    group: "Market",
+    blurb: "Where every cubic foot Nigeria produces actually ends up, and how little of it reaches the power sector.",
+    content: (
+      <div key="gas" className="flex flex-col gap-6">
+        <ChartFrame
+          n="G1" title="Where Nigeria's gas goes"
+          plain={<>Only {GAS_FACTS.domesticShare}% of production reaches the domestic market, and gas to power is {GAS_FACTS.powerShare}% of everything produced.</>}
+          detail={<>Read left to right. Ribbon width is volume, so the comparison is the thickness. Export and field operations take the two widest branches; the domestic market is the third, and within it the power sector is a narrow strand. The first stage is NUPRC&rsquo;s full-year 2025 balance, converted to a daily average. The second stage, splitting domestic supply by sector, is NMDPRA&rsquo;s Q1 to Q3 2025 fact sheet, so it covers a shorter window. Those sectors are labelled &ldquo;strategic&rdquo; and are a subset of domestic offtake; the remainder is drawn grey rather than assigned to a sector it might not belong to.</>}
+          source={`NUPRC 2025 annual gas figures and NMDPRA "State of the Midstream and Downstream Sector" fact sheet, October 2025. The four published uses sum to ${RECONCILIATION.componentsSum} bscf; the flare share independently implies ${RECONCILIATION.impliedByFlareShare} bscf, agreeing to ${RECONCILIATION.gapPct}%. The diagram is drawn on that sum, so the headline "2.71 tscf" rounding gap of ${RECONCILIATION.headlineRoundingGap} bscf is not carried as a phantom flow.`}
+          legend={[
+            { label: "Export", color: "var(--chart-4)" },
+            { label: "Domestic market", color: "var(--chart-2)" },
+            { label: "Field operations", color: "var(--chart-1)" },
+            { label: "Flared", color: "var(--chart-3)" },
+            { label: "Not itemised", color: "var(--muted-foreground)" },
+          ]}
+        ><GasSankey /></ChartFrame>
+
+        <div className="grid gap-6 lg:grid-cols-4">
+          <ChartFrame n="G2" title="Exported"
+            plain="Mostly as LNG, the single widest branch.">
+            <div className="px-4 pb-4 pt-1">
+              <span className="value">{GAS_FACTS.exportShare}%</span>
+              <p className="body mt-1">{GAS_2025_BSCF.export} bscf in 2025</p>
+            </div>
+          </ChartFrame>
+          <ChartFrame n="G3" title="Reached the domestic market"
+            plain="Everything Nigeria burns, sells and processes at home.">
+            <div className="px-4 pb-4 pt-1">
+              <span className="value" style={{ color: "var(--chart-2)" }}>{GAS_FACTS.domesticShare}%</span>
+              <p className="body mt-1">{GAS_2025_BSCF.domestic} bscf in 2025</p>
+            </div>
+          </ChartFrame>
+          <ChartFrame n="G4" title="Went to power"
+            plain="As a share of everything produced, not of domestic supply.">
+            <div className="px-4 pb-4 pt-1">
+              <span className="value" style={{ color: "var(--chart-2)" }}>{GAS_FACTS.powerShare}%</span>
+              <p className="body mt-1">0.641 bscf/d to the grid</p>
+            </div>
+          </ChartFrame>
+          <ChartFrame n="G5" title="Flared"
+            plain="Burned at the wellhead, earning nothing.">
+            <div className="px-4 pb-4 pt-1">
+              <span className="value" style={{ color: "var(--chart-3)" }}>{GAS_FACTS.flareShare}%</span>
+              <p className="body mt-1">{GAS_2025_BSCF.flared} bscf in 2025</p>
+            </div>
+          </ChartFrame>
+        </div>
       </div>
     ),
   },
